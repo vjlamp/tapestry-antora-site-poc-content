@@ -1,0 +1,30 @@
+= Community
+:navtitle: Community
+
+== Mailing Lists
+Like all Apache projects, Tapestry uses mailing lists for most communication. You can subscribe by sending e-mail to the addresses below. For each list, there are subscribe, unsubscribe, and archive links. All Tapestry users are welcome to subscribe to any of these lists, however questions on how to use Tapestry in your application are best sent to the user mailing list.
+
+[%autowidth]
+|===
+|List Name |Subscribe |Unsubscribe |Archive
+
+
+|Tapestry User List 
+|users-subscribe@tapestry.apache.org
+|users-unsubscribe@tapestry.apache.org
+|http://mail-archives.apache.org/mod_mbox/tapestry-users/
+
+|Tapestry Developer List 
+|dev-subscribe@tapestry.apache.org
+|dev-unsubscribe@tapestry.apache.org
+|http://mail-archives.apache.org/mod_mbox/tapestry-dev/
+
+|Tapestry Commits List 
+|commits-subscribe@tapestry.apache.org
+|commits-unsubscribe@tapestry.apache.org
+|http://mail-archives.apache.org/mod_mbox/tapestry-commits/
+|===
+
+
+== Third Party Modules
+...

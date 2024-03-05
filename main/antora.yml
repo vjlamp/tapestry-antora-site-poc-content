@@ -1,0 +1,6 @@
+name: main
+title: Tapestry
+version: ~
+start_page: ROOT:about.adoc
+nav:
+- modules/ROOT/nav.adoc
