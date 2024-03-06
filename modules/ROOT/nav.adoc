@@ -1,6 +1,7 @@
 * xref:index.adoc[]
 
 .Release Notes
+* xref:release-notes-5.1.adoc[]
 * xref:release-notes-5.0.adoc[]
 
 // .Pages and Components
