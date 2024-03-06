@@ -1,0 +1,225 @@
+= Client-Side JavaScript
+:experimental: true // required in Antora 3.1 for support of the keybinding UI macro
+
+JavaScript is a first-class concept in Tapestry, and sophisticated JavaScript support is provided right out of the box, including rich Ajax and Zones, download optimization, client-side logging, and localization.
+
+In production mode, by default, Tapestry will merge JavaScript libraries, add version numbering, and set a far-future expires header to encourage aggressive browser caching.
+
+In addition, as will be described in detail below, Tapestry comes with the Prototype and Scriptaculous libraries, or you can easily swap in JQuery using a 3rd-party module.
+
+== Adding Custom JavaScript
+When adding your own custom JavaScript or third-party libraries, just follow the strategies below to take advantage of Tapestry's JavaScript support mechanisms.
+
+The recommended practice in Tapestry is to package up any significant amount of JavaScript as a static JavaScript library, a .js file that can be downloaded to the client.
+Keep your in-page JavaScript code to a minimum, just the few statements needed to initialize objects and reference methods in the JavaScript libraries.
+
+=== Linking to your JavaScript libraries
+Tapestry provides several ways to add a link to a JavaScript library within your page or component.
+Although you can use direct `<script type="text/javascript" src="xxx.js"></script>` approach, you should only use it for JavaScript that resides outside of your application.
+For JavaScript within your app, Tapestry provides much better ways to do the same thing.
+Most users choose the simplest, the `@IncludeJavaScriptLibrary`  annotation approach.
+
+==== Approach 1: `@IncludeJavaScriptLibrary`
+Use the `@IncludeJavaScriptLibrary` annotation to include links to JavaScript (and CSS) files in your page or component.
+Tapestry ensures that each such file is only referenced once in your page.
+
+[,java]
+----
+@IncludeJavaScriptLibrary(value = {
+    "context:js/jquery.js", "context:js/myeffects.js"
+})
+public class MyComponent
+{
+  …
+}
+----
+
+NOTE: When specifying a file to import, you'll often use the context: binding prefix to indicate that the file is stored in the web application context, and not on the classpath.
+Relative paths will be on the classpath, relative to the Java class.
+See Component Parameters for other binding prefix options.
+
+Adding the same JavaScript library multiple times does not create duplicate links.
+The subsequent ones are simply ignored.
+In this way, each component can add the libraries it needs, without worrying about conflicts with other components.
+
+
+==== Approach 2: RenderSupport
+Alternatively, you can use RenderSupport to include a JavaScript library in your page or component.
+RenderSupport is an environmental service that includes a number of methods that will be used by components, or by services that are called from components. For example:
+
+===== The addScriptLink method
+The addScriptLink method adds a link to a JavaScript library.
+A component can inject such a script and pass one or more of assets to this method:
+
+[,java]
+----
+@Inject @Path("context:/js/myeffects.js")
+private Asset myEffects;
+
+@Environmental
+private RenderSupport renderSupport;
+
+void setupRender()
+{
+  renderSupport.addScriptLink(myEffects);
+}
+----
+
+Tapestry will ensure that the necessary `<link>` elements are added to the top of the document (at the top of the `<head>` element).
+
+As with the annotation approach, adding the same asset multiple times does not create duplicate links.
+
+The setupRender method (the name is specifically linked to a render phase) is the correct place to inform the RenderSupport service that the library is needed.
+
+
+===== The `addScript` method
+The addScript method is used when you need to add some JavaScript code directly to the page.
+This will be inserted at the bottom of the document, and will only be executed when the document has finished loading on the client (i.e., from the window.onload event handler).
+
+[,java]
+----
+void afterRender()
+{
+    javaScriptSupport.addScript(String.format(
+        "$('%s').observe('click', hideMe());",
+        container.getClientId()));
+}
+----
+
+===== Injecting RenderSupport
+`RenderSupport` is an environmental object, so you will normally inject it via the `@Environmental` annotation:
+
+[,java]
+----
+@Environmental
+private RenderSupport renderSupport;
+----
+
+The @Environmental annotation only works inside components, but occasionally you may want to inject `RenderSupport` into a service.
+Fortunately, a proxy has been set up to allow the use of `@Inject` instead:
+
+[,java]
+----
+@Inject
+private RenderSupport renderSupport;
+----
+
+…or, in a service implementation constructor:
+
+[,java]
+----
+public MyServiceImpl(RenderSupport support)
+{
+  …
+}
+----
+
+Inside a component, you should use `@Environmental`, to highlight the fact that RenderSupport (like most environmental objects) is only available during rendering, not during action requests.
+
+
+== Client-Side Logging
+
+Tapestry uses a modified version of the Blackbird JavaScript console. The Tapestry object includes three functions: debug, warn and error.
+
+Each of these functions take a message and an optional pattern; if the pattern is provided, the message is interpolated on the pattern.
+The final message is displayed in the Blackbird console, which will make itself visible automatically.
+
+In production mode, debug messages will be filtered out (they will not be visible until the user presses kbd:[F2] to display the console, and then clicks the grayed out icon for debug messages).
+In development mode, debug messages are not filtered out.
+
+Example usage:
+
+[,JavaScrpipt]
+----
+ Tapestry.debug("Field id is #{id}, value is #{value}", field);
+
+ Tapestry.error("Server is not available.");
+
+----
+
+== Handling Slow Page Loads
+If your page loads slowly (typically, because of scripts loaded from external sites), you may see a race condition where the user can click on a link before an event handler for that link has been wired up.
+
+The client-side function `Tapestry.waitForPage()` can be used in an element's onclick handler to force a wait for the page to fully load.
+In this race condition, the screen will dim and a message will appear advising the user to wait a moment; once the page is fully loaded, this modal dialog will be removed.
+
+The correct usage is:
+
+[,html]
+----
+  <a href="..." onclick="javascript:Tapestry.waitForPage(event);"> ... </a>
+----
+
+The constant `MarkupConstants.WAIT_FOR_PAGE` contains the part of this snippet inside the quotes.
+
+
+== The Standard Tapestry Library
+Tapestry's client-side support, the standard Tapestry library, consists of tapestry.js, which has dependencies on Prototype and on Scriptaculous Effects.
+tapestry.js, along with its dependencies.
+The tapestry.js library is automatically added to the page when your code adds any other JavaScript or JavaScript library.
+
+=== Tapestry Namespace
+Tapestry defines a number of object and classes inside the Tapestry namespace.
+
+It also adds a handful of methods to the Form class, and to Form elements. These are mostly related to input validation and determining element visibility.
+
+=== The Tapestry Object $T()
+The standard library adds a new function, `$T()`.
+This function is used much like Prototype's `$()`, except that instead of returning a DOM object, it returns a hash (an initially empty JavaScript object) that is associated with the DOM object.
+This hash is known as _the Tapestry object_.
+
+You may pass in an object id (as a string) or an object reference.
+The Tapestry Object is created on first invocation.
+
+NOTE: you'll see it as a property name `_tapestry` on the DOM object (which may be useful when debugging).
+
+When Tapestry adds information to a DOM object, it does so in the Tapestry object.
+This helps avoid name conflicts, and groups all Tapestry-added properties into one place which is much easier to debug.
+
+For example, you might store a value for an element in one place:
+[,javascript]
+----
+  $T(myid).fadeDuration = .5;
+----
+
+Then use it somewhere else:
+
+[,javascript]
+----
+  new Effect.Fade($(myId), { duration: $T(myid).fadeDuration });
+----
+
+== Ajax Components and Mixins
+Tapestry provides easy-to-use support for Ajax, the technique of using JavaScript to dynamically updating parts of a web page with content from the server without redrawing the whole page.
+See Ajax and Zones for details.
+
+=== Built-in Libraries
+Tapestry comes with the Prototype and Scriptaculous librarie … no extra download is required.
+Tapestry will automatically link into your pages the prototype.js, scriptaculous.js, and effects.js libraries, as well as the Tapestry library, tapestry.js (which largely consists of support for form input validation).
+
+==== Prototype and Scriptaculous Versions
+Tapestry uses a modified version of the main Scriptaculous library, scriptaculous.js, with the library's default autoloading behavior turned off.
+This lets Tapestry and Tapestry components control which Scriptaculus scripts are loaded, rather than having all of them loaded unnecessarily.
+
+If you need access to other Scriptaculous libraries, you can provide them as follows:
+
+[,java]
+----
+@Inject @Path("${tapestry.scriptaculous}/dragdrop.js")
+private Asset dragDropLibrary;
+
+@Environmental
+private JavaScriptSupport javaScriptSupport;
+
+void setupRender()
+{
+  javaScriptSupport.addScriptLink(dragDropLibrary);
+}
+----
+
+The Asset is injected, using the `tapestry.scriptaculous` configuration symbol to reference the location of the Scriptaculous library.
+
+Even though the dragdrop.js library is stored inside a JAR file, Tapestry ensures that it can be accessed from the client web browser.
+A Tapestry URL within the virtual folder "/assets" is created; the file will be given a version number (the application version number if not specified more specifically) and will be sent to the browser with a far-future expires header (to encourage the browser to cache the file aggressively).
+
+

@@ -1,0 +1,7 @@
+= The Apache Tapestry User Guide
+:navtitle: Welcome
+
+Welcome to the User Guide for Tapestry {page-component-display-version}. Hopefully it provides the information you are looking for. For additional sources of information, see the xref:main::documentation.adoc[] overview.
+
+If you see anything in the User Guide that is not correct or poorly described, please feel invited to suggest an improvement.
+

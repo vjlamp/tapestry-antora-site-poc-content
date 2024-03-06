@@ -1,0 +1,9 @@
+* xref:index.adoc[]
+
+.Release Notes
+* xref:release-notes-5.0.adoc[]
+
+// .Pages and Components
+* xref:property-expressions.adoc[]
+
+* xref:client-side-javascript.adoc[]
