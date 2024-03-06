@@ -19,13 +19,13 @@ Although you can use direct `<script type="text/javascript" src="xxx.js"></scrip
 For JavaScript within your app, Tapestry provides much better ways to do the same thing.
 Most users choose the simplest, the `@IncludeJavaScriptLibrary`  annotation approach.
 
-==== Approach 1: `@IncludeJavaScriptLibrary`
-Use the `@IncludeJavaScriptLibrary` annotation to include links to JavaScript (and CSS) files in your page or component.
+==== Approach 1: `@Import`
+Use the `@Import` annotation to include links to JavaScript (and CSS) files in your page or component.
 Tapestry ensures that each such file is only referenced once in your page.
 
 [,java]
 ----
-@IncludeJavaScriptLibrary(value = {
+@Import(library = {
     "context:js/jquery.js", "context:js/myeffects.js"
 })
 public class MyComponent
@@ -33,6 +33,7 @@ public class MyComponent
   …
 }
 ----
+`@Import` may also be applied to individual methods, in which case the import operation only occurs when the method is invoked.
 
 NOTE: When specifying a file to import, you'll often use the context: binding prefix to indicate that the file is stored in the web application context, and not on the classpath.
 Relative paths will be on the classpath, relative to the Java class.
@@ -43,12 +44,12 @@ The subsequent ones are simply ignored.
 In this way, each component can add the libraries it needs, without worrying about conflicts with other components.
 
 
-==== Approach 2: RenderSupport
-Alternatively, you can use RenderSupport to include a JavaScript library in your page or component.
-RenderSupport is an environmental service that includes a number of methods that will be used by components, or by services that are called from components. For example:
+==== Approach 2: JavaScriptSupport
+Alternatively, you can use JavaScriptSupport to include a JavaScript library in your page or component.
+JavaScriptSupport is an environmental service that includes a number of methods that will be used by components, or by services that are called from components. For example:
 
-===== The addScriptLink method
-The addScriptLink method adds a link to a JavaScript library.
+===== The importJavaScriptLibrary method
+The importJavaScriptLibrary method adds a link to a JavaScript library.
 A component can inject such a script and pass one or more of assets to this method:
 
 [,java]
@@ -57,11 +58,11 @@ A component can inject such a script and pass one or more of assets to this meth
 private Asset myEffects;
 
 @Environmental
-private RenderSupport renderSupport;
+private JavaScriptSupport javaScriptSupport;
 
 void setupRender()
 {
-  renderSupport.addScriptLink(myEffects);
+  javaScriptSupport.importJavaScriptLibrary(myEffects);
 }
 ----
 
@@ -69,7 +70,7 @@ Tapestry will ensure that the necessary `<link>` elements are added to the top o
 
 As with the annotation approach, adding the same asset multiple times does not create duplicate links.
 
-The setupRender method (the name is specifically linked to a render phase) is the correct place to inform the RenderSupport service that the library is needed.
+The setupRender method (the name is specifically linked to a render phase) is the correct place to inform the JavaScriptSupport service that the library is needed.
 
 
 ===== The `addScript` method
@@ -80,11 +81,14 @@ This will be inserted at the bottom of the document, and will only be executed w
 ----
 void afterRender()
 {
-    javaScriptSupport.addScript(String.format(
+    javaScriptSupport.addScript(
         "$('%s').observe('click', hideMe());",
-        container.getClientId()));
+        container.getClientId());
 }
 ----
+
+When calling the method, the format string can include standard substitutions (such as `%s`) for arguments. This saves you the trouble of calling `String.format()` yourself.
+The formatted JavaScript is added to the script block in the rendered output.
 
 ===== Injecting RenderSupport
 `RenderSupport` is an environmental object, so you will normally inject it via the `@Environmental` annotation:
@@ -92,29 +96,29 @@ void afterRender()
 [,java]
 ----
 @Environmental
-private RenderSupport renderSupport;
+private JavaScriptSupport javaScriptSupport;
 ----
 
-The @Environmental annotation only works inside components, but occasionally you may want to inject `RenderSupport` into a service.
+The `@Environmental` annotation only works inside components, but occasionally you may want to inject `JavaScriptSupport` into a service.
 Fortunately, a proxy has been set up to allow the use of `@Inject` instead:
 
 [,java]
 ----
 @Inject
-private RenderSupport renderSupport;
+private JavaScriptSupport javaScriptSupport;
 ----
 
 …or, in a service implementation constructor:
 
 [,java]
 ----
-public MyServiceImpl(RenderSupport support)
+public MyServiceImpl(JavaScriptSupport support)
 {
   …
 }
 ----
 
-Inside a component, you should use `@Environmental`, to highlight the fact that RenderSupport (like most environmental objects) is only available during rendering, not during action requests.
+Inside a component, you should use `@Environmental`, to highlight the fact that JavaScriptSupport (like most environmental objects) is only available during rendering, not during action requests.
 
 
 == Client-Side Logging
@@ -164,6 +168,8 @@ Tapestry defines a number of object and classes inside the Tapestry namespace.
 It also adds a handful of methods to the Form class, and to Form elements. These are mostly related to input validation and determining element visibility.
 
 === The Tapestry Object $T()
+IMPORTANT Deprecated since 5.2 (no replacement)
+
 The standard library adds a new function, `$T()`.
 This function is used much like Prototype's `$()`, except that instead of returning a DOM object, it returns a hash (an initially empty JavaScript object) that is associated with the DOM object.
 This hash is known as _the Tapestry object_.
@@ -222,4 +228,98 @@ The Asset is injected, using the `tapestry.scriptaculous` configuration symbol t
 Even though the dragdrop.js library is stored inside a JAR file, Tapestry ensures that it can be accessed from the client web browser.
 A Tapestry URL within the virtual folder "/assets" is created; the file will be given a version number (the application version number if not specified more specifically) and will be sent to the browser with a far-future expires header (to encourage the browser to cache the file aggressively).
 
+== JavaScript Stacks
+Tapestry allows you to define groups of related JavaScript libraries and stylesheets as "stacks".
+The built-in "core" stack is used to define the core JavaScript libraries needed by Tapestry (currently, this includes Prototype and Scriptaculous, as well as Tapestry-specific libraries).
+Other component libraries may define additional stacks for related sets of resources, for example, to bundle together some portion of the ExtJS or YUI libraries.
 
+A JavaScriptStack can be thought of as a generalization of Tapestry 5.1's ClientInfrastructure, which exists now to define the "core" JavaScript stack.
+
+JavaScript assets of a stack may (when enabled) be exposed to the client as a single URL (identifying the stack by name).
+The individual assets are combined into a single virtual asset, which is then streamed to the client.
+
+To group several static resources together in a single stack, you must create a new implementation of the JavaScriptStack interface.
+
+This interface has four methods:
+
+. getStylesheets : This method will return a list of stylesheet files (StylesheetLink-type object) associated to this stack
+. getJavaScriptLibraries : This method will return a list of javascript files (Asset-type object) associated to this stack
+. getStacks : It is also possible to make a stack dependant of other stacks. All the stacks defined in this method will be loaded before the current stack.
+. getInitialization : this method makes it possible to call a JavaScript initialization for the stack. Tapestry will automatically add this initialization to the page that imports the stacks.
+
+.MyStack.java
+[,java]
+----
+public class MyStack implements JavaScriptStack {
+
+    private final AssetSource assetSource;
+
+    public myStack (final AssetSource assetSource)
+    {
+        this.assetSource = assetSource;
+    }
+
+    public String getInitialization()
+    {
+    	return null;
+    }
+
+    public List<Asset> getJavaScriptLibraries()
+    {
+        List<Asset> ret = new ArrayList<Asset>();
+
+        ret.add(assetSource.getContextAsset("static/js/jquery.js", null));
+
+        ret.add(assetSource.getContextAsset("static/js/jquery.ui.core.js", null));
+
+        return ret;
+    }
+
+    public List<StylesheetLink> getStylesheets()
+    {
+    	List<StylesheetLink> ret = new ArrayList<StylesheetLink>();
+
+    	ret.add(new StylesheetLink(assetSource.getContextAsset("static/css/style.css", null)));
+
+        return ret;
+    }
+
+    public List<String> getStacks()
+    {
+        return Collections.emptyList();
+    }
+
+}
+----
+
+When your new Stack is created, you have to define it in your AppModule.
+
+.AppModule.java (partial)
+[,java]
+----
+@Contribute(JavaScriptStackSource.class)
+public static void addMyStack(MappedConfiguration<String, JavaScriptStack> config)
+{
+    config.addInstance("MyNewStack", MyStack.class);
+}
+----
+
+You can now use it in your pages and components, by using the @Import annotation or the JavaScriptSupport service:
+
+.With @Import
+[,java]
+----
+@Import(stack="MyNewStack")
+public class myPage {
+}
+----
+
+.With JavaScriptSupport
+[,java]
+----
+@Contribute(JavaScriptStackSource.class)
+public static void addMyStack(MappedConfiguration<String, JavaScriptStack> config)
+{
+    config.addInstance("MyNewStack", MyStack.class);
+}
+----
