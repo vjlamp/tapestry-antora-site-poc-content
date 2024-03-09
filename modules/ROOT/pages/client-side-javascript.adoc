@@ -168,7 +168,7 @@ Tapestry defines a number of object and classes inside the Tapestry namespace.
 It also adds a handful of methods to the Form class, and to Form elements. These are mostly related to input validation and determining element visibility.
 
 === The Tapestry Object $T()
-IMPORTANT Deprecated since 5.2 (no replacement)
+IMPORTANT: Deprecated since 5.2 (no replacement)
 
 The standard library adds a new function, `$T()`.
 This function is used much like Prototype's `$()`, except that instead of returning a DOM object, it returns a hash (an initially empty JavaScript object) that is associated with the DOM object.
@@ -242,10 +242,10 @@ To group several static resources together in a single stack, you must create a 
 
 This interface has four methods:
 
-. getStylesheets : This method will return a list of stylesheet files (StylesheetLink-type object) associated to this stack
-. getJavaScriptLibraries : This method will return a list of javascript files (Asset-type object) associated to this stack
-. getStacks : It is also possible to make a stack dependant of other stacks. All the stacks defined in this method will be loaded before the current stack.
-. getInitialization : this method makes it possible to call a JavaScript initialization for the stack. Tapestry will automatically add this initialization to the page that imports the stacks.
+. `getStylesheets()` : This method will return a list of stylesheet files (StylesheetLink-type object) associated to this stack
+. `getJavaScriptLibraries()` : This method will return a list of javascript files (Asset-type object) associated to this stack
+. `getStacks()` : It is also possible to make a stack dependant of other stacks. All the stacks defined in this method will be loaded before the current stack.
+. `getInitialization()` : this method makes it possible to call a JavaScript initialization for the stack. Tapestry will automatically add this initialization to the page that imports the stacks.
 
 .MyStack.java
 [,java]
