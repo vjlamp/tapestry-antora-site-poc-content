@@ -1,6 +1,6 @@
 name: userguide
 title: User Guide
-version: 5.2
+version: 5.3
 nav:
 - modules/ROOT/nav.adoc
 
