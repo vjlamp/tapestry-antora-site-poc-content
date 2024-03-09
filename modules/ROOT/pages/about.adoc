@@ -1,4 +1,7 @@
-= Developing Java Web Applications with Scripting Ease
+= Java Web Applications with Scripting Ease
 :navtitle: About
 
+image::apache-tapestry-icontext-600.png[]
+
 Apache Tapestry is an open-source component-oriented framework for creating dynamic, robust, highly scalable web appplications in Java.
+
