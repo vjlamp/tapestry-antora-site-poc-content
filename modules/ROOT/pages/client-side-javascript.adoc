@@ -193,11 +193,11 @@ Then use it somewhere else:
 Tapestry provides easy-to-use support for Ajax, the technique of using JavaScript to dynamically updating parts of a web page with content from the server without redrawing the whole page.
 See Ajax and Zones for details.
 
-=== Built-in Libraries
-Tapestry comes with the Prototype and Scriptaculous librarie … no extra download is required.
+== Built-in Libraries
+Tapestry comes with the Prototype and Scriptaculous libraries — no extra download is required.
 Tapestry will automatically link into your pages the prototype.js, scriptaculous.js, and effects.js libraries, as well as the Tapestry library, tapestry.js (which largely consists of support for form input validation).
 
-==== Prototype and Scriptaculous Versions
+=== Prototype and Scriptaculous Versions
 Tapestry uses a modified version of the main Scriptaculous library, scriptaculous.js, with the library's default autoloading behavior turned off.
 This lets Tapestry and Tapestry components control which Scriptaculus scripts are loaded, rather than having all of them loaded unnecessarily.
 
