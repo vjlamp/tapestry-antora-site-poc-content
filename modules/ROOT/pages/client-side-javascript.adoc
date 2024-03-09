@@ -116,6 +116,16 @@ public MyServiceImpl(RenderSupport support)
 
 Inside a component, you should use `@Environmental`, to highlight the fact that RenderSupport (like most environmental objects) is only available during rendering, not during action requests.
 
+== Combining JavaScript libraries
+In production mode, Tapestry automatically _combines_ JavaScript libraries.
+A single request (for a _virtual asset_) will retrieve the combined content of all referenced JavaScript library files.
+
+This is a very useful feature, as it reduces the number of requests needed to present a page to the user.
+It can be disabled, however, by setting the `SymbolConstants.COMBINE_SCRIPTS` configuration symbol to false in your application's module class (normally AppModule.java).
+By default it is enabled when in production mode and disabled otherwise.
+
+As elsewhere, if the client browser supports gzip compression, the combined JavaScript will be compressed.
+
 
 == Client-Side Logging
 
