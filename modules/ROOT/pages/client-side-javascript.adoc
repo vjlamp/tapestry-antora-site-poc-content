@@ -209,11 +209,11 @@ If you need access to other Scriptaculous libraries, you can provide them as fol
 private Asset dragDropLibrary;
 
 @Environmental
-private JavaScriptSupport javaScriptSupport;
+private RenderSupport renderSupport;
 
 void setupRender()
 {
-  javaScriptSupport.addScriptLink(dragDropLibrary);
+  renderSupport.addScriptLink(dragDropLibrary);
 }
 ----
 
