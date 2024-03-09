@@ -4,6 +4,7 @@
 JavaScript is a first-class concept in Tapestry, and sophisticated JavaScript support is provided right out of the box, including rich Ajax and Zones, download optimization, client-side logging, and localization.
 
 In production mode, by default, Tapestry will merge JavaScript libraries, add version numbering, and set a far-future expires header to encourage aggressive browser caching.
+Starting with version 5.3, Tapestry can also automatically minify (compress) JavaScript libraries when in production mode.
 
 In addition, as will be described in detail below, Tapestry comes with the Prototype and Scriptaculous libraries, or you can easily swap in JQuery using a 3rd-party module.
 
@@ -66,7 +67,7 @@ void setupRender()
 }
 ----
 
-Tapestry will ensure that the necessary `<link>` elements are added to the top of the document (at the top of the `<head>` element).
+Tapestry will ensure that the necessary `<link>` elements are inserted at the bottom of the `<head>` element).
 
 As with the annotation approach, adding the same asset multiple times does not create duplicate links.
 
@@ -130,26 +131,26 @@ By default it is enabled when in production mode and disabled otherwise.
 
 As elsewhere, if the client browser supports gzip compression, the combined JavaScript will be compressed.
 
+== Minifying JavaScript libraries
+In production mode, Tapestry can automatically minify (intelligently compresses) JavaScript libraries (and CSS) when the application starts up.
+This can significantly decrease the size of static content that the browser needs to download.
+
+Minification is accomplished using the ResourceMinimizer service.
+A YUI Compressor-based implementation is available, but this can be overridden.
+
+IMPORTANT: The `tapestry-core` module only provides the empty infrastructure for supporting minification; the actual logic is supplied in the `tapestry-yuicompressor` module.
+To use it, you'll need to update your dependencies to include this module.
+
+Minification can be disabled by setting the `tapestry.enable-minification` configuration symbol to `false` in your application's module class (usually `AppModule.java`).
+By default it is enabled when in production mode and disabled otherwise.
+
+Please test your applications well: the YUI Compressor code can be somewhat finicky about the application server and JDK version.
+
 
 == Client-Side Logging
+In versions prior to 5.3, Tapestry used a modified version of the Blackbird JavaScript console.
+In Tapestry 5.3 the Blackbird console was removed; just use the standard console logging features (e.g. `console.log()`) built into modern browsers.
 
-Tapestry uses a modified version of the Blackbird JavaScript console. The Tapestry object includes three functions: debug, warn and error.
-
-Each of these functions take a message and an optional pattern; if the pattern is provided, the message is interpolated on the pattern.
-The final message is displayed in the Blackbird console, which will make itself visible automatically.
-
-In production mode, debug messages will be filtered out (they will not be visible until the user presses kbd:[F2] to display the console, and then clicks the grayed out icon for debug messages).
-In development mode, debug messages are not filtered out.
-
-Example usage:
-
-[,JavaScrpipt]
-----
- Tapestry.debug("Field id is #{id}, value is #{value}", field);
-
- Tapestry.error("Server is not available.");
-
-----
 
 == Handling Slow Page Loads
 If your page loads slowly (typically, because of scripts loaded from external sites), you may see a race condition where the user can click on a link before an event handler for that link has been wired up.
@@ -212,6 +213,7 @@ See Ajax and Zones for details.
 == Built-in Libraries
 Tapestry comes with the Prototype and Scriptaculous libraries — no extra download is required.
 Tapestry will automatically link into your pages the prototype.js, scriptaculous.js, and effects.js libraries, as well as the Tapestry library, tapestry.js (which largely consists of support for form input validation).
+Starting with Tapestry 5.3, Underscore is also included.
 
 === Prototype and Scriptaculous Versions
 Tapestry uses a modified version of the main Scriptaculous library, scriptaculous.js, with the library's default autoloading behavior turned off.
