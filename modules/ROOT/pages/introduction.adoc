@@ -1,0 +1,24 @@
+= Introduction
+
+== Prerequiites
+
+== Tapestry IOC Fundamentals
+
+== What is Tapestry
+Being a multi-purpose programming language, Java...
+The Java ecosystem ...
+The Java Servlet Specification is the 
+Building on the Java Servlet API, ...
+
+=== Strengths
+
+=== Useful for...
+
+=== Compared to Spring
+
+[plantuml,tapestry-sequence,svg,role=sequence]
+----
+include::partial$diagrams/tapestry-sequence.puml[]
+----
+
+

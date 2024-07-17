@@ -1,0 +1,27 @@
+= Annotations
+
+Tapestry relies heavily on Java annotations rather than XML files for almost all of its configuration.
+(In addition, Tapestry's method naming conventions mean you don't _have_ to use annotations in many cases.)
+
+Tapestry annotations are grouped into several distinct modules according to their purpose.
+
+
+== Tapestry Core and IoC Annotations
+The majority of Tapestry annotations (those defined in the `tapestry-core` and `tapestry-ioc` modules) are very specific to Tapestry components or Tapestry IoC services:
+
+http://tapestry.apache.org/current/apidocs/org/apache/tapestry5/annotations/package-summary.html[Tapestry Component Annotations]:: intended for use in page/component/mixin classes
+
+http://tapestry.apache.org/current/apidocs/org/apache/tapestry5/ioc/annotations/package-summary.html[Tapestry IoC Annotations]:: for use by IoC services
+
+== Annotations for data holding classes
+In addition to the core and IoC annotations, there are a few annotations intended for data holding classes that are not Tapestry components; these annotations allow high-level components such as `Grid` and `BeanEditForm` to create powerful user interfaces with out any additional coding.
+Because these annotations are separated from the rest of Tapestry, they can be used inside your data tier classes _without_ having to bring all of Tapestry into your classpath.
+This is very useful in multi-tier applications where data objects may originate in an application tier (such as a JEE application server) and travel to the presentation tier (a Tapestry application).
+
+http://tapestry.apache.org/current/apidocs/org/apache/tapestry5/beaneditor/package-summary.html[BeanEditForm Annotations]:: for users of the BeanEditForm and Grid components
+
+http://tapestry.apache.org/current/apidocs/org/apache/tapestry5/hibernate/annotations/package-summary.html[Hibernate Annotations]:: for users of the Tapestry-Hibernate library
+
+== Upgrade Notes – Release 5.0.12
+The artifact id for the annotations module has changed from `tapestry-annotations` to `tapestry5-annotations`.
+This is necessary to support Tapestry 4 and Tapestry 5 applications co-existing within a single WAR.
