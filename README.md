@@ -15,14 +15,14 @@ To get started, this personal repo was a quick and easy for me to have a shared 
 Currently, the Tapestry website is generated from a Confluence Wiki hosted by the Apache Software Foundation.
 In contrast, Antora works with Asciidoc sources.
 The strategy is to migrate the content manually.
-. Copy the content from the current Tapestry website and paste it into the corresponding Asciidoc page.
-. Enhance the source by recreating (i.e. adding missing) typography and by adding `javadoc:` and `issue:` macros where appropriate.
-. Copy the Asciidoc page to the version branches.
-. For each version branch, remove content no longer, or not yet, relevant for that branch.
+1. Copy the content from the current Tapestry website and paste it into the corresponding Asciidoc page.
+2. Enhance the source by recreating (i.e. adding missing) typography and by adding `javadoc:` and `issue:` macros where appropriate.
+3. Copy the Asciidoc page to the version branches.
+4. For each version branch, remove content no longer, or not yet, relevant for that branch.
 
 Using automated scripts to convert Confluence sources to Asciidoc sources could be of some use. However, the larger part of the work is to split up the version-specific parts across the branches. Probably not worth the time to develop scripts for that.
 
 ## Contributing
-* This is hosted on GitHub so please feel invited to send pull requests.
-* If you would, please follow the [One sentence per line](https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line) principle.
+This is hosted on GitHub so please feel invited to send **pull requests**.
+If you would, please follow the [One sentence per line](https://asciidoctor.org/docs/asciidoc-recommended-practices/#one-sentence-per-line) principle.
 
