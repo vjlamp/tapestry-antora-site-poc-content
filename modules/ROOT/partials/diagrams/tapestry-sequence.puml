@@ -1,0 +1,24 @@
+@startuml
+
+participant "Web\nBrowser" as browser
+participant "Serlvet\nContainer" as container
+box "Tapestry 5" #Lightgreen
+participant "Tapestry Filter" as Tapestry << Servlet Filter >>
+collections "HttpServlet\nRequestHandler" as HttpServletRequestHandler
+collections RequestHandler
+collections Dispatcher
+collections "Component\nRequestHandler" as ComponentRequestHandler
+collections "PageRender\nRequestHandler" as PageRenderRequestHandler
+end box
+
+browser -> container: HTTP Request
+container -> Tapestry: doFilter
+Tapestry -> HttpServletRequestHandler: service
+HttpServletRequestHandler -> RequestHandler: service
+RequestHandler -> Dispatcher: dispatch
+Dispatcher -> RequestHandler
+RequestHandler -> HttpServletRequestHandler
+HttpServletRequestHandler -> Tapestry
+Tapestry -> container: asf
+container -> browser: HTML response
+@enduml

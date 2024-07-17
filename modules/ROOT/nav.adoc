@@ -1,10 +1,76 @@
 * xref:index.adoc[]
 
+* xref:getting-started.adoc[]
+
 .Release Notes
 * xref:release-notes-5.1.adoc[]
 * xref:release-notes-5.0.adoc[]
 
-// .Pages and Components
-* xref:property-expressions.adoc[]
+.Tapestry Core
+* Basics
+// ** xref:supported-environments-and-versions.adoc[]
+** xref:project-layout.adoc[]
+** xref:configuration.adoc[]
+** xref:class-reloading.adoc[]
+// ** xref:component-reference.adoc[]
+** xref:annotations.adoc[]
 
-* xref:client-side-javascript.adoc[]
+* Pages and Components
+** xref:component-classes.adoc[]
+** xref:component-templates.adoc[]
+** xref:property-expressions.adoc[]
+** xref:component-parameters.adoc[]
+** xref:parameter-type-coercion.adoc[]
+** xref:layout-component.adoc[]
+** xref:component-mixins.adoc[]
+** xref:page-navigation.adoc[]
+** xref:localization.adoc[]
+
+* Request/Response Rendering
+** xref:page-life-cycle.adoc[]
+** xref:request-processing.adoc[]
+** xref:component-rendering.adoc[]
+** xref:url-rewriting.adoc[]
+** xref:dom.adoc[Document Object Model (DOM)]
+** xref:response-compression.adoc[]
+** xref:https.adoc[]
+** xref:content-type-and-markup.adoc[]
+
+* Data Persistence
+** xref:persistent-page-data.adoc[]
+** xref:session-storage.adoc[]
+
+* Interacting with components
+** xref:injection.adoc[]
+** xref:environmental-services.adoc[]
+
+* JavaScript, AJAX, CSS & Binary Data
+** xref:client-side-javascript.adoc[]
+** xref:javascript-modules.adoc[]
+** xref:coffeescript.adoc[]
+** xref:ajax-and-zones.adoc[]
+** xref:css.adoc[Cascading Style Sheets (CSS)]
+** xref:assets.adoc[]
+
+* Working with Forms
+** xref:uploading-files.adoc[]
+ 
+* Testing
+// ** Logging & Debugging
+** xref:unit-testing.adoc[Unit testing pages or components]
+** xref:integration-testing.adoc[]
+** xref:development-dashboard.adoc[]
+ 
+
+.Tapestry IOC
+* xref:symbols.adoc[]
+* xref:type-coercion.adoc[]
+* xref:case-insensitivity.adoc[]
+* xref:aliases.adoc[]
+
+.Add-ons and Integrations
+* Built-in
+** xref:hibernate.adoc[]
+** xref:jpa.adoc[]
+** xref:spring.adoc[]
+* xref:third-party-modules.adoc[]

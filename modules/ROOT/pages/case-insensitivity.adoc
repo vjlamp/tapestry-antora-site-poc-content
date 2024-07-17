@@ -1,0 +1,15 @@
+= Case Insensitivity
+
+Ever get frustrated because you typed the right thing with the wrong case and your system blew up? We do.
+
+Tapestry IoC attempts to be case insensitive for all the main constructs:
+
+* Service ids.
+* Object provider prefixes.
+* Message keys.
+
+Thus, `getService("Baz", Baz.class)` is preferred, but `getService("BAZ", Baz.class)` (or any variation thereof) will work just exactly as well. This also extends to other naming conventions, such as `contributeFoo` methods. It also applies to values inside annotations.
+
+Just case is ignored – other punctuation, as well as whitespace, must exactly match.
+
+Under the covers, this is supported by the javadoc:org.apache.tapestry5.ioc.util.CaseInsensitiveMap[] class.
