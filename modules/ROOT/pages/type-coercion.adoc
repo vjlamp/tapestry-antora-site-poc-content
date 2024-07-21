@@ -1,0 +1,141 @@
+= Type Coercion
+
+Type Coercion is the conversion of one type of object to a another object of a different type with similar content.
+Tapestry frequently must coerce objects from one type to another.
+A common example is the coercion of string "5" into an integer 5 or a double 5.0.
+
+Although type coercions happen more inside tapestry-core (including coercions of component parameters ), they may also occur inside tapestry-ioc, such as when injecting a value, rather than a service, into a builder method.
+
+Like everything else in Tapestry, type coercions are extensible.
+At the root is the javadoc:org.apache.tapestry5.ioc.services.TypeCoercer[] service.
+Its configuration consists of javadoc:org.apache.tapestry5.ioc.services.CoercionTuple[]s.
+// until 5.6.x aand a mapped configuration of (CoercionTuple.Key, CoercionTuple) from Tapestry 5.7.0 on.
+Each tuple defines how to coerce from one type to another.
+The initial set of coercions is focused primarily on coercions between different numeric types:
+
+.Built-in Type Coercions
+[plantuml,type-coercion,svg,role=sequence]
+----
+include::partial$diagrams/type-coercion.puml[]
+----
+
+== Default Type Coercions
+There are a few special coercions related to `null` there; `Object` -> `List` wraps a lone object as a singleton list, we then need `null` -> `List` to ensure that `null` stays `null` (rather than a singleton list whose lone element is a `null`).
+
+== Type Coercion Interpolation
+Tapestry will try to interpolate necessary coercions.
+For example, say it is necessary to coerce a StringBuffer to an Integer; the TypeCoercer service will chain together a series of coercions:
+
+* `Object` -> `String`
+* `String` -> `Long`
+* `Long` -> `Integer`
+
+Because `Object` -> `String` is always available, this might lead to an unexpected interpolation between incompatible types due to multiple intermediate coercions.
+This can be easily prevented by providing an explicit `CoercionTuple` between the desired types.
+
+== Coercing from `null`
+Coercing from `null` is special; it is not a spanning search as with the other types.
+Either there is a specific coercion from null to the desired type, or no coercion takes places (and the coerced value is `null`).
+
+The only built-in `null`-coercion is from `null` to `boolean` (which is always `false`).
+
+== List of Coercions
+The following coercions are available:
+
+----
+// Since Tapestry 5.1/5.2
+Double --> Float
+Float --> Double
+Long --> Boolean
+Long --> Byte
+Long --> Double
+Long --> Integer
+Long --> Short
+Number --> Long
+Object --> Object[]
+Object --> String
+Object --> java.util.List
+Object[] --> java.util.List
+String --> Boolean
+String --> Double
+String --> Long
+String --> java.io.File
+String --> java.math.BigDecimal
+String --> java.math.BigInteger
+String --> java.text.DateFormat
+String --> java.util.regex.Pattern
+String --> org.apache.tapestry5.Renderable
+String --> org.apache.tapestry5.SelectModel
+String --> org.apache.tapestry5.corelib.ClientValidation
+String --> org.apache.tapestry5.corelib.LoopFormState
+String --> org.apache.tapestry5.corelib.SubmitMode
+String --> org.apache.tapestry5.corelib.data.BlankOption
+String --> org.apache.tapestry5.corelib.data.GridPagerPosition
+String --> org.apache.tapestry5.corelib.data.InsertPosition
+String --> org.apache.tapestry5.ioc.Resource
+String --> org.apache.tapestry5.ioc.util.TimeInterval
+boolean[] --> java.util.List
+byte[] --> java.util.List
+char[] --> java.util.List
+double[] --> java.util.List
+float[] --> java.util.List
+int[] --> java.util.List
+java.math.BigDecimal --> Double
+java.util.Collection --> Boolean
+java.util.Collection --> Object[]
+java.util.Collection --> org.apache.tapestry5.grid.GridDataSource
+java.util.Date --> java.util.Calendar
+java.util.List --> org.apache.tapestry5.SelectModel
+java.util.Map --> org.apache.tapestry5.SelectModel
+long[] --> java.util.List
+null --> Boolean
+null --> org.apache.tapestry5.grid.GridDataSource
+org.apache.tapestry5.ComponentResources --> org.apache.tapestry5.PropertyOverrides
+org.apache.tapestry5.PrimaryKeyEncoder --> org.apache.tapestry5.ValueEncoder
+org.apache.tapestry5.Renderable --> org.apache.tapestry5.Block
+org.apache.tapestry5.Renderable --> org.apache.tapestry5.runtime.RenderCommand
+org.apache.tapestry5.ioc.util.TimeInterval --> Long
+org.apache.tapestry5.runtime.ComponentResourcesAware --> org.apache.tapestry5.ComponentResources
+short[] --> java.util.List
+----
+
+== Contributing New Coercions
+javadoc:org.apache.tapestry.ioc.services.TypeCoercer[] is extensible; you may add new coercions as desired.
+For example, let's say you have a `Money` type that represents an amount of some currency, and you want to be able to convert from `BigDecimal` to `Money`.
+Further, let's assume that `Money` has a constructor that accepts a `BigDecimal` as its parameter.
+We'll use a little Tapestry IOC configuration jujitsu to inform the `TypeCoercer` about this coercion.
+
+.AppModule.java (partial)
+[source,java]
+----
+public static void contributeTypeCoercer(Configuration<CoercionTuple> configuration)
+{
+    Coercion<BigDecimal, Money> coercion = new Coercion<BigDecimal, Money>()
+    {
+        public Money coerce(BigDecimal input)
+        {
+           return new Money(input);
+        }
+    };
+ 
+    configuration.add(new CoercionTuple<BigDecimal, Money>(BigDecimal.class, Money.class, coercion));     
+}
+----
+
+Further, since `TypeCoercer` knows how to convert `Double` to `BigDecimal`, or even `Integer` (to `Long` to `Double`) to `BigDecimal`, all of those coercions would work as well.
+
+When creating a coercion from `null`, use `Void.class` as the source type. For example, the built-in coercion from null to `Boolean` is implemented as:
+
+.AppModule.java (partial)
+[source,java]
+----
+CoercionTuple tuple = new CoercionTuple(void.class, Boolean.class,
+    new Coercion<Void, Boolean>()
+{
+    public Boolean coerce(Void input)
+    {
+        return false;
+    }
+}));
+----
+
