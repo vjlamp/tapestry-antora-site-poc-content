@@ -2,23 +2,38 @@
 
 participant "Web\nBrowser" as browser
 participant "Serlvet\nContainer" as container
-box "Tapestry 5" #Lightgreen
-participant "Tapestry Filter" as Tapestry << Servlet Filter >>
+box "Tapestry" #bbd7ab
+participant "TapestryFilter" as Tapestry << javax.servlet.Filter >>
 collections "HttpServlet\nRequestHandler" as HttpServletRequestHandler
 collections RequestHandler
 collections Dispatcher
-collections "Component\nRequestHandler" as ComponentRequestHandler
 collections "PageRender\nRequestHandler" as PageRenderRequestHandler
+collections "Component\nRequestHandler" as ComponentRequestHandler
 end box
 
-browser -> container: HTTP Request
-container -> Tapestry: doFilter
-Tapestry -> HttpServletRequestHandler: service
-HttpServletRequestHandler -> RequestHandler: service
-RequestHandler -> Dispatcher: dispatch
-Dispatcher -> RequestHandler
-RequestHandler -> HttpServletRequestHandler
-HttpServletRequestHandler -> Tapestry
-Tapestry -> container: asf
-container -> browser: HTML response
+browser -> container ++ : HTTP Request
+note over container: Potentially other filters\nbefore Tapestry
+container -> Tapestry ++ : doFilter
+Tapestry -> HttpServletRequestHandler ++ : service
+HttpServletRequestHandler -> RequestHandler ++ : service
+RequestHandler -> Dispatcher ++ : dispatch
+alt request to render a page
+Dispatcher -> PageRenderRequestHandler ++ : handlePageRender
+return
+else request contains component parameters
+Dispatcher -> ComponentRequestHandler ++ : handleComponentEvent
+return
+end
+return
+return
+return
+return
+note over container
+Potentially more filters/servlets
+after Tapestry
+end note
+return : HTTP Response
+
+hide footbox
+
 @enduml

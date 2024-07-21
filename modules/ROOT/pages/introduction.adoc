@@ -1,24 +1,48 @@
 = Introduction
 
-== Prerequiites
+== Prerequisites
+This User Guide assumes you:
 
-== Tapestry IOC Fundamentals
+* have a general understanding of how the Web works, especially the interplay of requests and responses as specified in the https://httpwg.org[Hypertext Transport Protocol (HTTP)];
+* know basic Java;
+* are familiar with the https://docs.oracle.com/javaee/7/tutorial/servlets.htm[Java Servlet Technology];
+* understand that Web browsers display pages based on input expressed in https://www.w3.org/TR/html/[Hypertext Markup Language (HTML)] and related technologies such as https://www.w3.org/TR/CSS21/[Cascading Style Sheets (CSS)] and https://developer.mozilla.org/docs/Web/JavaScript[JavaScript].
 
-== What is Tapestry
-Being a multi-purpose programming language, Java...
-The Java ecosystem ...
-The Java Servlet Specification is the 
-Building on the Java Servlet API, ...
+== Tapestry as a Java Servlet Filter
+Tapestry integrates with the Java Servlet API by implementing https://docs.oracle.com/javaee/7/api/javax/servlet/Filter.html[javax.servlet.Filter].
+Similar to servlets, filters are added to a web application in the deployment descriptor (`web.xml`).
 
-=== Strengths
+.web.xml (partial)
+[source,xml]
+----
+<web-app>
+...
+    <filter>
+        <filter-name>app</filter-name>
+        <filter-class>org.apache.tapestry5.TapestryFilter</filter-class> 
+    </filter>
+...
+</web-app>
+----
 
-=== Useful for...
+javadoc:org.apache.tapestry5.TapestryFilter[] is the entry point to Tapestry.
+Inside Tapestry, various request handlers and a various dispatchers control access to (your) pages, components and static assets.
+The diagram below is intended as a rough overview of how Tapestry xref:request-processing.adoc[processes requests].
 
-=== Compared to Spring
-
+.Sequence Diagram of Tapestry (partial)
 [plantuml,tapestry-sequence,svg,role=sequence]
 ----
 include::partial$diagrams/tapestry-sequence.puml[]
 ----
 
+The request handlers and dispatchers are organized in pipelines and chain of commands, making it very easy to configure or extend Tapestry to your needs.
+That said, Tapestry embraces the _convention over configuration_ principle, allowing you to build great web applications with only minimal configuration and without the need to extend anything.
+
+
+== Tapestry and Inversion-of-Control (IoC)
+Tapesty features an Inversion of Control (IoC) container.
+IoC is a design approach that allows a working system to be fabricated from many small, easily testable pieces.
+
+It is also possible to run the IoC container independently from the Java Servlet API
+This is useful for xref:integration-testing.adoc[].
 
