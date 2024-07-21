@@ -1,0 +1,31 @@
+@startuml
+hide empty description
+
+' https://github.com/apache/tapestry-5/blob/8e385eb516d1b6e7b7a75220e27974c13ba49d7d/tapestry-ioc/src/main/java/org/apache/tapestry5/ioc/services/TapestryIOCModule.java#L111
+
+state "Object[]" as ObjectAr
+
+Object --> String
+String --> Double
+String --> BigDecimal
+BigDecimal --> Double
+String --> BigInteger
+String --> Long
+Long --> Byte
+Long --> Short
+Long --> Integer
+Number --> Long
+Double --> Float
+Long --> Double
+String --> Boolean
+Long --> Boolean
+null --> Boolean
+Collection --> Boolean
+Object --> List
+ObjectAr --> List
+Float --> Double
+String --> File
+String --> TimeInterval
+TimeInterval --> Long
+
+@enduml

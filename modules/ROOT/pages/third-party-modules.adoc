@@ -1,0 +1,8 @@
+= Third Party Modules
+
+Independent developers have build a rich collection of Tapestry modules for your immediate use.
+These modules greatly expand upon the capabilities already included in Tapestry. _These links take you to external sites._
+
+// http://code.google.com/p/tapestry5-cayenne/[tapestry5-cayenne]:: (for Tapestry 5.3) integrates with the Apache Cayenne persistence framework.
+https://github.com/ciaranw/tapestry-service-cache[tapestry-service-cache]:: provides easy, annotation-based caching for Tapestry 5 services.
+https://github.com/flowlogix/flowlogix[Flow Logix]:: a collection of components, services and utilities that integrates Tapestry into JEE environments and provides other commonly needed functionality.
