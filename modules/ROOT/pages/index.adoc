@@ -3,5 +3,29 @@
 
 Welcome to the User Guide for Tapestry {page-component-display-version}. Hopefully it provides the information you are looking for. For additional sources of information, see the xref:main::documentation.adoc[] overview.
 
-If you see anything in the User Guide that is not correct or poorly described, please feel invited to suggest an improvement.
+[sidebar]
+If you see anything in the User Guide that is not correct or poorly described, please feel invited to suggest an improvement, ideally through a GitHub Pull Request.
+
+== What is Apache Tapestry?
+Apache Tapestry is an open-source framework for creating dynamic, robust, highly scalable web applications in Java.
+Tapestry complements and builds upon the standard Java Servlet API, and so it works in any servlet container or application server.
+
+Tapestry divides a web application into a set of pages, each constructed from components.
+This provides a consistent structure, allowing the Tapestry framework to assume responsibility for key concerns such as URL construction and dispatch, persistent state storage on the client or on the server, user input validation, localization/internationalization, and exception reporting.
+Developing Tapestry applications involves creating HTML templates using plain HTML, and adding a small java class for each.
+In Tapestry, you create your application in terms of objects, and the methods and properties of those objects – and specifically not in terms of URLs and query parameters.
+Tapestry brings true object oriented development to Java web applications.
+
+Tapestry is specifically designed to make creating new components very easy, as this is a routine approach when building applications.
+
+Tapestry is architected to scale from tiny, single-page applications all the way up to massive applications consisting of hundreds of individual pages, developed by large, diverse teams. Tapestry easily integrates with any kind of backend, including JEE, Spring and Hibernate.
+
+It's more than what you can do with Tapestry ... it's also how you do it!
+Tapestry is a vastly productive environment. Java developers love it because they can make Java code changes and see them immediately ... no redeploy, no restart!
+And it's blazingly fast to boot (even when files have changed).
+Designers love it because Tapestry templates are so close to ordinary HTML, without all the cruft and confusion seen in JavaServer Pages.
+Managers love it because it makes it easy for large teams to work together productively, and because they know important features (including localization) are baked right in.
+Once you work in Tapestry there's no going back!
+
+Tapestry is released under the Apache Software License 2.0.
 
