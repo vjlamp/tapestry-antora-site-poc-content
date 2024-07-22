@@ -73,6 +73,7 @@
 * xref:third-party-modules.adoc[]
 
 .Release Notes
+* xref:release-notes-5.4.adoc[]
 * xref:release-notes-5.3.adoc[]
 * xref:release-notes-5.2.adoc[]
 * xref:release-notes-5.1.adoc[]

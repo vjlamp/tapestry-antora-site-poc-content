@@ -1,0 +1,59 @@
+= Tapestry 5.4
+
+== Incompatible APIs
+=== JavaScriptSupport
+Some existing methods of javadoc:org.apache.tapestry5.services.javascript.JavaScriptSupport[] were changed from returning void, to returning the `JavaScriptSupport` instance, to allow for chaining of calls.
+This interface is consumed by end-user code, but not generally implemented by end-user code.
+
+== Breaking Features
+=== ClassFactory Removed
+Tapestry's use of the http://www.csg.is.titech.ac.jp/~chiba/javassist/[Javassist] bytecode library has been completely removed, along with many related services, such as javadoc:org.apache.tapestry5.ioc.services.ClassFactory[version=5.3.7], that were deprecated in 5.3. Use javadoc:org.apache.tapestry5.ioc.services.PlasticProxyFactory[] instead.
+Most users will not be affected by this unless they relied on Tapestry's dependency on Javassist.
+
+=== ClientBehaviorSupport Functionality Removed
+This service collected details about zone usage, including the client-side behavior associated with javadoc:org.apache.tapestry5.corelib.components.FormFragments[].
+This interface is only kept for binary compatibility in Tapestry 5.4; the implementation no longer does anything but throw exceptions and will be removed in 5.5 or later.
+
+=== FormInjector Removed
+The FormInjector component was removed; it was intended for use only inside the AjaxFormLoop component (which was rewritten in 5.4 and no longer uses FormInjector). FormInjector was not widely used elsewhere, if it was used at all.
+
+
+=== MarkupWriterFactory API Changed
+The MarkupWriterFactory interface has 3 new methods, added to support the HTML5 rules for element endings.
+If you have any classes that _implement_ javadoc:org.apache.tapestry5.services.MarkupWriterFactory[] (which is rare), they'll need to be modified to implement the new methods.
+As noted in the javadoc:org.apache.tapestry5.services.ClientBehaviorSupport[label=Javadocs], use javadoc:org.apache.tapestry5.services.javascript.JavaScriptSupport[] directly instead.
+
+=== Injected Scripts at Bottom
+In prior versions of Tapestry, JavaScript libraries injected into the page (via the javadoc:org.apache.tapestry5.annotations.Import[label=@Import] annotation, or via javadoc:org.apache.tapestry5.services.javascript.JavaScriptSupport[]), were injected into the `<head>` element of the HTML page, either at the end of the element, or before any existing `<script>` element.
+
+With this release, the Tapestry integrates with http://requirejs.org/[RequireJS] to dynamically load libraries.
+This may affect a small number of JavaScript libraries, such as http://www.google.com/analytics/[Google Analytics] that need to be placed at the top of the page; in those cases, the library should be added to the template of your application's main layout component, instead of relying on `@Import` and `JavaScriptSupport`.
+
+=== No Redirect On Form Validation Errors
+In prior releases of Tapestry, when a client-side form was submitted and there were server-side validation errors, Tapestry would perform a redirect-after-post to re-render the page; this meant that the javadoc:org.apache.tapestry5.ValidationTracker[] object that stores validation errors would, itself, need to persist to the new render request, causing a server-side session to be created.
+Starting in 5.4, the default behavior for server-side validation exceptions is to re-render the page content immediately, within the same request; this obviates the need to use a persistent field to store the tracker.
+
+
+== New Features
+
+=== Component field visibility
+In prior versions of Tapestry, all instance fields of components had to be visibility `private`.
+Starting with versions 5.3.2 and 5.4, this has been relaxed.
+Component fields may be `protected`, or package private (that is, no visibility modifier).
+Fields that are `final`, or annotated with javadoc:org.apache.tapestry5.annotations.Retain[label=@Retain] may even be `public`.
+In any case, this makes it easier for pages to work with other pages in the same package, and for subclasses to more easily access the fields (including parameter fields, or injections) provided by base classes.
+This feature should be used with care, as it can lead to designs that are more difficult to maintain.
+
+=== JavaScript Modules
+Prior releases of Tapestry primarily organized client-side logic in terms of JavaScript libraries.
+These libraries can be declaratively imported into the page (either during a full-page render, or during an Ajax partial page update).
+In addition, libraries can be combined together into _stacks_, which (in a production application) are combined into a single virtual asset.
+
+The library approach is fundamentally limited in a number of ways, including namespace pollution and dealing with dependencies between libraries.
+Tapestry 5.4 introduces a parallel mechanism, based on http://requirejs.org/[RequireJS] and the https://github.com/amdjs/amdjs-api/wiki/AMD[Asynchronous Module Definition] as a way to speed up initial page load and organize client-side JavaScript in a more expressive and maintainable way.
+
+=== Client-side API for invoking server-side events
+Tapestry 5.4.2 adds an API which makes it easy for server-side events to be invoked from JavaScript.
+In the server-side, you first need to annotate the event handler methods you want exposed with the new javadoc:org.apache.tapestry5.annotations.PublishEvent[label=@PublishEvent] annotation.
+Then, in JS, all you need to do is to call the `t5/core/ajax` function with the server-side event name/type in the `url` parameter and with an `options` parameter containing an `element`  property, be it `null` or specifying an DOM element to be used as the starting point for finding the event information.
+More details in the xref:ajax-and-zones.adoc[] page.
