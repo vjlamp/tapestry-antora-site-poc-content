@@ -1,10 +1,110 @@
 = Tapestry 5.3
 
-== Breaking Changes
+== Tapestry 5.3.8
+This is a bug fix release, mainly meant to address compatibility with Java 8.
+The ASM library is updated to a Java 8 compatible version (5.0), however, if you wish to run this release on JRE 8, you still need to manually specify a Java 8 compatible version of javassist (such as 3.18.2-GA). With Maven you'd include:
+
+.pom.xml (partial)
+[source,xml]
+----
+<dependency>
+  <groupId>org.javassist</groupId>
+  <artifactId>javassist</artifactId>
+  <version>3.18.2-GA</version>
+</dependency>
+----
+
+Javassist has changed their group coordinates (from javassist to org.javassist), which further complicates the situation. You'll also have to manually exclude javassist:javassist dependency (if your dependencies are resolved automatically). With Maven, you'd add:
+
+.pom.xml (partial)
+[source,xml]
+----
+<exclusions>
+  <exclusion>
+    <artifactId>javassist</artifactId>
+    <groupId>javassist</groupId>
+  </exclusion>
+</exclusions>
+----
+
+where needed.
+
+=== Bugs fixed
+* issue:311[] - NPE in BeanDisplay if used in a form with a default model
+* issue:983[] - CLONE -NPE in BeanDisplay if used in a form with a default model
+* issue:1865[] - Chinese valication message issue
+* issue:2270[] - BeanDisplay exception when used inside a Form
+* issue:2298[] - "Any" component lacks any useful documentation
+* issue:2321[] - Tapestry 5.3.7 does not run with Java 8
+
+=== Dependency upgrade
+* issue:2295[] - Vulnerability in Tapestry-upload module due to commons-file-upload
+
+=== Improvements made
+* issue:1718[] - Tapestry-beanvalidator isn't validating nested DTO objects / Doesn't mark the invalid fields in the UI
+* issue:2157[] - Czech translations
+
+=== New Features added
+* issue:2305[] - Create a `@Sortable` annotation for properties
+
+== Tapestry 5.3.7
+This is a bug fix release, mainly focused on three aspects:
+
+* make Tapestry work better under Tomcat
+* minimize the possibility of clash for generated ids
+* let the BeanEditor be more JSR-303 friendly
+
+Some work has been made on the form component too.
+
+== Tapestry 5.3.6
+This is a very modest bug fix release. Importantly, the bundled version of http://prototypejs.org/[Prototype] has been downgraded back to version 1.7, as the new version was causing a number of issues, especially under Internet Explorer.
+
+The main improvement is security related; Tapestry will now integrate a http://en.wikipedia.org/wiki/HMAC[hash-based message authentication (HMAC)] code into serialized Java object data stored on the client (generally, this means the `t:formdata` hidden field used by the Form component).
+
+When you first run your application under 5.3.6, you will see an alert and a console error concerning the HMAC configuration.
+You should update your application's configuration to set a unique, private value for the `tapestry.hmac-passphrase` xref:configuration.adoc[configuration symbol].
+
+And, as with any Tapestry upgrade, be sure to change your application's version number by xref:configuration.adoc[configuring] the javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_VERSION[] symbol.
+
+== Tapestry 5.3.5
+This is a very modest bug fix release, including a number of minor performance improvements.
+Importantly, the bundled version of http://prototypejs.org/[Prototype] is now 1.7.1, which includes some significant improvements and bug fixes that target Internet Explorer.
+However, the prototype change may affect the functionality of the Tapestry DateField component under some versions of Internet Explorer (this issue was discovered late in the voting process).
+
+== Tapestry 5.3.4
+This is a very modest bug fix release, including a number of minor performance improvements.
+
+== Tapestry 5.3.3
+This is a very modest bug fix release, but it does straighten out a significant problem with Java component classes containing non-private fields.
+
+For those developers not using Maven or Gradle, you'll be pleased to know that this release now includes the option of a binary download containing Tapestry's modules and main dependencies. More details are on the xref:main::download.adoc[Download] page.
+
+
+== Tapestry 5.3.2
+
+=== New Features
+
+Component field visibility::
+In prior versions of Tapestry, all instance fields of components had to be visibility private.
+Starting with version 5.3.2, this has been relaxed.
+Component fields may be protected, or package private (that is, no visibility modifier).
+Fields that are final, or annotated with javadoc:org.apache.tapestry5.annotations.Retain[label=@Retain] may even be public.
+In any case, this makes it easier for pages to work with other pages in the same package, and for subclasses to more easily access the fields (including parameter fields, or injections) provided by base classes.
+This feature should be used with care, as it can lead to designs that are more difficult to maintain.
+
+Spring 3.1 upgrade::
+The Spring integration module has updated the Spring dependencies to 3.1.0.RELEASE
+
+TextField component support for HTML5 values::
+The TextField components now support HTML5 any HTML5 type attribute.
+
+== Tapestry 5.3.0 / Tapestry 5.3.1
+
+=== Breaking Changes
 Tapestry now depends on Servlet API version *2.5* (prior releases worked with 2.4).
 
 Tapestry no longer supports the ability to inject the component id into a String field. This was rarely (if ever) used functionality that caused unwanted conflicts elsewhere.
-When a component needs to know its component id, it may inject the http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/ComponentResources.html[ComponentResources] object, and invoke https://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/ComponentResourcesCommon.html#getCompleteId()[getCompleteId()].
+When a component needs to know its component id, it may inject the javadoc:org.apache.tapestry5.ComponentResources[] object, and invoke javadoc:org.apache.tapestry5.ComponentResourcesCommon#getCompleteId()[].
 
 Tapestry templates without a `<!DOCTYPE>` are treated a bit differently in Tapestry 5.3; they are treated as if they have the HTML5 doctype (`<!DOCTYPE html>`).
 See further notes about component templates.
@@ -12,9 +112,9 @@ See further notes about component templates.
 Many classes and interfaces that were deprecated in prior releases of Tapestry have been removed in Tapestry 5.3. See the full list.
 As always, you should use your IDE to find and replace all deprecated items before you upgrade. The following are the most significant of these:
 
-* `@IncludeJavaScriptLibrary` and `@IncludeStylesheet` annotations (replaced by http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/annotations/Import.html[@Import])
-* `@ApplicationState` annotation (replaced with http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/annotations/SessionState.html[@SessionState])
-* "validateForm" event triggered by Form component (replaced with "validate" event)
+* `@IncludeJavaScriptLibrary` and `@IncludeStylesheet` annotations (replaced by javadoc:org.apache.tapestry5.annotations.Import[label=@Import])
+* `@ApplicationState` annotation (replaced with javadoc:org.apache.tapestry5.annotations.SessionState[label=@SessionState])
+* `validateForm` event triggered by Form component (replaced with `validate` event)
 * Code and constants related to page pooling
 
 In addition, some of the abstract base classes used with the `tapestry-func` library have changed into interfaces; you will want to recompile, but may also need to adjust your code, depending on your compiler settings and use of the standard Java `@Override` annotation.
@@ -23,106 +123,107 @@ Because of the upgrade to Prototype 1.7, existing JavaScript that uses `value.to
 
 Some number of interfaces and APIs in Tapestry 5.3 will be removed in Tapestry 5.4 or later. These include:
 
-* The http://tapestry.apache.org/5.2/apidocs/org/apache/tapestry5/RenderSupport.html[RenderSupport] environmental (replaced with the http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/javascript/JavaScriptSupport.html[JavaScriptSupport] environmental)
+* The javadoc:org.apache.tapestry5.RenderSupport[] environmental (replaced with the javadoc:org.apache.tapestry5.services.javascript.JavaScriptSupport[] environmental)
 
-* The http://tapestry.apache.org/5.2/apidocs/org/apache/tapestry5/ajax/MultiZoneUpdate.html[MultiZoneUpdate] object, replaced with http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/ajax/AjaxResponseRenderer.html[AjaxResponseRenderer]
+* The javadoc:org.apache.tapestry5.ajax.MultiZoneUpdate[] object, replaced with javadoc:org.apache.tapestry5.services.ajax.AjaxResponseRenderer[]
 
-* ClassFactory service and ClassFab interface (replaced with the http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/ioc/services/PlasticProxyFactory.html[PlasticProxyFactory] service and http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/plastic/PlasticClass.html[PlasticClass] interface)
+* ClassFactory service and ClassFab interface (replaced with the javadoc:org.apache.tapestry5.ioc.services.PlasticProxyFactory[] service and javadoc:org.apache.tapestry5.plastic.PlasticClass[] interface)
 
 * The "suppress redirects" functionality, which allows component event requests to respond directly with HTML, as in Tapestry 4.
 
-== New Features
+=== New Features
 
-=== Underscore.js
+Underscore.js::
 Tapestry now bundles http://underscorejs.org/[Underscore.js], a useful library for expressive functional programming in the browser.
 It is used in no conflict mode, made available as the `T5._` object.
 
-=== User Alerts
+User Alerts::
 Tapestry now has a central mechanism for handling user alerts; this includes the AlertManager service and the Alerts component.
 Just add an Alerts component to your application's standard layout component and Tapestry takes care of the rest.
 Alerts can be added during both traditional and Ajax requests, and may be transient (displayed for a few seconds), normal, or sticky (persist until the user expressly dismisses them).
 Alerts support three severities: info, warn(ing) and error; the look and feel can be customized by overriding Tapestry's default CSS rules.
 
-=== Rendering comments
+Rendering comments::
 It is now possible to have Tapestry emit rendering comments; these are comments (such as `<!--BEGIN Index:loop (context:Index.tml, line 15)-->`) that can assist you in debugging markup output on the client-side.
 This is enabled for all requests using the configuration symbol `tapestry.component-render-tracing-enabled`, and can be added to any request by adding the query parameter `t:component-trace=true` to the URL.
 This will significantly increase the size of the rendered markup, but can be very helpful with complex layouts to determine which component was responsible for which portion of the rendered page.
 
-=== Adaptable service contributions
+Adaptable service contributions::
 When making contributions to a service, you are no longer restricted to contributing a value that is assignable to the type associated with the configuration; objects of any type may be contributed, and the TypeCoercer service is used to coerce the value to the configuration's type.
 
-=== Component debugging improvements
+Component debugging improvements::
 Because of how Tapestry instruments your pages and components, using a debugger has been difficult with Tapestry page and component classes; any mutable field shows its default value in the debugger, regardless of what has been written to the field or read out of it.
 In Tapestry 5.3, when in _development mode_, Tapestry now shadows values read from or written to such fields into the fields themselves (this has also been fixed in the 5.2.5 maintenance release).
 This shadowing does not occur in production, to avoid potential memory leaks.
 
-=== Reloading disabled in production
+Reloading disabled in production::
 Tapestry no longer checks for changes to Tapestry component class files, templates, or message catalogs in production mode.
 It is assumed that Tapestry applications are packaged as WAR files in production, and that changing the WAR file causes the servlet container to redeploy the entire application.
 This change is to improve throughput and reduce memory consumption in production applications.
 
-=== String-to-Enum coercions
+String-to-Enum coercions::
 The TypeCoercer service now automatically generates String-to-Enum coercions without requiring a specific contribution.
 This coercion is case insensitive. A contribution is still allowed, and will take priority over the default coercion, but is only necessary to support "aliases" for enum values outside those defined by the enum type itself.
 
-=== JavaScript and CSS minimization
+JavaScript and CSS minimization::
 A new optional library, `tapestry-yuicompressor`, has been added. This library adds support for compressing JavaScript libraries and CSS files using the http://developer.yahoo.com/yui/compressor/[YUICompressor library].
 
-=== ComponentClassTransformWorker Service
-The type of this service has changed from http://tapestry.apache.org/5.2/apidocs/org/apache/tapestry5/services/ComponentClassTransformWorker.html[ComponentClassTransformWorker] to http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/transform/ComponentClassTransformWorker2.html[ComponentClassTransformWorker2].
+ComponentClassTransformWorker Service::
+The type of this service has changed from javadoc:org.apache.tapestry5.services.ComponentClassTransformWorker[] to javadoc:org.apache.tapestry5.services.transform.ComponentClassTransformWorker2[].
 Contributions of type ComponentClassTransformWorker will automatically be coerced to the new ComponentClassTransformWorker2 interface.
 However, if you use the `@Contribute` annotation to mark the method that makes contributions, you will need to update the annotation to indicate the new service interface.
 If you followed the naming convention, and named your method `contributeComponentClassTransformWorker()`, you don't need to change anything.
 
-=== AjaxResponseRenderer
-The http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/ajax/AjaxResponseRenderer.html[AjaxResponseRenderer] service makes it easier to customize the partial page response generated when updating a http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/corelib/components/Zone.html[Zone] component, replacing the http://tapestry.apache.org/5.2/apidocs/org/apache/tapestry5/ajax/MultiZoneUpdate.html[MultiZoneUpdate] object as an event handler method return value.
+AjaxResponseRenderer::
+The javadoc:org.apache.tapestry5.services.ajax.AjaxResponseRenderer[] service makes it easier to customize the partial page response generated when updating a javadoc:org.apache.tapestry5.corelib.components.Zone[] component, replacing the javadoc:org.apache.tapestry5.ajax.MultiZoneUpdate[] object as an event handler method return value.
 
-=== Tapestry JavaDoc
+Tapestry JavaDoc::
 Tapestry now includes a new library, `tapestry-javadoc`, that replaces the old Maven-based component report. Simply by placing a `@tapestrydoc` annotation into your component's JavaDoc, Tapestry will generate complete documentation as part of JavaDoc ... no more switching back and forth between JavaDoc and the Maven-generated component report, and no more reliance on Maven for component documentation.
 
-=== Skinning / Theming Support
-Tapestry now adds the ability to skin and/or theme your pages and components. Its an extension of how Tapestry manages pages per locale, but adds new application-defined axes along with rules to find the resources. See http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/pageload/ComponentResourceSelector.html[ComponentResourceSelector] and http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/pageload/ComponentRequestSelectorAnalyzer.html[ComponentRequestSelectorAnalyzer].
+Skinning / Theming Support::
+Tapestry now adds the ability to skin and/or theme your pages and components. Its an extension of how Tapestry manages pages per locale, but adds new application-defined axes along with rules to find the resources. See javadoc:org.apache.tapestry5.services.pageload.ComponentResourceSelector[] and javadoc:org.apache.tapestry5.services.pageload.ComponentRequestSelectorAnalyzer[].
 
-There's also a new http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/corelib/components/Dynamic.html[Dynamic] component, which uses an external template, not a Tapestry template, which can be selected at runtime.
+There's also a new javadoc:org.apache.tapestry5.corelib.components.Dynamic[] component, which uses an external template, not a Tapestry template, which can be selected at runtime.
 
-=== Tree Component
-Tapestry finally has a proper http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/corelib/components/Tree.html[Tree] component for navigating hierarchical data.
+Tree Component::
+Tapestry finally has a proper javadoc:org.apache.tapestry5.corelib.components.Tree[] component for navigating hierarchical data.
 It's efficient and Ajax-enabled, and fully customizable.
 
-=== Form Cancelled Event
+Form Cancelled Event::
 Form components now recognize when the client-side form was cancelled.
 A new "cancelled" event is triggered early in the submission process, which allows the page to bypass all property updates and input validations, when desired.
 
-=== Implicit OrderedConfiguration Constraints
-When using http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/ioc/OrderedConfiguration.html[OrderedConfiguration.add()] with no constraints, Tapestry will now implicitly order the added element after the previously added element, within the same method.
+Implicit OrderedConfiguration Constraints::
+When using javadoc:org.apache.tapestry5.ioc.OrderedConfiguration[label=OrderedConfiguration.add()] with no constraints, Tapestry will now implicitly order the added element after the previously added element, within the same method.
 In prior releases, such elements were added with no constraints.
 This makes it easier to contribute a group of related items with an implicit ordering.
 
-=== New Component Class Validations
+New Component Class Validations::
 Tapestry includes new validations of component classes to help cut down on many common errors; Tapestry now checks that component ids referenced by an event handler method (the From__component_id__ part of the method name) actually matches a component defined in the template ... this quickly identifies typos in method names.
 This check can be disabled with a configuration symbol, as existing 5.2 apps may have such errors and still operate (that is, they may have dead event handler methods that will never be invoked).
 
-=== Application Folder
+Application Folder::
 Tapestry can now be configured to execute inside a folder, which can be useful when running Tapestry inside a web application that contains other servlets or filters, as a way to prevent conflicts.
 
-=== Improved Quickstart Archetype
+Improved Quickstart Archetype::
 The Maven quickstart archetype has been brought up to date, and now demonstrates several new bits of common useful functionality. It also generates support for http://gradle.org/[Gradle] as the build tool.
 
-=== Whitelisted Pages
-The new http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/annotations/WhitelistAccessOnly.html[@WhitelistAccessOnly] annotation marks a page as accessible only from white-listed clients; the rules for the whitelist are http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/services/security/ClientWhitelist.html[extensible].
+Whitelisted Pages::
+The new javadoc:org.apache.tapestry5.annotations.WhitelistAccessOnly[label=@WhitelistAccessOnly] annotation marks a page as accessible only from white-listed clients; the rules for the whitelist are javadoc:org.apache.tapestry5.services.security.ClientWhitelist[label=extensible].
 The default rule is that only access from localhost is on the white-list.
 Use this annotation on pages that may expose sensitive data, such as built-in application dashboards and the like.
 
-=== Page Catalog
+Page Catalog::
 Tapestry applications now include a built-in `PageCatalog` page, which lists all the loaded pages of the application, with details about construction time and number of components.
-The page requires whitelist access (see above comment), and some functionality is only available in development mode. PageCatalog can be used to load all pages of your application, which is useful to quickly spot problems in your pages ... especially useful when upgrading from a prior release of Tapestry.
+The page requires whitelist access (see above comment), and some functionality is only available in development mode.
+PageCatalog can be used to load all pages of your application, which is useful to quickly spot problems in your pages ... especially useful when upgrading from a prior release of Tapestry.
 
-=== Client-Side JavaScript Logging
+Client-Side JavaScript Logging::
 The integrated Blackbird client-side console has been removed.
 In its place are the floating console messages combined with logging to the Firebug or WebKit console.
 Tapestry no longer captures JavaScript initialization exceptions, so that they may be properly reported to the native console.
 These changes should make debugging client-side JavaScript much easier.
 
 In addition, Tapestry will now display a pop-up window containing the full exception report for a server-side error that occurs during an Ajax request, which makes debugging server-side problems that occur as part of an Ajax request _significantly_ easier.
-Note that this logic is tied to performing a http://tapestry.apache.org/5.3/apidocs/org/apache/tapestry5/corelib/components/Zone.html[Zone] update.
+Note that this logic is tied to performing a javadoc:org.apache.tapestry5.corelib.components.Zone[] update.
 
