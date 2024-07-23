@@ -106,24 +106,21 @@ The location of the global application message catalog, the default is `context:
 // You should change the application version on each new deployment of the application (that is, any time assets in the context change), to force clients to re-download changed versions of files.
 // If you do not specify an application version, a random one will be assigned on every deployment (which is good for development but very bad for production).
 
-// === tapestry.application-folder
-// Added in 5.3
-// *SymbolConstants.APPLICATION_FOLDER* –
-// The folder, of the context, in which the Tapestry application executes.
-// By default this is blank, meaning the Tapestry application executes in the root of the web application context.
-// Setting this value allows the Tapestry application to be segregated into a folder, which can be useful when Tapestry is executed inside a web application with other servlets or filters.
+tapestry.application-folder | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_FOLDER[]::
+Since 5.3.1 +
+The folder, of the context, in which the Tapestry application executes.
+By default this is blank, meaning the Tapestry application executes in the root of the web application context.
+Setting this value allows the Tapestry application to be segregated into a folder, which can be useful when Tapestry is executed inside a web application with other servlets or filters.
 
-// === tapestry.asset-url-fully-qualified
-// Added in 5.3
-// *SymbolConstants.ASSET_URL_FULL_QUALIFIED* –
-// A boolean value to indicate whether asset URLs should be fully qualified in the rendered page.
-// This defaults to false (not fully qualified).
+tapestry.asset-url-fully-qualified | javadoc:org.apache.tapestry5.SymbolConstants#ASSET_URL_FULL_QUALIFIED[]:: 
+Since 5.3.1 +
+A boolean value to indicate whether asset URLs should be fully qualified in the rendered page.
+This defaults to `false` (not fully qualified).
 
-// === tapestry.asset-path-prefix
-// Added in 5.3.1
-// *SymbolConstants.ASSET_PATH_PREFIX* –
-// The prefix to be used for all asset paths. This should start and end with a slash ("/").
-// By default this is "/assets/".
+tapestry.asset-path-prefix | javadoc:org.apache.tapestry5.SymbolConstants#ASSET_PATH_PREFIX[]::
+Since 5.3.1 +
+The prefix to be used for all asset paths. This should start and end with a slash ("/").
+By default this is `/assets/`.
 
 // tapestry.blackbird-enabled | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD_ENABLED[]::
 // A flag (`true` or `false`).
@@ -149,12 +146,11 @@ The default is "UTF-8".
 See xref:content-type-and-markup.adoc[] for more details.
 ////
 
-// === tapestry.clustered-sessions
-// Added in 5.3
-// *SymbolConstants.CLUSTERED_SESSIONS* –
-// If "true" then at the end of each request the SessionPersistedObjectAnalyzer will be called on each session persisted object that was accessed during the request.
-// The default is "true", to preserve 5.2 behavior.
-// For non-clustered applications (the majority), this value should be overridden to "false".
+tapestry.clustered-sessions | javadoc:org.apache.tapestry5.SymbolConstants#CLUSTERED_SESSIONS[]::
+Since 5.3.1 +
+If `true` then at the end of each request the javadoc:org.apache.tapestry5.services.SessionPersistedObjectAnalyzer[] will be called on each session persisted object that was accessed during the request.
+The default is "true", to preserve 5.2 behavior.
+For non-clustered applications (the majority), this value should be overridden to `false`.
 
 ////
 === tapestry.combine-scripts
@@ -207,6 +203,20 @@ Primarily, this is used with a cookie that exists to track the preferred user lo
 The default value is "7 d" (7 days; see Time Interval Formats).
 ////
 
+tapestry.enable-minification | javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[]::
+Since 5.3.0 +
+If `true`, then resources (individually or when aggregated into stacks) will be minimized via the javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer service.
+If `false`, then minification is disabled.
+The default is `true` in production mode, `false` otherwise.
+
+Note that Tapestry's default implementation of ResourceMinimizer does nothing; minification is provided by add-on libraries.
+See xref:assets.adoc[] for details.
+
+tapestry.execution-mode | javadoc:org.apache.tapestry5.SymbolConstants#EXECUTION_MODE[]::
+Since 5.3.1 +
+The execution mode. See <<Setting Execution Modes>> below.
+
+
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
 Time interval between file system checks.
@@ -223,6 +233,29 @@ tapestry.force-absolute-uris | javadoc:org.apache.tapestry5.SymbolConstants#FORC
 Since 5.0 +
 When `false` (the default), Tapestry will attempt to optimize URIs that it generates, using relative URIs when such URIs are shorter than absolute URIs.
 When `true`, all URIs will be absolute URIs (including the context path, and the complete path for the request). 
+
+tapestry.hmac-passphrase | javadoc:org.apache.tapestry5.SymbolConstants#HMAC_PASSPHRASE[]::
+Since 5.3.6 +
+The plaintext phrase used to set the key for HMAC securing of serialized object data.
+The default is blank, which causes a runtime alert and console error.
+You should set this to a reasonably unique, private value, and ensure (in a cluster) that all servers use the same value – typically by making a contribution in your applications module class (normally AppModule.java).
+See xref:security.adoc[] for details.
+
+tapestry.hostname | javadoc:org.apache.tapestry5.SymbolConstants#HOSTNAME[]::
+Since 5.3.0 +
+The hostname that application should use when constructing an absolute URL.
+The default is "", i.e. an empty string, in which case system will use `request.getServerName()`.
+_Not_ the same as environment variable `HOSTNAME` (but you could contribute `$HOSTNAME` as the value to make it the same).
+
+tapestry.hostport | javadoc:org.apache.tapestry5.SymbolConstants#HOSTPORT[]::
+Since 5.3.0 +
+The port that application should use when constructing an absolute URL.
+The default is "0", which means to use the port value from the request.
+
+tapestry.hostport-secure | javadoc:org.apache.tapestry5.SymbolConstants#HOSTPORT_SECURE[]::
+Since 5.3.0 +
+The secure (https) port that application should use when constructing an absolute URL.
+The default is "0", i.e. use the value from the request.
 
 tapestry.production-mode | javadoc:org.apache.tapestry5.SymbolConstants#PRODUCTION_MODE[]::
 Since 5.0 +
@@ -249,14 +282,12 @@ As the community contributes new localizations of the necessary messages files, 
 Note that the Tapestry quickstart archetype overrides the factory default, forcing the application to be localized only for `en`.
 
 
-////
 == Setting Component Parameter Defaults
 Added in 5.3
 Some components, notably Grid, Pallete and Zone, have default parameter values specified in terms of symbols.
 This means you can use these symbols to modify the defaults for all instances of such components in your application.
 For example, you can set the default rows per page for all Grid instances by adding this to the contributeApplicationDefaults method in your application's module class (typically AppModule.java): `configuration.add(ComponentParameterConstants.GRID_ROWS_PER_PAGE, "15");`
 See the complete list of such constants at ComponentParameterConstants.
-////
 
 == Configuring Ignored Paths
 You may sometimes need to use Tapestry in concert with other servlets.
@@ -294,3 +325,50 @@ The mapping from file type (by extension) to content type is typically done as p
 Alternately, you may contribute to the javadoc:org.apache.tapestry5.internal.services.ResourceStreamer[] service's configuration.
 This is a mapped configuration; it maps file extensions (such as "css" or "js") to content types (`text/css` or `text/javascript`) respectively.
 
+== Setting Execution Modes
+
+== Segregating Applications Into Folders
+In many cases where Tapestry is being adopted into an existing web application (possibly written in Tapestry 4 or some other framework), it is nice to segregate the Tapestry application into its own folder, to avoid conflicts with the existing application or servlets.
+
+Setting this up is in two parts:
+
+* Modifying the configuration of the `<url-pattern>` for the Tapestry filter to match the specified folder.
+* Identifying the folder name using a Tapestry symbol value contribution.
+
+So, if you wanted to run the Tapestry application inside folder `t5app`, you would modify your `web.xml` indicate the use of the folder:
+
+.web.xml (partial)
+[source,xml]
+----
+<filter-mapping>
+  <filter-name>app</filter-name>
+  <url-pattern>/t5app/*</url-pattern>
+</filter-mapping>
+----
+
+... and in your AppModule, you would inform Tapestry about the mapping change:
+
+.AppModule.java
+[source,java]
+----
+public class AppModule
+{
+    @Contribute(SymbolProvider.class)
+    @ApplicationDefaults
+    public static void applicationDefaults(MappedConfiguration<String, String> configuration)
+    {
+        configuration.add(SymbolConstants.APPLICATION_FOLDER, "t5app")
+    }
+}
+----
+
+NOTE: This extra mapping is unfortunately necessary, because the Servlet API does not provide a way for a servlet filter, such as the one used by Tapestry, to know about its mapping.
+
+This changes the servlet container to only forward requests inside the `t5app` folder to Tapestry.
+Requests for other folders (or the root folder) will not be passed to Tapestry at all.
+The symbol contribution informs Tapestry to change the URLs it generates to include the necessary folder name.
+It also affects the logic in Tapestry that recognizes and handles requests.
+
+In addition, if you choose to place page template files in the context, rather than on the classpath (as with component templates), then you will place those template files inside the `t5app` folder.
+
+At this time, it is still not possible to run multiple Tapestry 5 applications within the same web application.
