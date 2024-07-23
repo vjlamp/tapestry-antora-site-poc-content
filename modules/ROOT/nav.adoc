@@ -44,6 +44,7 @@
 ** xref:client-side-javascript.adoc[]
 ** xref:javascript-modules.adoc[]
 ** xref:coffeescript.adoc[]
+** xref:typescript.adoc[]
 ** xref:ajax-and-zones.adoc[]
 ** xref:css.adoc[Cascading Style Sheets (CSS)]
 ** xref:assets.adoc[]
@@ -73,6 +74,7 @@
 * xref:third-party-modules.adoc[]
 
 .Release Notes
+* xref:release-notes-5.5.adoc[]
 * xref:release-notes-5.4.adoc[]
 * xref:release-notes-5.3.adoc[]
 * xref:release-notes-5.2.adoc[]

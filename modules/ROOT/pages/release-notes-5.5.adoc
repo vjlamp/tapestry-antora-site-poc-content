@@ -1,0 +1,38 @@
+= Tapestry 5.5
+
+== New Features
+
+The main new features are:
+
+* Added support for Java 9, 10, 11 and 12 bytecode. Tapestry 5.5.0 now supports Java 8 through 12. issue:2588[]
+* Added support for on-the-fly TypeScript compilation in the tapestry-webresources module. See xref:typescript.adoc[TypeScript] for more info. issue:2591[]
+* Added the ability to switch between CSS frameworks: Bootstrap CSS 4, Bootstrap 3 (the default for Tapestry 5.4), or  your own CSS (in this case, Tapestry doesn't provide any CSS at all).  See CSS for more info. issue:2612[]
+* Added a "then" parameter to the If component. See If component docs for more info. issue:2615[]
+
+== Improvements
+* issue:2615[] - "If" component should have an optional "then" parameter
+* issue:2614[] - Update Closure Compiler to latest version available
+* issue:2612[] - Allow the usage of Tapestry without Bootstrap, the CSS framework
+* issue:2608[] - Fix and update quickstart
+* issue:2591[] - TypeScript support
+* issue:2589[] - Improve Grid implementation for "slow" data sources
+* issue:2575[] - Replace json.org-licensed classes with Apache-compatible versions
+* issue:2573[] - Update Closure Compiler version
+* issue:2558[] - Lock contention in PlasticClassPool
+* issue:2557[] - Lock contention in ComponentInstantiatorSourceImpl
+* issue:2556[] - Upgrade Hibernate to 5.1 for T5.5
+* issue:2553[] - Support pseudo nested JPA transactions, injectable entity listeners and pre/post commit hooks
+* issue:2548[] - Upgrade embedded Jetty and Tomcat versions
+* issue:2546[] - Parallel class loading
+* issue:2545[] - Reduce lock contention during page loading
+* issue:2532[] - Add Object editor to PropertyEditBlocks
+* issue:2478[] - Create getIfExists in SessionApplicationStatePersistenceStrategy
+* issue:2327[] - The Cookies interface should provide an option to mark cookies as httpOnly
+
+== Bugs fixed
+* issue:2610[] - required validation should not be added to checkbox when primitive boolean is behind it, unless checked or required validation is explicitly added
+* issue:2606[] - Inline SVG image is broken in proudction mode, because whitespaces are removed
+* issue:2582[] - Service creation for Hibernate Session results in ClassFormatError: Duplicate method name&signature
+* issue:2560[] - Error in GenericsUtils affecting property access
+* issue:2075[] - Checkbox doesn't trigger VALIDATE event
+
