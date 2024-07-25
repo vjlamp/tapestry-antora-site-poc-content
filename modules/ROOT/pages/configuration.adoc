@@ -89,123 +89,13 @@ These symbols are always defined in terms of strings, and those strings are coer
 Of special note are _time intervals_, which are specified in a particular format (see javadoc::org.apache.tapestry5.ioc.util.TimeInterval[]).
 
 Most of these symbols have a constant defined in the javadoc:org.apache.tapestry5.SymbolConstants[] class.
-//, while others are in the IOCSymbols class (since 5.2.2..
 Use the symbol name (`tapestry.*`) for JVM System Properties with the `-D` option, and use the constant (in bold below) from within your Java classes (e.g. `AppModule.java`).
-
-////
-tapestry.app-catalog | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_CATALOG[]:: 
-Since 5.1 +
-The location of the global application message catalog, the default is `context:WEB-INF/app-name.properties`.
-////
-
-// === tapestry.application-version
-// Added in 5.4
-// *SymbolConstants.APPLICATION_VERSION* – 
-// The version of the application, which is incorporated into URLs for context and classpath assets in Tapestry versions prior to 5.4.
-// Assets may be compressed, and will have far-future expiration headers; they will be aggressively cached by the client web browser.
-// You should change the application version on each new deployment of the application (that is, any time assets in the context change), to force clients to re-download changed versions of files.
-// If you do not specify an application version, a random one will be assigned on every deployment (which is good for development but very bad for production).
-
-// === tapestry.application-folder
-// Added in 5.3
-// *SymbolConstants.APPLICATION_FOLDER* –
-// The folder, of the context, in which the Tapestry application executes.
-// By default this is blank, meaning the Tapestry application executes in the root of the web application context.
-// Setting this value allows the Tapestry application to be segregated into a folder, which can be useful when Tapestry is executed inside a web application with other servlets or filters.
-
-// === tapestry.asset-url-fully-qualified
-// Added in 5.3
-// *SymbolConstants.ASSET_URL_FULL_QUALIFIED* –
-// A boolean value to indicate whether asset URLs should be fully qualified in the rendered page.
-// This defaults to false (not fully qualified).
-
-// === tapestry.asset-path-prefix
-// Added in 5.3.1
-// *SymbolConstants.ASSET_PATH_PREFIX* –
-// The prefix to be used for all asset paths. This should start and end with a slash ("/").
-// By default this is "/assets/".
-
-// tapestry.blackbird-enabled | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD_ENABLED[]::
-// A flag (`true` or `false`).
-// When `false` the Blackbird JavaScript console will be disabled (in Tapestry 5.2 and newer). Defaults to `true`.
-// Since 5.2.0
-// Deprecated since 5.3 The client-side BlackBird console has been removed.
-
-// === tapestry.bootstrap-root
-// Added in 5.4
-// *SymbolConstants.BOOTSTRAP_ROOT* –
-// The root asset path for Twitter Bootstrap; if your application uses a modified version of Bootstrap, you can override this symbol to have Tapestry automatically use your version.
-// The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
-
-// === tapestry.font-awesome-root
-// Added in 5.5.0
-// *SymbolConstants.FONT_AWESOME_ROOT* – The root asset path for FontAwesome; if your application uses a modified version of it, you can override this symbol to have Tapestry automatically use your version.
-// The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
-
-////
-tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
-The character encoding used when generating output (or parsing input).
-The default is "UTF-8".
-See xref:content-type-and-markup.adoc[] for more details.
-////
-
-// === tapestry.clustered-sessions
-// Added in 5.3
-// *SymbolConstants.CLUSTERED_SESSIONS* –
-// If "true" then at the end of each request the SessionPersistedObjectAnalyzer will be called on each session persisted object that was accessed during the request.
-// The default is "true", to preserve 5.2 behavior.
-// For non-clustered applications (the majority), this value should be overridden to "false".
-
-////
-=== tapestry.combine-scripts
-*SymbolConstants.COMBINE_SCRIPTS* –
-If "true", then Tapestry will combine (or "aggregate") the individual JavaScript libraries within a JavaScript stack; this reduces the number of requests from the client to the server, as the client can cache the combined JavaScript files locally (and will not need to re-download them on subsequent pages).
-// The implementation of this changed significantly between Tapestry 5.1 and 5.2.
-Defaults to "true" in production mode.
-////
-
-// === tapestry.compact-json
-// Added in 5.2
-// *SymbolConstants.COMPACT_JSON* – If "true", then JSON page initialization content is compressed; if "false" then extra white space is added (pretty printing). Defaults to "true" in production mode.
-
-// === tapestry.compatibility.unknown-component-id-check-enabled
-// Added in 5.3
-// Deprecated since 5.3
-// *SymbolConstants.UNKNOWN_COMPONENT_ID_CHECK_ENABLED* – When enabled, Tapestry will check that component ids referenced in event handler method names (or the @OnEvent annotation) match up against components in the container's template. The default is true, but applications upgraded form Tapestry 5.2 may want to set this to false, to keep pages from failing due to the presence of such dead code.
-
-// === tapestry.component-render-tracing-enabled
-// SymbolConstants.COMPONENT_RENDER_TRACING_ENABLED –
-// Starting with version 5.3, if "true" then Tapestry will emit rendering comments for all requests; these are comments (such as <!--BEGIN Index:loop (context:Index.tml, line 15)-->) that can assist you in debugging markup output on the client-side. This will significantly increase the size of the rendered markup, but can be very helpful with complex layouts to determine which component was responsible for which portion of the rendered page. (To turn on rendering comments only for a particular request, add the query parameter t:component-trace=true to the URL.)
 
 tapestry.compress-whitespace | javadoc:org.apache.tapestry5.SymbolConstants#COMPRESS_WHITESPACE[version={javadoc-version}]::
 Since 5.0 +
 A flag (`true` or `false`). When `true` (the default) whitespace in component templates is compressed by default (this can be fine-tuned using the standard `xml:space` attribute on an element in the template).
 When this flag is false, then whitespace is retained by default (but can still be overridden).
 See xref:component-templates.adoc[] for details.
-
-// === tapestry.module-path-prefix
-// Added in 5.4
-// SymbolConstants.MODULE_PATH_PREFIX – 
-// Prefix used for all module resources.
-// This may contain slashes, but should not begin or end with one.
-// Tapestry will create two Dispatchers from this: one for normal modules, the other for GZip compressed modules (by appending ".gz" to this value).
-
-// === tapestry.context-path
-// Added in 5.4
-// SymbolConstants.CONTEXT_PATH –
-// Identifies the context path of the application, as determined from ServletContext.getContextPath() method. This is either a blank string or a string that starts with a slash but does not end with one.
-
-// === tapestry.datepicker
-// Added in 5.2
-// SymbolConstants.DATEPICKER – The path to the assets of the embedded DatePicker component
-
-////
-tapestry.default-cookie-max-age | javadoc:org.apache.tapestry5.SymbolConstants#COOKIE_MAX_AGE[]::
-Since 5.2 +
-The default time interval that cookies created by Tapestry will be kept in the client web browser.
-Primarily, this is used with a cookie that exists to track the preferred user locale.
-The default value is "7 d" (7 days; see Time Interval Formats).
-////
 
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
@@ -236,8 +126,6 @@ This has a lot of benefits in terms of improving browser navigation, making sure
 However, it has a cost: more data stored persistently in the session, and a double-request for each user action (one action request, one render request). +
 Setting this symbol to `true` changes the Tapestry behavior to make it more like Tapestry 4: a markup response is sent directly for the action request, with no redirect in the middle.
 This option should be used with care, and only in cases where you are certain that the benefits outweigh the disadvantages.
-// Deprecated since 5.2
-// Removed in 5.3
 
 tapestry.supported-locales | javadoc:org.apache.tapestry5.SymbolConstants#SUPPORTED_LOCALES[]::
 Since 5.0 +
@@ -248,15 +136,6 @@ The default is (currently) "en,it,es,zh_CN,pt_PT,de,ru,hr,fi_FI,sv_SE,fr_FR,da,p
 As the community contributes new localizations of the necessary messages files, this list will expand.
 Note that the Tapestry quickstart archetype overrides the factory default, forcing the application to be localized only for `en`.
 
-
-////
-== Setting Component Parameter Defaults
-Added in 5.3
-Some components, notably Grid, Pallete and Zone, have default parameter values specified in terms of symbols.
-This means you can use these symbols to modify the defaults for all instances of such components in your application.
-For example, you can set the default rows per page for all Grid instances by adding this to the contributeApplicationDefaults method in your application's module class (typically AppModule.java): `configuration.add(ComponentParameterConstants.GRID_ROWS_PER_PAGE, "15");`
-See the complete list of such constants at ComponentParameterConstants.
-////
 
 == Configuring Ignored Paths
 You may sometimes need to use Tapestry in concert with other servlets.
