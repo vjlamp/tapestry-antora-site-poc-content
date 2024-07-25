@@ -166,6 +166,12 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
+tapestry.secure-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SECURE_ENABLED[]::
+Since 5.1.0.1 +
+If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] annotations are honored; if `false`, no security checks or redirects take place.
+This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
+However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
+
 tapestry.script-at-top | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTS_AT_TOP[]::
 WARNING: Deprecated since 5.1.0.1. Scripts are now always at the top (see issue:544[]) +
 Since 5.0.16 +
