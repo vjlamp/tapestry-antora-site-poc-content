@@ -257,6 +257,11 @@ Since 5.3.0 +
 The secure (https) port that application should use when constructing an absolute URL.
 The default is "0", i.e. use the value from the request.
 
+tapestry.persistence-strategy | javadoc:org.apache.tapestry5.SymbolConstants#PERSISTENCE_STRATEGY[]::
+Since 5.1.0.0 +
+Identifies the default persistence strategy for all pages that do not provide an override.
+The default is `session` (javadoc:org.apache.tapestry5.PersistenceConstants#SESSION[]).
+
 tapestry.production-mode | javadoc:org.apache.tapestry5.SymbolConstants#PRODUCTION_MODE[]::
 Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
