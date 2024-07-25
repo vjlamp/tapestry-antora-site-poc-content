@@ -97,6 +97,13 @@ Since 5.1 +
 The location of the global application message catalog, the default is `context:WEB-INF/app-name.properties`.
 ////
 
+tapestry.application-version | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_VERSION[]::
+Since 5.1.0.0 +
+The version of the application, which is incorporated into URLs for context and classpath assets.
+xref:assets.adoc[Assets] may be xref:response-compression.adoc[compressed], and will have far-future expiration headers; they will be aggressively cached by the client web browser.
+You should change the application version on each new deployment of the application (that is, any time assets in the context change), to force clients to re-download changed versions of files.
+If you do not specify an application version, a _random_ one will be assigned on every deployment (which is good for development but very bad for production).
+
 ////
 tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
 The character encoding used when generating output (or parsing input).
