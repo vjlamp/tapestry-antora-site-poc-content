@@ -147,6 +147,11 @@ tapestry.min-gzip-size | javadoc:org.apache.tapestry5.SymbolConstants#MIN_GZIP_S
 Since 5.1.0.0 +
 The minimum stream size necessary for Tapestry to use GZIP compression on the response stream. See xref:response-compression.adoc[] for more details.
 
+tapestry.omit-generator-meta | javadoc:org.apache.tapestry5.SymbolConstants#OMIT_GENERATOR_META[]::
+Since 5.1.0.0 +
+If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
+Use this when you do not wish to advertise your application's use of Tapestry.
+
 tapestry.persistence-strategy | javadoc:org.apache.tapestry5.SymbolConstants#PERSISTENCE_STRATEGY[]::
 Since 5.1.0.0 +
 Identifies the default persistence strategy for all pages that do not provide an override.
