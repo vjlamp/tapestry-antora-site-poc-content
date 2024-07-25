@@ -166,6 +166,12 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
+tapestry.script-at-top | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTS_AT_TOP[]::
+Since 5.0.16 +
+If `true`, then links for external JavaScript libraries are placed at the top of the document (just inside the `<body>` element).
+If `false`, the default, then the libraries are placed at the bottom of the document.
+Per-page initialization always goes at the bottom.
+
 tapestry.suppress-redirect-from-action-requests | javadoc:org.apache.tapestry5.SymbolConstants#SUPPRESS_REDIRECT_FROM_ACTION_REQUESTS[]::
 Since 5.0 +
 Normally, Tapestry responds to action requests (such as form submissions) by sending a client-side redirect to the rendering page.
