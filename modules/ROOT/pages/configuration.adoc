@@ -167,6 +167,7 @@ A flag (`true` or `false`) indicating whether the application is running in prod
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
 tapestry.script-at-top | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTS_AT_TOP[]::
+WARNING: Deprecated since 5.1.0.1. Scripts are now always at the top (see issue:544[]) +
 Since 5.0.16 +
 If `true`, then links for external JavaScript libraries are placed at the top of the document (just inside the `<body>` element).
 If `false`, the default, then the libraries are placed at the bottom of the document.
