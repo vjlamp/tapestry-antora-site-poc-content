@@ -126,6 +126,12 @@ A flag (`true` or `false`). When `true` (the default) whitespace in component te
 When this flag is false, then whitespace is retained by default (but can still be overridden).
 See xref:component-templates.adoc[] for details.
 
+tapestry.encode-locale-into-path | javadoc:org.apache.tapestry5.SymbolConstants#ENCODE_LOCALE_INTO_PATH[]::
+Since 5.1.0.1 +
+If `true` (the default), then the javadoc:org.apache.tapestry5.services.PersistentLocale[] will be encoded into URLs by the javadoc:org.apache.tapestry5.services.ComponentEventLinkEncoder[] service.
+If overridden to `false` this does not occur, but you should provide a javadoc:org.apache.tapestry5.services.LinkCreationListener[] (registered with the javadoc:org.apache.tapestry5.services.LinkCreationHub[]) in order to add the locale as a query parameter (or provide some alternate means of persisting the locale between requests).
+See xref:localization.adoc[] for more details on localization.
+
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
 Time interval between file system checks.
