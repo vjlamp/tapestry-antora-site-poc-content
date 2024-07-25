@@ -233,6 +233,10 @@ Since 5.0 +
 When `false` (the default), Tapestry will attempt to optimize URIs that it generates, using relative URIs when such URIs are shorter than absolute URIs.
 When `true`, all URIs will be absolute URIs (including the context path, and the complete path for the request). 
 
+tapestry.gzip-compression-enabled | javadoc:org.apache.tapestry5.SymbolConstants#GZIP_COMPRESSION_ENABLED[]::
+Since 5.1.0.0 +
+Override to `false` to disable GZIP compression of dynamic Tapestry pages and static assets.
+
 tapestry.hmac-passphrase | javadoc:org.apache.tapestry5.SymbolConstants#HMAC_PASSPHRASE[]::
 Since 5.3.6 +
 The plaintext phrase used to set the key for HMAC securing of serialized object data.
