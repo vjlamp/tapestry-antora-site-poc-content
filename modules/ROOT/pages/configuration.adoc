@@ -188,6 +188,16 @@ Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
 Use this when you do not wish to advertise your application's use of Tapestry.
 
+tapestry.page-pool.soft-limit | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_SOFT_LIMIT[]::
+Since 5.2.0 +
+The number of pages in the page pool (for a given page name / locale combination) before which Tapestry will start to wait for existing pages to be made available.
+Under this limit of pages, Tapestry will simply create a new page instance if no existing instance is readily available.
+Once the soft limit is reached, Tapestry will wait a short period of time (the soft wait interval) to see if an existing page instance is made available.
+It will then create a new page instance (unless the hard limit has been reached).
++
+The default is 5 page instances.
+Remember that page pooling is done separately for each page (and localization of the page).
+
 tapestry.persistence-strategy | javadoc:org.apache.tapestry5.SymbolConstants#PERSISTENCE_STRATEGY[]::
 Since 5.1.0.0 +
 Identifies the default persistence strategy for all pages that do not provide an override.
