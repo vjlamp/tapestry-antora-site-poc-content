@@ -193,13 +193,11 @@ See xref:component-templates.adoc[] for details.
 // Added in 5.2
 // SymbolConstants.DATEPICKER – The path to the assets of the embedded DatePicker component
 
-////
 tapestry.default-cookie-max-age | javadoc:org.apache.tapestry5.SymbolConstants#COOKIE_MAX_AGE[]::
-Since 5.2 +
+Since 5.2.0 +
 The default time interval that cookies created by Tapestry will be kept in the client web browser.
 Primarily, this is used with a cookie that exists to track the preferred user locale.
-The default value is "7 d" (7 days; see Time Interval Formats).
-////
+The default value is "7 d" (7 days; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
 
 tapestry.enable-minification | javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[]::
 Since 5.3.0 +
