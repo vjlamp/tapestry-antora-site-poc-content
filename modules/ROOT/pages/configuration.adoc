@@ -91,6 +91,10 @@ Of special note are _time intervals_, which are specified in a particular format
 Most of these symbols have a constant defined in the javadoc:org.apache.tapestry5.SymbolConstants[] class.
 Use the symbol name (`tapestry.*`) for JVM System Properties with the `-D` option, and use the constant (in bold below) from within your Java classes (e.g. `AppModule.java`).
 
+tapestry.app-catalog | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_CATALOG[]::
+Since 5.0.14 +
+The location of the global application message catalog, the default is `context:WEB-INF/app-name.properties`.
+
 tapestry.compress-whitespace | javadoc:org.apache.tapestry5.SymbolConstants#COMPRESS_WHITESPACE[version={javadoc-version}]::
 Since 5.0 +
 A flag (`true` or `false`). When `true` (the default) whitespace in component templates is compressed by default (this can be fine-tuned using the standard `xml:space` attribute on an element in the template).
