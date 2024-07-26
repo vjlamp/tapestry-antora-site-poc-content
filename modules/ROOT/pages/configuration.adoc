@@ -148,6 +148,10 @@ The default time interval that cookies created by Tapestry will be kept in the c
 Primarily, this is used with a cookie that exists to track the preferred user locale.
 The default value is "7 d" (7 days; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
 
+tapestry.default-javascript | javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_JAVASCRIPT[]::
+Since 5.2.0 +
+The Asset path of the default javascript (`tapestry.js`) automatically injected into every rendered HTML page.
+
 tapestry.default-stylesheet | javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_STYLESHEET[]::
 Since 5.2.0 +
 The default stylesheet automatically injected into every rendered HTML page.
