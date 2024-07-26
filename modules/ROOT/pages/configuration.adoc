@@ -151,13 +151,11 @@ If `true` then at the end of each request the javadoc:org.apache.tapestry5.servi
 The default is "true", to preserve 5.2 behavior.
 For non-clustered applications (the majority), this value should be overridden to `false`.
 
-////
-=== tapestry.combine-scripts
-*SymbolConstants.COMBINE_SCRIPTS* –
-If "true", then Tapestry will combine (or "aggregate") the individual JavaScript libraries within a JavaScript stack; this reduces the number of requests from the client to the server, as the client can cache the combined JavaScript files locally (and will not need to re-download them on subsequent pages).
-// The implementation of this changed significantly between Tapestry 5.1 and 5.2.
-Defaults to "true" in production mode.
-////
+tapestry.combine-scripts | javadoc:org.apache.tapestry5.SymbolConstants#COMBINE_SCRIPTS[]::
+Since 5.1.0.2 +
+If `true`, then Tapestry will combine (or "aggregate") the individual JavaScript libraries within a JavaScript stack; this reduces the number of requests from the client to the server, as the client can cache the combined JavaScript files locally (and will not need to re-download them on subsequent pages).
+The implementation of this changed significantly between Tapestry 5.1 and 5.2.
+Defaults to `true` in production mode.
 
 // === tapestry.compact-json
 // Added in 5.2
