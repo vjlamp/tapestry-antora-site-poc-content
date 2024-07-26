@@ -88,8 +88,7 @@ These symbols can be overridden by contributing to the ApplicationDefaults servi
 These symbols are always defined in terms of strings, and those strings are coerced to the appropriate type (a number, a boolean, etc.).
 Of special note are _time intervals_, which are specified in a particular format (see javadoc::org.apache.tapestry5.ioc.util.TimeInterval[]).
 
-Most of these symbols have a constant defined in the javadoc:org.apache.tapestry5.SymbolConstants[] class.
-//, while others are in the IOCSymbols class (since 5.2.2..
+Most of these symbols have a constant defined in the javadoc:org.apache.tapestry5.SymbolConstants[] class, while others are in the javadoc:org.apache.tapestry5.ioc.IOCSymbols[] class (since 5.2.2).
 Use the symbol name (`tapestry.*`) for JVM System Properties with the `-D` option, and use the constant (in bold below) from within your Java classes (e.g. `AppModule.java`).
 
 ////
