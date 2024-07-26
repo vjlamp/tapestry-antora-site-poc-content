@@ -183,6 +183,8 @@ tapestry.force-absolute-uris | javadoc:org.apache.tapestry5.SymbolConstants#FORC
 Since 5.0 +
 When `false` (the default), Tapestry will attempt to optimize URIs that it generates, using relative URIs when such URIs are shorter than absolute URIs.
 When `true`, all URIs will be absolute URIs (including the context path, and the complete path for the request). 
++
+WARNING: Deprecated as of version 5.2.1, since when URLs are always absolute.
 
 tapestry.gzip-compression-enabled | javadoc:org.apache.tapestry5.SymbolConstants#GZIP_COMPRESSION_ENABLED[]::
 Since 5.1.0.0 +
