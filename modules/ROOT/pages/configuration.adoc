@@ -188,6 +188,14 @@ Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
 Use this when you do not wish to advertise your application's use of Tapestry.
 
+tapestry.page-pool.hard-limit | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_HARD_LIMIT[]::
+Since 5.2.0 +
+The absolute maximum number of page instances (for a particular page name / locale combination) that Tapestry will create at any time.
+If this number is reached, then requests will fail because a page instance is not available ... this can happen as part of a denial of service attack.
+For this value to have any meaning, it should be lower than the number of threads that the servlet container is configured to use when processing requests.
++
+The default is 20 page instances.
+
 tapestry.page-pool.soft-limit | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_SOFT_LIMIT[]::
 Since 5.2.0 +
 The number of pages in the page pool (for a given page name / locale combination) before which Tapestry will start to wait for existing pages to be made available.
