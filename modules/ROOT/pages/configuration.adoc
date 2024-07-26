@@ -203,6 +203,12 @@ If `true`, then links for external JavaScript libraries are placed at the top of
 If `false`, the default, then the libraries are placed at the bottom of the document.
 Per-page initialization always goes at the bottom.
 
+tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
+Since 5.2.0 +
+The logical name of the start page, the page that is rendered for the _root URL_.
+This is normally "start".
+This functionality is vestigial: it has been superseded by the use of Index pages.
+
 tapestry.suppress-redirect-from-action-requests | javadoc:org.apache.tapestry5.SymbolConstants#SUPPRESS_REDIRECT_FROM_ACTION_REQUESTS[]::
 Since 5.0 +
 Normally, Tapestry responds to action requests (such as form submissions) by sending a client-side redirect to the rendering page.
