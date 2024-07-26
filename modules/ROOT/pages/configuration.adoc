@@ -188,9 +188,9 @@ See xref:component-templates.adoc[] for details.
 // SymbolConstants.CONTEXT_PATH –
 // Identifies the context path of the application, as determined from ServletContext.getContextPath() method. This is either a blank string or a string that starts with a slash but does not end with one.
 
-// === tapestry.datepicker
-// Added in 5.2
-// SymbolConstants.DATEPICKER – The path to the assets of the embedded DatePicker component
+tapestry.datepicker | javadoc:org.apache.tapestry5.SymbolConstants#DATEPICKER[]::
+Since 5.2.0 +
+The path to the assets of the embedded DatePicker component.
 
 tapestry.default-cookie-max-age | javadoc:org.apache.tapestry5.SymbolConstants#COOKIE_MAX_AGE[]::
 Since 5.2.0 +
