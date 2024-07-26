@@ -128,9 +128,10 @@ If `true`, then Tapestry will combine (or "aggregate") the individual JavaScript
 The implementation of this changed significantly between Tapestry 5.1 and 5.2.
 Defaults to `true` in production mode.
 
-// === tapestry.compact-json
-// Added in 5.2
-// *SymbolConstants.COMPACT_JSON* – If "true", then JSON page initialization content is compressed; if "false" then extra white space is added (pretty printing). Defaults to "true" in production mode.
+tapestry.compact-json | javadoc:org.apache.tapestry5.SymbolConstants#COMPACT_JSON[]::
+Since in 5.2.0 +
+If `true`, then JSON page initialization content is compressed; if `false` then extra white space is added (pretty printing).
+Defaults to `true` in production mode.
 
 tapestry.compress-whitespace | javadoc:org.apache.tapestry5.SymbolConstants#COMPRESS_WHITESPACE[version={javadoc-version}]::
 Since 5.0 +
