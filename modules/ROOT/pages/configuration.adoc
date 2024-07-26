@@ -303,6 +303,11 @@ If `true`, then links for external JavaScript libraries are placed at the top of
 If `false`, the default, then the libraries are placed at the bottom of the document.
 Per-page initialization always goes at the bottom.
 
+tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
+The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
+This value may be overridden to use a different version of the script.aculo.us library.
+See xref:client-side-javascript.adoc[] for the default version.
+
 tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
 Since 5.2.0 +
 The logical name of the start page, the page that is rendered for the _root URL_.
