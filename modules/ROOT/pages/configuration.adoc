@@ -91,11 +91,9 @@ Of special note are _time intervals_, which are specified in a particular format
 Most of these symbols have a constant defined in the javadoc:org.apache.tapestry5.SymbolConstants[] class, while others are in the javadoc:org.apache.tapestry5.ioc.IOCSymbols[] class (since 5.2.2).
 Use the symbol name (`tapestry.*`) for JVM System Properties with the `-D` option, and use the constant (in bold below) from within your Java classes (e.g. `AppModule.java`).
 
-////
-tapestry.app-catalog | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_CATALOG[]:: 
-Since 5.1 +
+tapestry.app-catalog | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_CATALOG[]::
+Since 5.0.14 +
 The location of the global application message catalog, the default is `context:WEB-INF/app-name.properties`.
-////
 
 tapestry.application-version | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION_VERSION[]::
 Since 5.1.0.0 +
