@@ -188,6 +188,16 @@ Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
 Use this when you do not wish to advertise your application's use of Tapestry.
 
+tapestry.page-pool.active-window | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_ACTIVE_WINDOW[]::
+Since 5.2.0 +
+The time interval that an instantiated page instance may be cached before being removed.
+As pages are returned to the pool, they are time stamped.
+Periodically (as per the file check interval), the pool is scanned for page instances that have not been used recently; those that are outside the active window are discarded.
+This is used to free up unnecessary page instances after a request surge.
+This is only effective if `tapestry.page-pool-enabled` is true.
++
+The default is "10 m" (10 minutes; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
+
 tapestry.page-pool.hard-limit | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_HARD_LIMIT[]::
 Since 5.2.0 +
 The absolute maximum number of page instances (for a particular page name / locale combination) that Tapestry will create at any time.
