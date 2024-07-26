@@ -197,6 +197,15 @@ Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
 Use this when you do not wish to advertise your application's use of Tapestry.
 
+tapestry.page-pool-enabled | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_ENABLED[]::
+Since 5.2.0 +
+Starting with Tapestry 5.2, page pooling has been turned off by default.
+This symbol lets you re-enable page pooling.
+Under most circumstances this symbol should not be set.
+The disabling of page pooling starting in 5.2 significantly reduces heap memory usage and improves performance for most web applications.
++
+The default is `false`.
+
 tapestry.page-pool.active-window | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_ACTIVE_WINDOW[]::
 Since 5.2.0 +
 The time interval that an instantiated page instance may be cached before being removed.
