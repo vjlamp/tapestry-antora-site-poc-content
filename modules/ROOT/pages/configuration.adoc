@@ -224,6 +224,12 @@ tapestry.execution-mode | javadoc:org.apache.tapestry5.SymbolConstants#EXECUTION
 Since 5.3.1 +
 The execution mode. See <<Setting Execution Modes>> below.
 
+tapestry.exception-report-page | javadoc:org.apache.tapestry5.SymbolConstants#EXCEPTION_REPORT_PAGE[]::
+Since 5.0.15 +
+The name of the page used to report exceptions.
+This defaults to "ExceptionReport", a page that Tapestry provides.
+See xref:overriding-exception-reporting.adoc[] for details.
+
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
 Time interval between file system checks.
