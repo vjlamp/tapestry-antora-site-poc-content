@@ -299,13 +299,6 @@ If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] a
 This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
 However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
 
-tapestry.script-at-top | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTS_AT_TOP[]::
-WARNING: Deprecated since 5.1.0.1. Scripts are now always at the top (see issue:544[]) +
-Since 5.0.16 +
-If `true`, then links for external JavaScript libraries are placed at the top of the document (just inside the `<body>` element).
-If `false`, the default, then the libraries are placed at the bottom of the document.
-Per-page initialization always goes at the bottom.
-
 tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
 The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
 This value may be overridden to use a different version of the script.aculo.us library.
