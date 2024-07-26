@@ -95,6 +95,12 @@ tapestry.app-catalog | javadoc:org.apache.tapestry5.SymbolConstants#APPLICATION
 Since 5.0.14 +
 The location of the global application message catalog, the default is `context:WEB-INF/app-name.properties`.
 
+tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
+Since 5.0.14 +
+The character encoding used when generating output (or parsing input).
+The default is "UTF-8".
+See xref:content-type-and-markup.adoc[] for more details.
+
 tapestry.compress-whitespace | javadoc:org.apache.tapestry5.SymbolConstants#COMPRESS_WHITESPACE[version={javadoc-version}]::
 Since 5.0 +
 A flag (`true` or `false`). When `true` (the default) whitespace in component templates is compressed by default (this can be fine-tuned using the standard `xml:space` attribute on an element in the template).
