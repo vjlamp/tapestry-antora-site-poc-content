@@ -105,6 +105,10 @@ xref:assets.adoc[Assets] may be xref:response-compression.adoc[compressed], and 
 You should change the application version on each new deployment of the application (that is, any time assets in the context change), to force clients to re-download changed versions of files.
 If you do not specify an application version, a _random_ one will be assigned on every deployment (which is good for development but very bad for production).
 
+tapestry.blackbird | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD[]::
+Since 5.2.0 +
+The Asset path to the embedded copy of blackbird packaged with Tapestry.
+
 tapestry.blackbird-enabled | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD_ENABLED[]::
 Since 5.2.0 +
 A flag (`true` or `false`).
