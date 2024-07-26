@@ -112,12 +112,11 @@ A flag (`true` or `false`).
 When `false` the Blackbird JavaScript console will be disabled (in Tapestry 5.2 and newer). Defaults to `true`.
 // Deprecated since 5.3 The client-side BlackBird console has been removed.
 
-////
-tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
+tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
+Since 5.0.14 +
 The character encoding used when generating output (or parsing input).
 The default is "UTF-8".
 See xref:content-type-and-markup.adoc[] for more details.
-////
 
 tapestry.combine-scripts | javadoc:org.apache.tapestry5.SymbolConstants#COMBINE_SCRIPTS[]::
 Since 5.1.0.2 +
