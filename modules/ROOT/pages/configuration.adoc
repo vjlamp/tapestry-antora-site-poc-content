@@ -213,6 +213,9 @@ The default stylesheet automatically injected into every rendered HTML page.
 Many Tapestry components assume that this stylesheet is available.
 All the classes defined in the stylesheet are prefixed with `t-`.
 The exact contents of the stylesheet are subject to change at `ny time (they are considered internal), so replacing the stylesheet, rather than overriding selected rules within it, entails some risk.
+The default is `org/apache/tapestry5/default.css`, stored on the classpath.
++
+WARNING: Deprecated in 5.4 with no replacement. The stylesheet is now associated with the core JavaScriptStack.
 
 tapestry.encode-locale-into-path | javadoc:org.apache.tapestry5.SymbolConstants#ENCODE_LOCALE_INTO_PATH[]::
 Since 5.1.0.1 +
