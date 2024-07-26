@@ -206,6 +206,12 @@ It will then create a new page instance (unless the hard limit has been reached)
 The default is 5 page instances.
 Remember that page pooling is done separately for each page (and localization of the page).
 
+tapestry.page-pool.soft-wait | javadoc:org.apache.tapestry5.SymbolConstants#PAGE_POOL_SOFT_WAIT[]::
+Since 5.2.0 +
+The time interval that Tapestry will wait for a page instance to become available before deciding whether to create an entirely new page instance.
++
+The default is "10 ms" (10 milliseconds; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
+
 tapestry.persistence-strategy | javadoc:org.apache.tapestry5.SymbolConstants#PERSISTENCE_STRATEGY[]::
 Since 5.1.0.0 +
 Identifies the default persistence strategy for all pages that do not provide an override.
