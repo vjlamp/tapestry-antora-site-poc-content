@@ -315,16 +315,6 @@ The logical name of the start page, the page that is rendered for the _root URL_
 This is normally "start".
 This functionality is vestigial: it has been superseded by the use of Index pages.
 
-tapestry.suppress-redirect-from-action-requests | javadoc:org.apache.tapestry5.SymbolConstants#SUPPRESS_REDIRECT_FROM_ACTION_REQUESTS[]::
-Since 5.0 +
-Normally, Tapestry responds to action requests (such as form submissions) by sending a client-side redirect to the rendering page.
-This has a lot of benefits in terms of improving browser navigation, making sure URLs are bookmarkable, and so forth.
-However, it has a cost: more data stored persistently in the session, and a double-request for each user action (one action request, one render request). +
-Setting this symbol to `true` changes the Tapestry behavior to make it more like Tapestry 4: a markup response is sent directly for the action request, with no redirect in the middle.
-This option should be used with care, and only in cases where you are certain that the benefits outweigh the disadvantages.
-// Deprecated since 5.2
-// Removed in 5.3
-
 tapestry.supported-locales | javadoc:org.apache.tapestry5.SymbolConstants#SUPPORTED_LOCALES[]::
 Since 5.0 +
 A comma-separated list of supported locales.
