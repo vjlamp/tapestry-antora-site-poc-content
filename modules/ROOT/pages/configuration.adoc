@@ -108,31 +108,20 @@ xref:assets.adoc[Assets] may be xref:response-compression.adoc[compressed], and 
 You should change the application version on each new deployment of the application (that is, any time assets in the context change), to force clients to re-download changed versions of files.
 If you do not specify an application version, a _random_ one will be assigned on every deployment (which is good for development but very bad for production).
 
-tapestry.asset-url-fully-qualified | javadoc:org.apache.tapestry5.SymbolConstants#ASSET_URL_FULL_QUALIFIED[]:: 
-Since 5.3.1 +
-A boolean value to indicate whether asset URLs should be fully qualified in the rendered page.
-This defaults to `false` (not fully qualified).
-
 tapestry.asset-path-prefix | javadoc:org.apache.tapestry5.SymbolConstants#ASSET_PATH_PREFIX[]::
 Since 5.3.1 +
 The prefix to be used for all asset paths. This should start and end with a slash ("/").
 By default this is `/assets/`.
 
-// tapestry.blackbird-enabled | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD_ENABLED[]::
-// A flag (`true` or `false`).
-// When `false` the Blackbird JavaScript console will be disabled (in Tapestry 5.2 and newer). Defaults to `true`.
-// Since 5.2.0
-// Deprecated since 5.3 The client-side BlackBird console has been removed.
+tapestry.asset-url-fully-qualified | javadoc:org.apache.tapestry5.SymbolConstants#ASSET_URL_FULL_QUALIFIED[]:: 
+Since 5.3.1 +
+A boolean value to indicate whether asset URLs should be fully qualified in the rendered page.
+This defaults to `false` (not fully qualified).
 
 // === tapestry.bootstrap-root
 // Added in 5.4
 // *SymbolConstants.BOOTSTRAP_ROOT* –
 // The root asset path for Twitter Bootstrap; if your application uses a modified version of Bootstrap, you can override this symbol to have Tapestry automatically use your version.
-// The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
-
-// === tapestry.font-awesome-root
-// Added in 5.5.0
-// *SymbolConstants.FONT_AWESOME_ROOT* – The root asset path for FontAwesome; if your application uses a modified version of it, you can override this symbol to have Tapestry automatically use your version.
 // The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
 
 tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
@@ -157,11 +146,6 @@ tapestry.compact-json | javadoc:org.apache.tapestry5.SymbolConstants#COMPACT_JSO
 Since in 5.2.0 +
 If `true`, then JSON page initialization content is compressed; if `false` then extra white space is added (pretty printing).
 Defaults to `true` in production mode.
-
-// === tapestry.compatibility.unknown-component-id-check-enabled
-// Added in 5.3
-// Deprecated since 5.3
-// *SymbolConstants.UNKNOWN_COMPONENT_ID_CHECK_ENABLED* – When enabled, Tapestry will check that component ids referenced in event handler method names (or the @OnEvent annotation) match up against components in the container's template. The default is true, but applications upgraded form Tapestry 5.2 may want to set this to false, to keep pages from failing due to the presence of such dead code.
 
 tapestry.component-render-tracing-enabled | javadoc:org.apache.tapestry5.SymbolConstants#COMPONENT_RENDER_TRACING_ENABLED[]::
 Since 5.3.0 +
@@ -295,16 +279,16 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
+tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
+The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
+This value may be overridden to use a different version of the script.aculo.us library.
+See xref:client-side-javascript.adoc[] for the default version.
+
 tapestry.secure-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SECURE_ENABLED[]::
 Since 5.1.0.1 +
 If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] annotations are honored; if `false`, no security checks or redirects take place.
 This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
 However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
-
-tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
-The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
-This value may be overridden to use a different version of the script.aculo.us library.
-See xref:client-side-javascript.adoc[] for the default version.
 
 tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
 Since 5.2.0 +
