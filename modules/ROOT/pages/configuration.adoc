@@ -118,8 +118,18 @@ Since 5.3.1 +
 The prefix to be used for all asset paths. This should start and end with a slash ("/").
 By default this is `/assets/`.
 
+tapestry.blackbird | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD[]::
+Since 5.2.0 +
++
+WARNING: Deprecated (due to removal of Blackbird console entirely)
++
+The Asset path to the embedded copy of blackbird packaged with Tapestry. 
+
 tapestry.blackbird-enabled | javadoc:org.apache.tapestry5.SymbolConstants#BLACKBIRD_ENABLED[]::
 Since 5.2.0 +
++
+WARNING: Deprecated (due to removal of Blackbird console entirely)
++
 A flag (`true` or `false`).
 When `false` the Blackbird JavaScript console will be disabled.
 Defaults to `true`.
