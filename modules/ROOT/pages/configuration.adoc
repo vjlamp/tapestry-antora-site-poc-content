@@ -302,6 +302,14 @@ If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] a
 This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
 However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
 
+tapestry.session-locking-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SESSION_LOCKING_ENABLED[]::
+Since 5.4.0 +
+If true (the default), then Tapestry will use a lock when reading/updating HttpSession attributes, to avoid simultaneous access by multiple threads when using AJAX.
+See issue:2049[].
+Set to `false` to deactivate the session locking logic.
++
+Prior to version 5.4 session locking was not performed.
+
 tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
 Since 5.2.0 +
 The logical name of the start page, the page that is rendered for the _root URL_.
