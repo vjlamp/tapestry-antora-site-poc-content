@@ -252,6 +252,10 @@ Since 5.3.0 +
 The secure (https) port that application should use when constructing an absolute URL.
 The default is "0", i.e. use the value from the request.
 
+tapestry.include-core-stack | javadoc:org.apache.tapestry5.SymbolConstants#INCLUDE_CORE_STACK[]::
+Since 5.4.0 +
+Whether to include Tapestry's "core" stack of JavaScript libraries. The default is `true`.
+
 tapestry.javascript-infrastructure-provider | javadoc:org.apache.tapestry5.SymbolConstants#JAVASCRIPT_INFRASTRUCTURE_PROVIDER[]::
 Since 5.4.0 +
 Tapestry relies on an underlying client-side JavaScript infrastructure framework to handle DOM manipulation, event handling, and Ajax requests.
