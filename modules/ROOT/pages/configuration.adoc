@@ -299,16 +299,25 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
+tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
+Since 5.2.0 +
+The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
+This value may be overridden to use a different version of the script.aculo.us library.
+See xref:client-side-javascript.adoc[] for the default version.
+
 tapestry.secure-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SECURE_ENABLED[]::
 Since 5.1.0.1 +
 If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] annotations are honored; if `false`, no security checks or redirects take place.
 This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
 However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
 
-tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
-The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
-This value may be overridden to use a different version of the script.aculo.us library.
-See xref:client-side-javascript.adoc[] for the default version.
+tapestry.session-locking-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SESSION_LOCKING_ENABLED[]::
+Since 5.4.0 +
+If true (the default), then Tapestry will use a lock when reading/updating HttpSession attributes, to avoid simultaneous access by multiple threads when using AJAX.
+See issue:2049[].
+Set to `false` to deactivate the session locking logic.
++
+Prior to version 5.4 session locking was not performed.
 
 tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
 Since 5.2.0 +
