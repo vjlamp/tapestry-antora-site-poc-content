@@ -159,13 +159,6 @@ A flag (`true` or `false`). When `true` (the default) whitespace in component te
 When this flag is false, then whitespace is retained by default (but can still be overridden).
 See xref:component-templates.adoc[] for details.
 
-// === tapestry.module-path-prefix
-// Added in 5.4
-// SymbolConstants.MODULE_PATH_PREFIX – 
-// Prefix used for all module resources.
-// This may contain slashes, but should not begin or end with one.
-// Tapestry will create two Dispatchers from this: one for normal modules, the other for GZip compressed modules (by appending ".gz" to this value).
-
 // === tapestry.context-path
 // Added in 5.4
 // SymbolConstants.CONTEXT_PATH –
@@ -263,6 +256,13 @@ The default is "0", i.e. use the value from the request.
 tapestry.min-gzip-size | javadoc:org.apache.tapestry5.SymbolConstants#MIN_GZIP_SIZE[]::
 Since 5.1.0.0 +
 The minimum stream size necessary for Tapestry to use GZIP compression on the response stream. See xref:response-compression.adoc[] for more details.
+
+tapestry.module-path-prefix | javadoc:org.apache.tapestry5.SymbolConstants#MODULE_PATH_PREFIX[]::
+Since 5.4.0 +
+Prefix used for all module resources.
+This may contain slashes, but should not begin or end with one.
+Tapestry will create two Dispatchers from this: one for normal modules, the other for GZip compressed modules (by appending `.gz` to this value).
+The default is `modules`.
 
 tapestry.omit-generator-meta | javadoc:org.apache.tapestry5.SymbolConstants#OMIT_GENERATOR_META[]::
 Since 5.1.0.0 +
