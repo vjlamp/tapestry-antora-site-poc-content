@@ -153,9 +153,11 @@ Defaults to `true` in production mode.
 // Deprecated since 5.3
 // *SymbolConstants.UNKNOWN_COMPONENT_ID_CHECK_ENABLED* – When enabled, Tapestry will check that component ids referenced in event handler method names (or the @OnEvent annotation) match up against components in the container's template. The default is true, but applications upgraded form Tapestry 5.2 may want to set this to false, to keep pages from failing due to the presence of such dead code.
 
-// === tapestry.component-render-tracing-enabled
-// SymbolConstants.COMPONENT_RENDER_TRACING_ENABLED –
-// Starting with version 5.3, if "true" then Tapestry will emit rendering comments for all requests; these are comments (such as <!--BEGIN Index:loop (context:Index.tml, line 15)-->) that can assist you in debugging markup output on the client-side. This will significantly increase the size of the rendered markup, but can be very helpful with complex layouts to determine which component was responsible for which portion of the rendered page. (To turn on rendering comments only for a particular request, add the query parameter t:component-trace=true to the URL.)
+tapestry.component-render-tracing-enabled | javadoc:org.apache.tapestry5.SymbolConstants#COMPONENT_RENDER_TRACING_ENABLED[]::
+Since 5.3.0 +
+If `true` then Tapestry will emit rendering comments for all requests; these are comments (such as `<!--BEGIN Index:loop (context:Index.tml, line 15)-->`) that can assist you in debugging markup output on the client-side.
+This will significantly increase the size of the rendered markup, but can be very helpful with complex layouts to determine which component was responsible for which portion of the rendered page.
+(To turn on rendering comments only for a particular request, add the query parameter `t:component-trace=true` to the URL.)
 
 tapestry.compress-whitespace | javadoc:org.apache.tapestry5.SymbolConstants#COMPRESS_WHITESPACE[version={javadoc-version}]::
 Since 5.0 +
