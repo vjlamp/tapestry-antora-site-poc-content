@@ -159,10 +159,10 @@ A flag (`true` or `false`). When `true` (the default) whitespace in component te
 When this flag is false, then whitespace is retained by default (but can still be overridden).
 See xref:component-templates.adoc[] for details.
 
-// === tapestry.context-path
-// Added in 5.4
-// SymbolConstants.CONTEXT_PATH –
-// Identifies the context path of the application, as determined from ServletContext.getContextPath() method. This is either a blank string or a string that starts with a slash but does not end with one.
+tapestry.context-path | javadoc:org.apache.tapestry5.SymbolConstants#CONTEXT_PATH[]::
+Since 5.4.0 +
+Identifies the context path of the application, as determined from `ServletContext.getContextPath()` method.
+This is either a blank string or a string that starts with a slash but does not end with one.
 
 tapestry.datepicker | javadoc:org.apache.tapestry5.SymbolConstants#DATEPICKER[]::
 Since 5.2.0 +
