@@ -175,6 +175,14 @@ The default time interval that cookies created by Tapestry will be kept in the c
 Primarily, this is used with a cookie that exists to track the preferred user locale.
 The default value is "7 d" (7 days; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
 
+tapestry.default-stylesheet | javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_STYLESHEET[]::
+Since 5.2.0 +
+The default stylesheet automatically injected into every rendered HTML page.
+Many Tapestry components assume that this stylesheet is available.
+All the classes defined in the stylesheet are prefixed with `t-`.
+The exact contents of the stylesheet are subject to change at `ny time (they are considered internal), so replacing the stylesheet, rather than overriding selected rules within it, entails some risk.
+The default is `org/apache/tapestry5/default.css`, stored on the classpath.
+
 tapestry.enable-minification | javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[]::
 Since 5.3.0 +
 If `true`, then resources (individually or when aggregated into stacks) will be minimized via the javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer service.
@@ -184,29 +192,21 @@ The default is `true` in production mode, `false` otherwise. +
 Note that Tapestry's default implementation of ResourceMinimizer does nothing; minification is provided by add-on libraries.
 See xref:assets.adoc[] for details.
 
-tapestry.default-stylesheet | javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_STYLESHEET[]::
-Since 5.2.0 +
-The default stylesheet automatically injected into every rendered HTML page.
-Many Tapestry components assume that this stylesheet is available.
-All the classes defined in the stylesheet are prefixed with `t-`.
-The exact contents of the stylesheet are subject to change at `ny time (they are considered internal), so replacing the stylesheet, rather than overriding selected rules within it, entails some risk.
-The default is `org/apache/tapestry5/default.css`, stored on the classpath.
-
 tapestry.encode-locale-into-path | javadoc:org.apache.tapestry5.SymbolConstants#ENCODE_LOCALE_INTO_PATH[]::
 Since 5.1.0.1 +
 If `true` (the default), then the javadoc:org.apache.tapestry5.services.PersistentLocale[] will be encoded into URLs by the javadoc:org.apache.tapestry5.services.ComponentEventLinkEncoder[] service.
 If overridden to `false` this does not occur, but you should provide a javadoc:org.apache.tapestry5.services.LinkCreationListener2[] (registered with the javadoc:org.apache.tapestry5.services.LinkCreationHub[]) in order to add the locale as a query parameter (or provide some alternate means of persisting the locale between requests).
 See xref:localization.adoc[] for more details on localization.
 
-tapestry.execution-mode | javadoc:org.apache.tapestry5.SymbolConstants#EXECUTION_MODE[]::
-Since 5.3.1 +
-The execution mode. See <<Setting Execution Modes>> below.
-
 tapestry.exception-report-page | javadoc:org.apache.tapestry5.SymbolConstants#EXCEPTION_REPORT_PAGE[]::
 Since 5.0.15 +
 The name of the page used to report exceptions.
 This defaults to "ExceptionReport", a page that Tapestry provides.
 See xref:overriding-exception-reporting.adoc[] for details.
+
+tapestry.execution-mode | javadoc:org.apache.tapestry5.SymbolConstants#EXECUTION_MODE[]::
+Since 5.3.1 +
+The execution mode. See <<Setting Execution Modes>> below.
 
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
