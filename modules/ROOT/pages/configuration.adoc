@@ -123,11 +123,6 @@ Since 5.4.0 +
 The root asset path for Twitter Bootstrap; if your application uses a modified version of Bootstrap, you can override this symbol to have Tapestry automatically use your version.
 The value should be a path to a folder (under `classpath:` or `context:`) and should not include a trailing slash.
 
-// === tapestry.font-awesome-root
-// Added in 5.5.0
-// *SymbolConstants.FONT_AWESOME_ROOT* – The root asset path for FontAwesome; if your application uses a modified version of it, you can override this symbol to have Tapestry automatically use your version.
-// The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
-
 tapestry.charset | javadoc:org.apache.tapestry5.SymbolConstants#CHARSET[]::
 Since 5.0.14 +
 The character encoding used when generating output (or parsing input).
@@ -254,6 +249,12 @@ Since 5.0 +
 Time interval that Tapestry will wait to obtain the exclusive lock needed for a file check.
 If the exclusive lock can't be obtained in that amount of time, the request will proceed normally (without the check), but each successive request will attempt to get the lock and perform the check until successful. +
 The default is "50 ms" (50 milliseconds; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[]).
+
+tapestry.font-awesome-root | javadoc:org.apache.tapestry5.SymbolConstants#FONT_AWESOME_ROOT[]:: 
+Since 5.5.0 +
+The root asset path for https://fontawesome.com[FontAwesome];
+if your application uses a modified version of it, you can override this symbol to have Tapestry automatically use your version.
+The value should be a path to a folder (under "classpath:" or "context:") and should not include a trailing slash.
 
 tapestry.force-absolute-uris | javadoc:org.apache.tapestry5.SymbolConstants#FORCE_ABSOLUTE_URIS[]::
 Since 5.0 +
