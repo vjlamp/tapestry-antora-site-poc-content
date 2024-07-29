@@ -365,6 +365,11 @@ The logical name of the start page, the page that is rendered for the _root URL_
 This is normally "start".
 This functionality is vestigial: it has been superseded by the use of Index pages.
 
+tapestry.strict-css-url-rewriting | javadoc:org.apache.tapestry5.SymbolConstants#STRICT_CSS_URL_REWRITING[]::
+Since 5.4.0 +
+Controls whether to throw an exception (`true`) or log a warning (`false`) when Tapestry encounters a URL reference to a non-existing file within a CSS file.
+The default is `false`.
+
 tapestry.supported-locales | javadoc:org.apache.tapestry5.SymbolConstants#SUPPORTED_LOCALES[]::
 Since 5.0 +
 A comma-separated list of supported locales.
