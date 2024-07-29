@@ -295,6 +295,11 @@ In Tapestry 5.4, this defaults to `prototype` for compatibility with 5.3.
 This will likely change in 5.5 to default to `jquery`.
 At some point in the future, Prototype support may no longer be present.
 
+tapestry.lenient-date-format | javadoc:org.apache.tapestry5.SymbolConstants#LENIENT_DATE_FORMAT[]::
+Since 5.4.0 +
+Defines whether `java.text.DateFormat` instances created by Tapestry should be lenient or not by default.
+The default value is `false`.
+
 tapestry.min-gzip-size | javadoc:org.apache.tapestry5.SymbolConstants#MIN_GZIP_SIZE[]::
 Since 5.1.0.0 +
 The minimum stream size necessary for Tapestry to use GZIP compression on the response stream. See xref:response-compression.adoc[] for more details.
