@@ -345,6 +345,11 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
+tapestry.restrictive-environment | javadoc:org.apache.tapestry5.SymbolConstants#RESTRICTIVE_ENVIRONMENT[]::
+Since 5.4.0 +
+A flag (`true` or `false`) that, if `true`, changes some default Tapestry behavior to make it work better in restrictive environments such as xref:google-app-engine.adoc[Google App Engine (GAE)].
+Specifically, if `true`, then javadoc:org.apache.tapestry5.ioc.OperationTracker[] writes its exception report files into a single folder (specified by the `tapestry.exception-reports-dir` symbol, above) rather than creating dated sub-folders under that path, and javadoc:org.apache.tapestry5.internal.webresources.ResourceTransformerFactory[] avoids creating a cache folder for resources.
+
 tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
 The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
 This value may be overridden to use a different version of the script.aculo.us library.
