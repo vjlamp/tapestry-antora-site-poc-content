@@ -216,6 +216,11 @@ The name of the page used to report exceptions.
 This defaults to "ExceptionReport", a page that Tapestry provides.
 See xref:overriding-exception-reporting.adoc[] for details.
 
+tapestry.exception-reports-dir | javadoc:org.apache.tapestry5.SymbolConstants#EXCEPTION_REPORTS_DIR[]::
+Since 5.4.0 +
+The directory to which exception report files should be written.
+The default is appropriate for development: `build/exceptions`, and should be changed for production.
+
 tapestry.file-check-interval | javadoc:org.apache.tapestry5.SymbolConstants#FILE_CHECK_INTERVAL[]::
 Since 5.0 +
 Time interval between file system checks.
