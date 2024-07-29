@@ -324,6 +324,13 @@ This may contain slashes, but should not begin or end with one.
 Tapestry will create two Dispatchers from this: one for normal modules, the other for GZip compressed modules (by appending `.gz` to this value).
 The default is `modules`.
 
+tapestry.omit-expiration-cache-control-header | javadoc:org.apache.tapestry5.SymbolConstants#OMIT_EXPIRATION_CACHE_CONTROL_HEADER[]::
+Since 5.4.0 +
+When an asset (typically, a JavaScript module) is streamed without an explicit expiration header, then this value is sent as the `Cache-Control` header;
+the default is `max-age=60, must-revalidate`.
+Setting max-age to a value above zero significantly reduces the number of client requests for module content, as client browsers will then cache previously downloaded versions.
+For normal assets, which are immutable, and fingerprinted with a content hash, there is no need to set max age, and instead, a far-future expiration date is provided.
+
 tapestry.omit-generator-meta | javadoc:org.apache.tapestry5.SymbolConstants#OMIT_GENERATOR_META[]::
 Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
