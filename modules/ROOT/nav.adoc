@@ -8,7 +8,7 @@
 ** xref:project-layout.adoc[]
 ** xref:configuration.adoc[]
 ** xref:class-reloading.adoc[]
-// ** xref:component-reference.adoc[]
+** xref:component-reference.adoc[]
 ** xref:annotations.adoc[]
 
 * Pages and Components
