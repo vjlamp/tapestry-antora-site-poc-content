@@ -16,11 +16,8 @@ A special form of the Loop component that adds Ajax support to handle adding new
 javadoc:org.apache.tapestry5.corelib.components.AddRowLink[], javadoc:org.apache.tapestry5.corelib.components.RemoveRowLink[]::
 Used inside an AjaxFormLoop component to spur the addition or removal of a row.
 
-////
-added in 5.1.0.1
 javadoc:org.apache.tapestry5.corelib.components.ProgressiveDisplay[]::
 Used to implement the progressive enhancement web design strategy; the component renders itself with a simplified initial content (i.e., "loading ...") and an Ajax request then supplies the component's true body.
-////
 
 javadoc:org.apache.tapestry5.corelib.components.Zone[]::
 A region of a page marked for dynamic updating via Ajax or other client-side effects.
@@ -68,12 +65,6 @@ Inverse of the javadoc:org.apache.tapestry5.corelib.components.If[] component, r
 javadoc:org.apache.tapestry5.corelib.components.Checkbox[]::
 Renders a standard `<input type="checkbox">` element
 
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.components.Checklist[]::
-Renders a vertical list of `<input type="checkbox">` elements.
-////
-
 javadoc:org.apache.tapestry5.corelib.components.DateField[]::
 Collect a provided date from the user using a client-side JavaScript calendar.
 
@@ -83,23 +74,11 @@ An HTML form, which will enclose other components to render out the various type
 javadoc:org.apache.tapestry5.corelib.components.FormFragment[]::
 A portion of a Form that may be selectively displayed.
 
-////
-added in 5.1.0.1
 javadoc:org.apache.tapestry5.corelib.components.Hidden[]::
 Used to record a page property as a value into the form.
-////
 
 javadoc:org.apache.tapestry5.corelib.components.Label[]::
 Generates a label element for a particular field.
-
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.components.KaptchaField[]::
-Part of a Captcha based authentication scheme; a KaptchaField is paired with a KaptchaImage to ensure that the user has provided the correct value.
-
-javadoc:org.apache.tapestry5.corelib.components.KaptchaImage[]::
-Part of a Captcha based authentication scheme; a KaptchaImage generates a new text image whenever it renders and can provide the previously rendred text subsequently (it is stored persistently in the session).
-////
 
 javadoc:org.apache.tapestry5.corelib.components.Palette[]::
 A multiple selection component.
@@ -170,25 +149,6 @@ Generates a render request link to some other page in the application.
 
 === Output and Messages
 
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.components.Alerts[]::
-Renders out an empty `<div>` element and provides JavaScript initialization to make the element the container for alerts.
-////
-
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.components.Dynamic[]::
-Allows a component to render itself differently at different times, by making use of an external template file.
-////
-
-////
-added in 5.2
-javadoc:org.apache.tapestry5.corelib.components.Error[]::
-Presents validation errors of a single field.
-Must be enclosed by a javadoc:org.apache.tapestry5.corelib.components.Form[] component.
-////
-
 javadoc:org.apache.tapestry5.corelib.components.Errors[]::
 Standard validation error presenter.
 Must be enclosed by a javadoc:org.apache.tapestry5.corelib.components.Form[] component.
@@ -196,12 +156,6 @@ If errors are present, renders a `div` element around a banner message and aroun
 
 javadoc:org.apache.tapestry5.corelib.components.ExceptionDisplay[]::
 Integral part of the default javadoc:org.apache.tapestry5.corelib.pages.ExceptionReport[] page used to break apart and display the properties of the exception.
-
-////
-added in 5.5
-javadoc:org.apache.tapestry5.corelib.components.FontAwesomeIcon[]::
-Renders an `<i>` tag with the CSS class to select a https://fontawesome.com/v4.7.0/[FontAwesome 4.7.0] icon.
-////
 
 javadoc:org.apache.tapestry5.corelib.components.Output[]::
 A component for formatting output.
@@ -219,27 +173,8 @@ The `TextArea` is split into lines, and each line it output inside its own `<p>`
 javadoc:org.apache.tapestry5.corelib.components.Any[]::
 Renders an arbitrary element including informal parameters.
 
-////
-added in 5.4
-javadoc:org.apache.tapestry5.corelib.components.DevTool[]::
-Renders a dropdown menu of useful options when developing, such as reloading the current page or invalidating the current HttpSession.
-////
-
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.components.Doctype[]::
-Overrides the DOCTYPE of the rendered document (via Document.dtd(String, String, String) which can be useful when different component templates that render to the same document disagree about what the correct DOCTYPE is.
-////
-
 javadoc:org.apache.tapestry5.corelib.components.RenderObject[]::
 Renders out an object using the javadoc:org.apache.tapestry5.service.ObjectRenderer[] service. Used primarily on the ExceptionReport page.
-
-////
-added in 5.2
-javadoc:org.apache.tapestry5.corelib.components.Trigger[]::
-Triggers an arbitrary event during rendering.
-This is often useful to add JavaScript to a page or a component (via calls to the JavaScriptSupport environmental).
-////
 
 == Tapestry-provided Mixins
 Main article: xref:component-mixins.adoc[]
@@ -252,41 +187,12 @@ Tapestry includes the following mixins out-of-the-box.
 javadoc:org.apache.tapestry5.corelib.mixins.Autocomplete[]::
 Modifies a text field to provide for auto-completion of text using values retrieved from the server as the user types. See xref:ajax-and-zones.adoc#_autocomplete-mixin[instructions].
 
-////
-added in 5.4
-javadoc:org.apache.tapestry5.corelib.mixins.Confirm[]::
-attached to a Form or link component, runs a modal-dialog to force the user to confirm the behavior.
-////
-
 javadoc:org.apache.tapestry5.corelib.mixins.DiscardBody[]::
 Discards a component's body.
 Returns false from the xref:component-rendering.adoc#_beforerenderbody[BeforeRenderBody] phase, which prevents the rendering of the body.
 
-////
-added in 5.3
-javadoc:org.apache.tapestry5.corelib.mixins.FormFieldFocus[]::
-instruments the outer Form on which component the focus should be activated.
-Replaced by javadoc:org.apache.tapestry5.corelib.mixins.OverrideFieldFocus[]  starting in Tapestry 5.4.
-////
-
-////
-added in 5.4
-javadoc:org.apache.tapestry5.corelib.mixins.FormGroup[]::
-Attaches to a field to render an enclosing `<div>` element and label for proper Bootstrap markup of text fields, selects, and textareas.
-////
-
-////
-added in 5.1
 javadoc:org.apache.tapestry5.corelib.mixins.NotEmpty[]::
 Attaches to any component that renders an element. At the end of the render, if the element is empty, then a non-breaking space (`\&nbsp;`) is injected into the element.
-////
-
-////
-added in 5.4
-javadoc:org.apache.tapestry5.corelib.mixins.OverrideFieldFocus[]::
-When attached to a form field, causes that field to gain focus.
-Supersedes javadoc:org.apache.tapestry5.corelib.mixins.FormFieldFocus[].
-////
 
 javadoc:org.apache.tapestry5.corelib.mixins.RenderClientId[]::
 Forces a client element to render its client id by ensuring that `getClientId()` is called.
@@ -297,12 +203,6 @@ Renders a `disabled` attribute if the containing component is disabled.
 javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[]::
 Renders out all informal parameters, at the end of the xref:component-rendering.adoc#_beginrender[BeginRender] phase.
 This mixin can be used with components that render a single tag inside the `BeginRender` phase.
-
-////
-added in 5.2
-javadoc:org.apache.tapestry5.corelib.mixins.RenderNotification[]::
-Triggers component event notifications when the attached component enters its xref:component-rendering.adoc#_beginrender[BeginRender] and xref:component-rendering.adoc#_afterrender[AfterRender] render phases.
-////
 
 javadoc:org.apache.tapestry5.corelib.mixins.TriggerFragment[]::
 When applied to a javadoc:org.apache.tapestry5.corelib.components.Checkbox[] or javadoc:org.apache.tapestry5.corelib.components.Radio[] component, links the input field and a javadoc:org.apache.tapestry5.corelib.components.FormFragment[], making the field control the client-side visibility of the `FormFragment`.
@@ -359,7 +259,6 @@ javadoc:org.apache.tapestry5.corelib.base.AbstractTextField[]::
 Abstract class for a variety of components that render some variation of a text field.
 Most of the hooks for user input validation are in this class.
 
-// removed in 5.4
 javadoc:org.apache.tapestry5.corelib.base.BaseMessages[]::
 Base class for components that output messages.
 
