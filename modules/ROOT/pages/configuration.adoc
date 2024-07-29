@@ -183,6 +183,23 @@ The default time interval that cookies created by Tapestry will be kept in the c
 Primarily, this is used with a cookie that exists to track the preferred user locale.
 The default value is "7 d" (7 days; see javadoc:org.apache.tapestry5.ioc.util.TimeInterval[] formats).
 
+tapestry.default-stylesheet | javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_STYLESHEET[]::
+Since 5.2.0 +
+The default stylesheet automatically injected into every rendered HTML page.
+Many Tapestry components assume that this stylesheet is available.
+All the classes defined in the stylesheet are prefixed with `t-`.
+The exact contents of the stylesheet are subject to change at any time (they are considered internal), so replacing the stylesheet, rather than overriding selected rules within it, entails some risk.
+The default is `org/apache/tapestry5/default.css`, stored on the classpath.
++
+WARNING: Deprecated in 5.4 with no replacement. The stylesheet is now associated with the core JavaScriptStack.
+
+tapestry.enable-html5-support | javadoc:org.apache.tapestry5.SymbolConstants#ENABLE_HTML5_SUPPORT[]::
+Since 5.4.0 +
+If `true`, then certain HTML5 features are invoked by built-in Tapestry components.
+Mostly this controls whether the javadoc:org.apache.tapesty5.corelib.components.TextField[] component will emit HTML5 `type` attributes automatically when certain validators are used.
+See xref:forms-and-validation.adoc[] for details.
+The default is `false`.
+
 tapestry.enable-minification | javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[]::
 Since 5.3.0 +
 If `true`, then resources (individually or when aggregated into stacks) will be minimized via the javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer service.
