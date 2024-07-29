@@ -1,0 +1,365 @@
+= Component Reference
+
+Tapestry includes more than 65 built-in components and mixins.
+In addition, there are hundreds of Tapestry components freely available from others.
+Of course, Tapestry makes it xref:component-classes.adoc[trivially easy] to create your own custom components, so if you don't see what you need, just develop them yourself.
+
+== Tapestry-provided Components
+Most Tapestry-provided components are found in the `org.apache.tapestry5.corelib.components` package. Other components are included in the separate `org.apache.tapestry5.kaptcha.components` and `org.apache.tapestry5.upload.components` packages.
+
+=== AJAX-specific Components
+Main article: xref:ajax-and-zones.adoc[]
+
+javadoc:org.apache.tapestry5.corelib.components.AjaxFormLoop[]::
+A special form of the Loop component that adds Ajax support to handle adding new rows and removing existing rows dynamically.
+
+javadoc:org.apache.tapestry5.corelib.components.AddRowLink[], javadoc:org.apache.tapestry5.corelib.components.RemoveRowLink[]::
+Used inside an AjaxFormLoop component to spur the addition or removal of a row.
+
+////
+added in 5.1.0.1
+javadoc:org.apache.tapestry5.corelib.components.ProgressiveDisplay[]::
+Used to implement the progressive enhancement web design strategy; the component renders itself with a simplified initial content (i.e., "loading ...") and an Ajax request then supplies the component's true body.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.Zone[]::
+A region of a page marked for dynamic updating via Ajax or other client-side effects.
+
+=== Bean Displaying & Editing
+Main article: xref:beaneditform-guide.adoc[]
+
+javadoc:org.apache.tapestry5.corelib.components.BeanDisplay[]::
+Displays the properties of a bean, using an underlying BeanModel, as a `<dl>` element with `<dt>`/`<dd>` pairs.
+
+javadoc:org.apache.tapestry5.corelib.components.BeanEditForm[]::
+Creates an entire form for editing the properties of a particular bean.
+
+javadoc:org.apache.tapestry5.corelib.components.BeanEditor[]::
+The central component of BeanEditForm, this generates a user interface for editing the properties of a bean.
+
+javadoc:org.apache.tapestry5.corelib.components.PropertyDisplay[]::
+Outputs a single property value.
+Overrides for individual properties come from block parameters whose name matches the property id.
+This component is used by the javadoc:org.apache.tapestry5.corelib.components.BeanDisplay[] component.
+
+javadoc:org.apache.tapestry5.corelib.components.PropertyEditor[]::
+Used to edit a single property of a bean.
+This is used primarily by javadoc:org.apache.tapestry5.corelib.components.BeanEditForm[].
+
+=== Conditional and Looping Components
+
+xref:switching-cases.adoc[Case]::
+Not really a component, but a technique to emulate a "case" statement using a delegate.
+
+javadoc:org.apache.tapestry5.corelib.components.Delegate[]::
+Does not do any rendering of its own, but will delegate to some other object that can do rendering.
+
+javadoc:org.apache.tapestry5.corelib.components.If[]::
+Conditionally renders its body. May render its tag and any informal parameters.
+
+javadoc:org.apache.tapestry5.corelib.components.Loop[]::
+Loops over a number of items (provided by its source parameter), rendering its body for each one.
+
+javadoc:org.apache.tapestry5.corelib.components.Unless[]::
+Inverse of the javadoc:org.apache.tapestry5.corelib.components.If[] component, renders its body if the condition is `false`.
+
+=== Form Components
+
+javadoc:org.apache.tapestry5.corelib.components.Checkbox[]::
+Renders a standard `<input type="checkbox">` element
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.components.Checklist[]::
+Renders a vertical list of `<input type="checkbox">` elements.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.DateField[]::
+Collect a provided date from the user using a client-side JavaScript calendar.
+
+javadoc:org.apache.tapestry5.corelib.components.Form[]::
+An HTML form, which will enclose other components to render out the various types of fields.
+
+javadoc:org.apache.tapestry5.corelib.components.FormFragment[]::
+A portion of a Form that may be selectively displayed.
+
+////
+added in 5.1.0.1
+javadoc:org.apache.tapestry5.corelib.components.Hidden[]::
+Used to record a page property as a value into the form.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.Label[]::
+Generates a label element for a particular field.
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.components.KaptchaField[]::
+Part of a Captcha based authentication scheme; a KaptchaField is paired with a KaptchaImage to ensure that the user has provided the correct value.
+
+javadoc:org.apache.tapestry5.corelib.components.KaptchaImage[]::
+Part of a Captcha based authentication scheme; a KaptchaImage generates a new text image whenever it renders and can provide the previously rendred text subsequently (it is stored persistently in the session).
+////
+
+javadoc:org.apache.tapestry5.corelib.components.Palette[]::
+A multiple selection component.
+Generates a UI consisting of two select elements configured for multiple selection;
+the one on the left is the list of "available" elements, the one on the right is "selected".
+
+javadoc:org.apache.tapestry5.corelib.components.PasswordField[]::
+A version of javadoc:org.apache.tapestry5.corelib.components.TextField[], but rendered out as an `<input type="password">` element.
+
+javadoc:org.apache.tapestry5.corelib.components.Radio[]::
+A radio button (i.e., `<input type="radio">`).
+Radio buttons must operate within a javadoc:org.apache.tapestry5.RadioContainer[] (normally, the javadoc:org.apache.tapestry5.corelib.components.RadioGroup[] component).
+
+javadoc:org.apache.tapestry5.corelib.components.RadioGroup[]::
+Groups together a set of radio components that all affect the same property.
+
+javadoc:org.apache.tapestry5.corelib.components.Select[]::
+Renders a `<select>` element for selecting an item from a list of values.
+
+javadoc:org.apache.tapestry5.corelib.components.SubmitNotifier[]::
+A non visual component used to provide notifications to its container during a form submission.
+
+javadoc:org.apache.tapestry5.corelib.components.TextArea[]::
+Renders a `<textarea>` element for editing multi-line text.
+
+javadoc:org.apache.tapestry5.corelib.components.TextField[]::
+Renders an `<input type="text">` element to edit single-line text.
+
+xref:uploading-files.adoc[Upload]::
+A file upload component (i.e., `<input type="file">`) based on https://commons.apache.org/proper/commons-fileupload/[Apache Commons FileUpload].
+
+=== Grids, Tables and Trees
+
+javadoc:org.apache.tapestry5.corelib.components.Grid[]::
+Presents tabular data in a `<table>` element by iterating over a List or array.
+
+javadoc:org.apache.tapestry5.corelib.components.GridCell[]::
+Part of javadoc:org.apache.tapestry5.corelib.components.Grid[], renders the markup inside a single data cell.
+
+javadoc:org.apache.tapestry5.corelib.components.GridColumns[]::
+Part of javadoc:org.apache.tapestry5.corelib.components.Grid[], renders out the column headers for the grid, including links (where appropriate) to control column sorting.
+
+javadoc:org.apache.tapestry5.corelib.components.GridPager[]::
+Generates a series of links used to jump to a particular page index within the overall data set
+
+javadoc:org.apache.tapestry5.corelib.components.GridRows[]::
+Renders out a series of rows within the table.
+
+javadoc:org.apache.tapestry5.corelib.components.Tree[]::
+A component used to render a recursive tree structure, with expandable/collapsable/selectable nodes.
+
+=== Links and Buttons
+
+javadoc:org.apache.tapestry5.corelib.components.ActionLink[]::
+Triggers an action on the server with a subsequent full page refresh.
+
+javadoc:org.apache.tapestry5.corelib.components.EventLink[]::
+Like javadoc:org.apache.tapestry5.corelib.components.ActionLink[] except that the event that it triggers is explicitly controlled, rather than always `action`, and the event is triggered in its container.
+
+javadoc:org.apache.tapestry5.corelib.components.LinkSubmit[]::
+Generates a client-side hyperlink that submits the enclosing form.
+
+javadoc:org.apache.tapestry5.corelib.components.Submit[]::
+Corresponds to `<input type="submit">` or `<input type="image">`, a client-side element that can force the enclosing form to submit.
+
+javadoc:org.apache.tapestry5.corelib.components.PageLink[]::
+Generates a render request link to some other page in the application.
+
+=== Output and Messages
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.components.Alerts[]::
+Renders out an empty `<div>` element and provides JavaScript initialization to make the element the container for alerts.
+////
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.components.Dynamic[]::
+Allows a component to render itself differently at different times, by making use of an external template file.
+////
+
+////
+added in 5.2
+javadoc:org.apache.tapestry5.corelib.components.Error[]::
+Presents validation errors of a single field.
+Must be enclosed by a javadoc:org.apache.tapestry5.corelib.components.Form[] component.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.Errors[]::
+Standard validation error presenter.
+Must be enclosed by a javadoc:org.apache.tapestry5.corelib.components.Form[] component.
+If errors are present, renders a `div` element around a banner message and around an unnumbered list of error messages.
+
+javadoc:org.apache.tapestry5.corelib.components.ExceptionDisplay[]::
+Integral part of the default javadoc:org.apache.tapestry5.corelib.pages.ExceptionReport[] page used to break apart and display the properties of the exception.
+
+////
+added in 5.5
+javadoc:org.apache.tapestry5.corelib.components.FontAwesomeIcon[]::
+Renders an `<i>` tag with the CSS class to select a https://fontawesome.com/v4.7.0/[FontAwesome 4.7.0] icon.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.Output[]::
+A component for formatting output.
+If the component is represented in the template using an element, then the element (plus any informal parameters) will be output around the formatted value.
+
+javadoc:org.apache.tapestry5.corelib.components.OutputRaw[]::
+Output raw markup to the client. Unlike an expansion, the output from OutputRaw is unfiltered, with any special characters or entities left exactly as is.
+
+javadoc:org.apache.tapestry5.corelib.components.TextOutput[]::
+Outputs paragraph oriented text, typically collected via a javadoc:org.apache.tapestry5.corelib.components.TextArea[] component.
+The `TextArea` is split into lines, and each line it output inside its own `<p>` element.
+
+=== Miscellaneous
+
+javadoc:org.apache.tapestry5.corelib.components.Any[]::
+Renders an arbitrary element including informal parameters.
+
+////
+added in 5.4
+javadoc:org.apache.tapestry5.corelib.components.DevTool[]::
+Renders a dropdown menu of useful options when developing, such as reloading the current page or invalidating the current HttpSession.
+////
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.components.Doctype[]::
+Overrides the DOCTYPE of the rendered document (via Document.dtd(String, String, String) which can be useful when different component templates that render to the same document disagree about what the correct DOCTYPE is.
+////
+
+javadoc:org.apache.tapestry5.corelib.components.RenderObject[]::
+Renders out an object using the javadoc:org.apache.tapestry5.service.ObjectRenderer[] service. Used primarily on the ExceptionReport page.
+
+////
+added in 5.2
+javadoc:org.apache.tapestry5.corelib.components.Trigger[]::
+Triggers an arbitrary event during rendering.
+This is often useful to add JavaScript to a page or a component (via calls to the JavaScriptSupport environmental).
+////
+
+== Tapestry-provided Mixins
+Main article: xref:component-mixins.adoc[]
+
+Mixins allow you to add behaviors to existing components.
+The core mixins are found in the `org.apache.tapestry5.corelib.mixins` package.
+
+Tapestry includes the following mixins out-of-the-box.
+
+javadoc:org.apache.tapestry5.corelib.mixins.Autocomplete[]::
+Modifies a text field to provide for auto-completion of text using values retrieved from the server as the user types. See xref:ajax-and-zones.adoc#_autocomplete-mixin[instructions].
+
+////
+added in 5.4
+javadoc:org.apache.tapestry5.corelib.mixins.Confirm[]::
+attached to a Form or link component, runs a modal-dialog to force the user to confirm the behavior.
+////
+
+javadoc:org.apache.tapestry5.corelib.mixins.DiscardBody[]::
+Discards a component's body.
+Returns false from the xref:component-rendering.adoc#_beforerenderbody[BeforeRenderBody] phase, which prevents the rendering of the body.
+
+////
+added in 5.3
+javadoc:org.apache.tapestry5.corelib.mixins.FormFieldFocus[]::
+instruments the outer Form on which component the focus should be activated.
+Replaced by javadoc:org.apache.tapestry5.corelib.mixins.OverrideFieldFocus[]  starting in Tapestry 5.4.
+////
+
+////
+added in 5.4
+javadoc:org.apache.tapestry5.corelib.mixins.FormGroup[]::
+Attaches to a field to render an enclosing `<div>` element and label for proper Bootstrap markup of text fields, selects, and textareas.
+////
+
+////
+added in 5.1
+javadoc:org.apache.tapestry5.corelib.mixins.NotEmpty[]::
+Attaches to any component that renders an element. At the end of the render, if the element is empty, then a non-breaking space (`\&nbsp;`) is injected into the element.
+////
+
+////
+added in 5.4
+javadoc:org.apache.tapestry5.corelib.mixins.OverrideFieldFocus[]::
+When attached to a form field, causes that field to gain focus.
+Supersedes javadoc:org.apache.tapestry5.corelib.mixins.FormFieldFocus[].
+////
+
+javadoc:org.apache.tapestry5.corelib.mixins.RenderClientId[]::
+Forces a client element to render its client id by ensuring that `getClientId()` is called.
+
+javadoc:org.apache.tapestry5.corelib.mixins.RenderDisabled[]::
+Renders a `disabled` attribute if the containing component is disabled.
+
+javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[]::
+Renders out all informal parameters, at the end of the xref:component-rendering.adoc#_beginrender[BeginRender] phase.
+This mixin can be used with components that render a single tag inside the `BeginRender` phase.
+
+////
+added in 5.2
+javadoc:org.apache.tapestry5.corelib.mixins.RenderNotification[]::
+Triggers component event notifications when the attached component enters its xref:component-rendering.adoc#_beginrender[BeginRender] and xref:component-rendering.adoc#_afterrender[AfterRender] render phases.
+////
+
+javadoc:org.apache.tapestry5.corelib.mixins.TriggerFragment[]::
+When applied to a javadoc:org.apache.tapestry5.corelib.components.Checkbox[] or javadoc:org.apache.tapestry5.corelib.components.Radio[] component, links the input field and a javadoc:org.apache.tapestry5.corelib.components.FormFragment[], making the field control the client-side visibility of the `FormFragment`.
+
+javadoc:org.apache.tapestry5.corelib.mixins.ZoneRefresh[]::
+Periodically refreshes a javadoc:org.apache.tapestry5.corelib.components.Zone[] by triggering an event on the server using ajax requests.
+
+== Tapestry-provided Pages
+
+Tapestry provides several special pages that provide status information.
+Most of these are found in the `org.apache.tapestry5.corelib.pages` package.
+
+javadoc:org.apache.tapestry5.corelib.pages.ExceptionReport[]::
+Responsible for reporting runtime exceptions.
+This page is quite verbose and is usually overridden in a production application.
+
+javadoc:org.apache.tapestry5.corelib.pages.PageCatalog[]::
+Lists out the currently loaded pages, with some statistics.
+
+javadoc:org.apache.tapestry5.corelib.pages.PropertyDisplayBlocks[]::
+Contains blocks for displaying basic property types; the blocks are contributed to the javadoc:org.apache.tapestry5.services.BeanBlockSource[] service.
+
+javadoc:org.apache.tapestry5.corelib.pages.PropertyEditBlocks[]::
+A page that exists to contain blocks used to edit different types of properties.
+The blocks on this page are contributed into the javadoc:org.apache.tapestry5.services.BeanBlockSource[] service configuration.
+
+javadoc:org.apache.tapestry5.corelib.pages.ServiceStatus[]::
+A page used to see the status of all services defined by the javadoc:org.apache.tapestry5.ioc.Registry[].
+
+== Base Components
+
+The base components, in the `org.apache.tapestry5.corelib.base` package, are intended to be extended by other components rather than used directly in templates.
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractComponentEventLink[]::
+Base class for link-generating components that are based on a component event request.
+Such events have an event context and may also update a javadoc:org.apache.tapestry5.corelib.components.Zone[].
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractConditional[]::
+Base class for javadoc:org.apache.tapestry5.corelib.components.If[] and javadoc:org.apache.tapestry5.corelib.components.Unless[].
+Will render its body or the block from its else parameter.
+If it renders anything and it has an element name, then it renders the element and its informal parameters.
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractFields[]::
+Provides initialization of the `clientId` and `elementName` properties.
+In addition, adds the javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[], javadoc:org.apache.tapestry5.corelib.mixins.RenderDisabled[] and javadoc:org.apache.tapestry5.corelib.mixins.DiscardBody[] mixins.
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractLink[]::
+Provides base utilities for classes that generate clickable links.
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractPropertyOutput[]::
+Base class for components that output a property value using a javadoc:org.apache.tapestry5.beaneditor.PropertyModel[].
+
+javadoc:org.apache.tapestry5.corelib.base.AbstractTextField[]::
+Abstract class for a variety of components that render some variation of a text field.
+Most of the hooks for user input validation are in this class.
+
+// removed in 5.4
+javadoc:org.apache.tapestry5.corelib.base.BaseMessages[]::
+Base class for components that output messages.
+
