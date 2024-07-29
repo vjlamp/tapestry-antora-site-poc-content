@@ -49,6 +49,8 @@
 ** xref:assets.adoc[]
 
 * Working with Forms
+** xref:forms-and-validation.adoc[]
+** xref:beaneditform-guide.adoc[]
 ** xref:uploading-files.adoc[]
  
 * Testing
