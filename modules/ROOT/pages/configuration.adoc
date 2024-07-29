@@ -183,6 +183,13 @@ The default is `org/apache/tapestry5/default.css`, stored on the classpath.
 +
 WARNING: Deprecated in 5.4 with no replacement. The stylesheet is now associated with the core JavaScriptStack.
 
+tapestry.enable-html5-support | javadoc:org.apache.tapestry5.SymbolConstants#ENABLE_HTML5_SUPPORT[]::
+Since 5.4.0 +
+If `true`, then certain HTML5 features are invoked by built-in Tapestry components.
+Mostly this controls whether the javadoc:org.apache.tapesty5.corelib.components.TextField[] component will emit HTML5 `type` attributes automatically when certain validators are used.
+See xref:forms-and-validation.adoc[] for details.
+The default is `false`.
+
 tapestry.enable-minification | javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[]::
 Since 5.3.0 +
 If `true`, then resources (individually or when aggregated into stacks) will be minimized via the javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer service.
