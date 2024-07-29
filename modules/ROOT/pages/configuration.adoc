@@ -199,6 +199,11 @@ The default is `true` in production mode, `false` otherwise. +
 Note that Tapestry's default implementation of ResourceMinimizer does nothing; minification is provided by add-on libraries.
 See xref:assets.adoc[] for details.
 
+tapestry.enable-pageloading-mask | javadoc:org.apache.tapestry5.SymbolConstants#ENABLE_PAGELOADING_MASK[]::
+Since 5.4.0 +
+If `true`, then when a page includes any JavaScript, a `<script>` block is added to insert a pageloader mask into the page to ensure that the user can't interact with the page until the page is fully initialized.
+The default is `true`.
+
 tapestry.encode-locale-into-path | javadoc:org.apache.tapestry5.SymbolConstants#ENCODE_LOCALE_INTO_PATH[]::
 Since 5.1.0.1 +
 If `true` (the default), then the javadoc:org.apache.tapestry5.services.PersistentLocale[] will be encoded into URLs by the javadoc:org.apache.tapestry5.services.ComponentEventLinkEncoder[] service.
