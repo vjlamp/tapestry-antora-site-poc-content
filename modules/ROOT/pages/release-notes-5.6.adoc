@@ -1,0 +1,63 @@
+= Tapestry 5.6
+
+[WARNING]
+====
+The tapestry-json improvements (issue:2640[]) introduced an incompatibility with dependencies built with earlier versions than Tapestry 5.6.2.
+The method `JSONObject#get(String)` will fail with a `NoSuchMethodError` exception due to a signature change to conform to the `Map` interface.
+
+Possible workarounds:
+
+* Use a newer version of the dependency build with at least Tapestry 5.6.2
+* Shade the dependency and update it manually
+* Fork the dependency and update it manually
+====
+
+== Tapestry 5.6.3
+=== Improvements Made
+* issue:2665[] - Disallow requests for folders in the classpath by default
+
+=== Bugs Fixed
+* issue:2664[] - PropertyShadowBuilder fails when interface inherits same method more than once
+* issue:2663[] - ChecksumPath should ignore slashes at the end of URLs
+
+== Tapestry 5.6.2
+
+=== Improvements Made
+* issue:2662[] - Make BeanEditor/BeanEditForm/FormGroup more accessible
+* issue:2657[] - Blacklist modules autoloaded via manifests
+* issue:2655[] - Create annotation to disable validation in event handler methods
+* issue:2651[] - TypeCoercer should favor exact match coercions over intermediate ones
+* issue:2649[] - Configuration should have consistent ordering
+* issue:2640[] - better exceptions in tapestry-json code, plus JSONArray now implementing Collection and JSONObject implementing Map
+
+=== Bugs Fixed
+* issue:2661[] - Allow options to be passed to GoogleClosureMinimizer
+* issue:2660[] - Empty string and null namespaces should be treated as the same in Element
+* issue:2659[] - Direct instantiation of ComponentResourceSelector should be replaced with delegation to ComponentRequestSelectorAnalyzer
+* issue:2658[] - Tuple should implement hashCode based on its values
+* issue:2656[] - Disabling strict CSS URL rewriting still throws exceptions for non-existing files
+* issue:2643[] - Label component throws NPE when corresponding form field isn't rendered
+* issue:2636[] - Non-unique advice IDs silently override each other in random order on application startup
+
+== Tapestry 5.6.1
+=== Bugs Fixed
+* issue:2642[] - Tapestry 5.6.1 asset request fails due to missing dependency
+
+
+== Tapestry 5.6.0
+The main new features are:
+
+* issue:2588[] - Added support for Java 14 bytecode. Tapestry 5.6.0 now supports Java 8 through 14.
+* issue:2631[] - Tapestry form are more accessible with automatic generation of WAI-ARIA attributes.
+
+=== Improvements Made
+* issue:2631[] - Make Tapestry forms more accessible with automatic generation WAI-ARIA attributes
+* issue:2626[] - Update Closure Compiler to latest version available (v20200504)
+* issue:2625[] - Upgrade Prototype.js to the latest one, 1.7.3
+* issue:2624[] - Support Java 14 bytecode by upgrading embedded ASM version to 8.0.1
+
+=== Bugs Fixed
+* issue:2635[] - Deadlock when using eager-loaded services through PeriodicExecutor
+* issue:2633[] - ChainBuilder fails with interface containing static methods
+* issue:2632[] - ContextAssetRequestHandler doesn't handle slashes in paths correctly
+* issue:2602[] - 5.4 LinkSubmit does not work with Prototype JS
