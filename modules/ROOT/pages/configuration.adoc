@@ -156,11 +156,6 @@ Since in 5.2.0 +
 If `true`, then JSON page initialization content is compressed; if `false` then extra white space is added (pretty printing).
 Defaults to `true` in production mode.
 
-// === tapestry.compatibility.unknown-component-id-check-enabled
-// Added in 5.3
-// Deprecated since 5.3
-// *SymbolConstants.UNKNOWN_COMPONENT_ID_CHECK_ENABLED* – When enabled, Tapestry will check that component ids referenced in event handler method names (or the @OnEvent annotation) match up against components in the container's template. The default is true, but applications upgraded form Tapestry 5.2 may want to set this to false, to keep pages from failing due to the presence of such dead code.
-
 tapestry.component-render-tracing-enabled | javadoc:org.apache.tapestry5.SymbolConstants#COMPONENT_RENDER_TRACING_ENABLED[]::
 Since 5.3.0 +
 If `true` then Tapestry will emit rendering comments for all requests; these are comments (such as `<!--BEGIN Index:loop (context:Index.tml, line 15)-->`) that can assist you in debugging markup output on the client-side.
