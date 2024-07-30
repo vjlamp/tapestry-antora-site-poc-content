@@ -237,6 +237,11 @@ Defines the prefix of the CSS class that will be given to the outer `<div>` elem
 The value of javadoc:org.apache.tapestry5.corelib.components.Errors[]'s `class` parameter appended after the prefix and a space character.
 The default value is `alert-dismissable`.
 
+tapestry.errors-default-class-parameter-value | javadoc:org.apache.tapestry5.SymbolConstants#ERRORS_DEFAULT_CLASS_PARAMETER_VALUE[]:: 
+Since 5.5.0 +
+Defines the default value of the javadoc:org.apache.tapestry5.corelib.components.Errors[]'s `class` parameter.
+The default value for this symbol is `alert alert-danger`.
+
 tapestry.execution-mode | javadoc:org.apache.tapestry5.SymbolConstants#EXECUTION_MODE[]::
 Since 5.3.1 +
 The execution mode. See <<Setting Execution Modes>> below.
