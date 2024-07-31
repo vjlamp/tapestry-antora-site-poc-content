@@ -42,7 +42,6 @@
 
 * JavaScript, AJAX, CSS & Binary Data
 ** xref:client-side-javascript.adoc[]
-** xref:javascript-modules.adoc[]
 ** xref:coffeescript.adoc[]
 ** xref:ajax-and-zones.adoc[]
 ** xref:css.adoc[Cascading Style Sheets (CSS)]
