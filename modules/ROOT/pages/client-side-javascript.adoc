@@ -1,337 +1,131 @@
 = Client-Side JavaScript
 :experimental: true // required in Antora 3.1 for support of the keybinding UI macro
 
-JavaScript is a first-class concept in Tapestry, and sophisticated JavaScript support is provided right out of the box, including rich Ajax and Zones, download optimization, client-side logging, and localization.
+Perhaps nothing in Tapestry has changed over the years so much as the way client-side JavaScript is supported.
+From the get go, the goal was to make JavaScript a first-class citizen in the Tapestry world, and make it easy to encapsulate JavaScript within components.
 
-In production mode, by default, Tapestry will merge JavaScript libraries, add version numbering, and set a far-future expires header to encourage aggressive browser caching.
-Starting with version 5.3, Tapestry can also automatically minify (compress) JavaScript libraries when in production mode.
+The main feature of Tapestry 5.4 is a total rewrite of all things client-side, with the following goals:
 
-In addition, as will be described in detail below, Tapestry comes with the Prototype and Scriptaculous libraries, or you can easily swap in JQuery using a 3rd-party module.
+* Break the hard linkage of Tapestry to http://prototypejs.org/[Prototype] and http://script.aculo.us/[Scriptaculous], by introducing an abstraction layer
+* Remove the clumsy `Tapestry` and `T5` "namespaces"
+* Reduce the amount of page-specific JavaScript initialization
+* Make it easier to override behavior associated with client elements
+* Support CoffeeScript and (potentially) other languages that target JavaScript
+* Organize client-side JavaScript using xref:javascript-modules.adoc[modules]
+* Make pages load faster
+* Integrate http://getbootstrap.com/[Bootstrap]
+* Make it easier for rich client libraries such as http://backbonejs.org/[Backbone] or https://angularjs.org/[AngularJS] to operate within a page
+* Properly document Tapestry's client support
 
-== Adding Custom JavaScript
-When adding your own custom JavaScript or third-party libraries, just follow the strategies below to take advantage of Tapestry's JavaScript support mechanisms.
+== The Overall Vision
+The overall vision for the client-side in Tapestry is encapsulation, at several different levels.
 
-The recommended practice in Tapestry is to package up any significant amount of JavaScript as a static JavaScript library, a .js file that can be downloaded to the client.
-Keep your in-page JavaScript code to a minimum, just the few statements needed to initialize objects and reference methods in the JavaScript libraries.
+On the server-side, a Tapestry component (or mixin) exposes configurable parameters.
+The component writes DOM elements or attributes, as well as some amount of JavaScript initialization.
+The encapsulation here allows developers with little or no knowledge of client-side JavaScript to enjoy the benefits (as consumers of components created by developers who are versed in client-side coding and Tapestry components).
 
-=== Linking to your JavaScript libraries
-Tapestry provides several ways to add a link to a JavaScript library within your page or component.
-Although you can use direct `<script type="text/javascript" src="xxx.js"></script>` approach, you should only use it for JavaScript that resides outside of your application.
-For JavaScript within your app, Tapestry provides much better ways to do the same thing.
-Most users choose the simplest, the `@IncludeJavaScriptLibrary`  annotation approach.
+On the client-side, the JavaScript combines with the special markup to produce the behaviors that are desired ...anything from controlling the initial focus field, to performing client-side input field validation, to running complex Ajax workflows.
 
-==== Approach 1: `@Import`
-Use the `@Import` annotation to include links to JavaScript (and CSS) files in your page or component.
-Tapestry ensures that each such file is only referenced once in your page.
+Where possible, all of this behavior is driven by `data-` attributes on the elements, combined with top-level event handlers.
+On the client side, events are used not only to respond directly to user actions (with `click`, `mouseOver`, `submit`, or other event listeners) but also to allow elements to collaborate in various ways.
+For example, input validation is based on triggering a specific custom event on each form control element, and top-level event handlers can then manage the validation for any number of fields.
 
-[,java]
+== Prototype vs. jQuery
+For several years, it has been obvious that Tapestry "backed the wrong horse" with respect to Prototype and jQuery.
+When the first code was being laid down in 2007 or 2008, it wasn't so clear that jQuery with its odd abstractions and unfamiliar approach, would go on to conquer the world.
+Meanwhile, Prototype was very strongly integrated into Ruby on Rails and had first class documentation and books.
+
+That being said, jQuery is not the be-all and end-all either.
+Tapestry 5.4 introduces an abstraction layer, that allows many components to write code that doesn't care whether the foundation framework is Prototype or jQuery or something else.
+If you like jQuery then there's no problem: write your application using just jQuery and you can ignore a lot of the features in the abstraction layer.
+Your code will likely be just a bit more efficient.
+
+If you are building a reusable component or library, writing to the abstraction layer may be worth the effort; it is entirely possible that someone may write a replacement for the abstraction layer that targets your favorite foundation framework, such as ExtJS, MooTools, or something not even known of today.
+
+== Heavy vs. Light
+Earlier Tapestry JavaScript was heavy. Essentially, each component would write some very specific JavaScript initialization that would include the component's DOM id and many other details.
+This initialization would reference a function on the `T5.inits` namespace.
+
+The function there would typically locate the specific element by its client DOM id, then attach event handlers to the one element.
+It might also create some form of client-side controller object.
+There were issues due to this: for complex pages (or perhaps even typical pages), the "blob" of JavaScript initialization at the bottom of the page could be quite large.
+
+The use of individual event handlers meant that Tapestry applications would use more client-side objects that a bespoke jQuery solution ... because the normal approach in jQuery is to attach a single event handler to the document or body that handles any events that bubble up to the top and match a CSS selector.
+
+In Tapestry 5.4, the goal is to make things light.
+In most cases, there isn't a specific initialization function;
+instead a JavaScript module is loaded, and it installs one or more top-level event handlers;
+the elements has `data-` https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_data_attributes[attributes] that are used by those top level handlers to recognize which elements they are responsible for.
+
+This is more of a full lifecycle approach;
+adding or removing page content (such as with a javadoc:org.apache.tapestry5.corelib.components.Zone[] component) is both cheaper and less error prone using top-level event handlers than per-element event handlers;
+there's also less of a chance of memory leaks under Internet Explorer.
+
+TIP: Internet Explorer is pretty well known for memory leaks; its DOM and JavaScript run in different kinds of memory, which are garbage collected individually.
+This means that a reference from JavaScript to a DOM element will keep the DOM element live, even if that's the only reference to the DOM element anywhere.
+Meanwhile, event handler JavaScript functions are kept live from the DOM element, making a cycle that can't be broken.
+Libraries like Prototype and jQuery have to expend some effort to break this link by unregistering event handlers from DOM elements when removing them from the DOM.
+
+A specific example of this approach is how client-side validation now works;
+in the past, there was a complex system of classes and event listeners that were specific to each individual field.
+Field controllers had to register with Form controllers.
+Validators had to register with Field controllers.
+
+Under 5.4, there are a number of `data-` attributes that can be attached to any DOM element.
+A form searches for elements with a non-blank value for data-validation; each such element has a series of custom events triggered on it.
+The top-level handlers for those events receive notifications for elements throughout the document.
+
+.t5/core/validation.coffee (partial)
+[source,coffeescript]
 ----
-@Import(library = {
-    "context:js/jquery.js", "context:js/myeffects.js"
-})
-public class MyComponent
-{
-  …
-}
-----
-`@Import` may also be applied to individual methods, in which case the import operation only occurs when the method is invoked.
+define ["underscore", "./dom", "./events", "./utils", "./messages", "./fields"],
+  (_, dom, events, utils, messages) ->
 
-NOTE: When specifying a file to import, you'll often use the context: binding prefix to indicate that the file is stored in the web application context, and not on the classpath.
-Relative paths will be on the classpath, relative to the Java class.
-See Component Parameters for other binding prefix options.
+  ...
+ 
+    dom.onDocument events.field.optional, "[data-optionality=required]", (event, memo) ->
+      if utils.isBlank memo.value
+        memo.error =  (@attr "data-required-message") or "REQUIRED"
 
-Adding the same JavaScript library multiple times does not create duplicate links.
-The subsequent ones are simply ignored.
-In this way, each component can add the libraries it needs, without worrying about conflicts with other components.
-
-
-==== Approach 2: JavaScriptSupport
-Alternatively, you can use JavaScriptSupport to include a JavaScript library in your page or component.
-JavaScriptSupport is an environmental service that includes a number of methods that will be used by components, or by services that are called from components. For example:
-
-===== The importJavaScriptLibrary method
-The importJavaScriptLibrary method adds a link to a JavaScript library.
-A component can inject such a script and pass one or more of assets to this method:
-
-[,java]
-----
-@Inject @Path("context:/js/myeffects.js")
-private Asset myEffects;
-
-@Environmental
-private JavaScriptSupport javaScriptSupport;
-
-void setupRender()
-{
-  javaScriptSupport.importJavaScriptLibrary(myEffects);
-}
-----
-
-Tapestry will ensure that the necessary `<link>` elements are inserted at the bottom of the `<head>` element).
-
-As with the annotation approach, adding the same asset multiple times does not create duplicate links.
-
-The setupRender method (the name is specifically linked to a render phase) is the correct place to inform the JavaScriptSupport service that the library is needed.
-
-
-===== The `addScript` method
-The addScript method is used when you need to add some JavaScript code directly to the page.
-This will be inserted at the bottom of the document, and will only be executed when the document has finished loading on the client (i.e., from the window.onload event handler).
-
-[,java]
-----
-void afterRender()
-{
-    javaScriptSupport.addScript(
-        "$('%s').observe('click', hideMe());",
-        container.getClientId());
-}
-----
-
-When calling the method, the format string can include standard substitutions (such as `%s`) for arguments. This saves you the trouble of calling `String.format()` yourself.
-The formatted JavaScript is added to the script block in the rendered output.
-
-===== Injecting RenderSupport
-`RenderSupport` is an environmental object, so you will normally inject it via the `@Environmental` annotation:
-
-[,java]
-----
-@Environmental
-private JavaScriptSupport javaScriptSupport;
+  ...
+ 
+    dom.onDocument events.field.validate, "[data-validate-min-length]", (event, memo) ->
+      min = parseInt @attr "data-validate-min-length"
+      if memo.translated.length < min
+        memo.error = (@attr "data-min-length-message") or "TOO SHORT"
+        return false
 ----
 
-The `@Environmental` annotation only works inside components, but occasionally you may want to inject `JavaScriptSupport` into a service.
-Fortunately, a proxy has been set up to allow the use of `@Inject` instead:
+The `t5/core/events` module defines constants for different custom event name, it's also a handy place to hang documentation about those events.
 
-[,java]
-----
-@Inject
-private JavaScriptSupport javaScriptSupport;
-----
+The `t5/core/dom` namespace is the abstraction layer. `onDocument` is a handy way to attach a top-level event handler.
 
-…or, in a service implementation constructor:
+Fields that are required have the attribute `data-optionality=required`;
+the event handler is passed a _memo_ object that includes a `value` property, the value from the field.
+This makes it easier to generate an error if the value is blank.  Because the exact error message may be customized or localized, it is provided in the element as well, as the `data-required-message` attribute.
+Setting `memo.error` to a validation error string causes the field to be decorated with the error message and indicates that the form itself is in error and not ready for submission.
 
-[,java]
-----
-public MyServiceImpl(JavaScriptSupport support)
-{
-  …
-}
-----
+A different event is triggered after the optionality check.
+The `memo.translated` property is the value translated before validation (for a numeric field, it would be translated from a string to a number, for example).
+Again, the `error` property is set, and the `return false` ensures that the event will stop bubbling to containing elements or event handlers.
 
-Inside a component, you should use `@Environmental`, to highlight the fact that JavaScriptSupport (like most environmental objects) is only available during rendering, not during action requests.
+What's very useful in this overall approach is that it no longer matters whether the fields were rendered by Tapestry on the server, or rendered locally (perhaps using Backbone or AngularJS) on the client.
+As long as they have the correct `data-` attributes, then they can participate in Tapestry's overall form validation and submission cycle, and even leverage the default validation decoration behavior.
 
-== Combining JavaScript libraries
-In production mode, Tapestry automatically _combines_ JavaScript libraries if they are part of a <<_javascript_stacks,JavaScript Stack>>.
-A single request (for a _virtual asset_) will retrieve the combined content of all referenced JavaScript library files.
+== The Abstraction Layer
+The abstraction layer is defined by the `t5/core/dom module`.
+This module currently has two different implementations - one is a wrapper around Prototype, and the other is a wrapper around jQuery.
 
-This is a very useful feature, as it reduces the number of requests needed to present a page to the user.
-It can be disabled, however, by setting the `SymbolConstants.COMBINE_SCRIPTS` configuration symbol to false in your application's module class (normally AppModule.java).
-By default it is enabled when in production mode and disabled otherwise.
+The resulting abstraction layer is a bit of a hybrid; it mostly looks like jQuery, but events look a bit more like Prototype.
+It also doesn't have jQuery's concept of operating on a matched set of elements.
 
-As elsewhere, if the client browser supports gzip compression, the combined JavaScript will be compressed.
+The abstraction is both transitional and permanent.
+It is transitional in that it is about allowing existing sites with a heavy investment in Prototype to continue to operate with Prototype in the mix.
+It is permanent in that it is desirable for third party library developers to keep an abstraction layer between Tapestry's client-side code and any underlying framework, so that particular applications can provide their own abstraction layer and operate without breaking built-in components.
 
-== Minifying JavaScript libraries
-In production mode, Tapestry can automatically minify (intelligently compresses) JavaScript libraries (and CSS) when the application starts up.
-This can significantly decrease the size of static content that the browser needs to download.
+Most applications should transition to jQuery and feel free to use jQuery directly. 
+It is still best to inject module jquery into your own modules (usually as parameter `$`). 
 
-Minification is accomplished using the ResourceMinimizer service.
-A YUI Compressor-based implementation is available, but this can be overridden.
+If you are writing a third-party application and want to maximize re-use, then use the abstraction layer.
 
-IMPORTANT: The `tapestry-core` module only provides the empty infrastructure for supporting minification; the actual logic is supplied in the `tapestry-yuicompressor` module.
-To use it, you'll need to update your dependencies to include this module.
-
-Minification can be disabled by setting the `tapestry.enable-minification` configuration symbol to `false` in your application's module class (usually `AppModule.java`).
-By default it is enabled when in production mode and disabled otherwise.
-
-Please test your applications well: the YUI Compressor code can be somewhat finicky about the application server and JDK version.
-
-
-== Client-Side Logging
-In versions prior to 5.3, Tapestry used a modified version of the Blackbird JavaScript console.
-In Tapestry 5.3 the Blackbird console was removed; just use the standard console logging features (e.g. `console.log()`) built into modern browsers.
-
-
-== Handling Slow Page Loads
-If your page loads slowly (typically, because of scripts loaded from external sites), you may see a race condition where the user can click on a link before an event handler for that link has been wired up.
-
-The client-side function `Tapestry.waitForPage()` can be used in an element's onclick handler to force a wait for the page to fully load.
-In this race condition, the screen will dim and a message will appear advising the user to wait a moment; once the page is fully loaded, this modal dialog will be removed.
-
-The correct usage is:
-
-[,html]
-----
-  <a href="..." onclick="javascript:Tapestry.waitForPage(event);"> ... </a>
-----
-
-The constant `MarkupConstants.WAIT_FOR_PAGE` contains the part of this snippet inside the quotes.
-
-
-== The Standard Tapestry Library
-Tapestry's client-side support, the standard Tapestry library, consists of tapestry.js, which has dependencies on Prototype and on Scriptaculous Effects.
-tapestry.js, along with its dependencies.
-The tapestry.js library is automatically added to the page when your code adds any other JavaScript or JavaScript library.
-
-=== Tapestry Namespace
-Tapestry defines a number of object and classes inside the Tapestry namespace.
-
-It also adds a handful of methods to the Form class, and to Form elements. These are mostly related to input validation and determining element visibility.
-
-=== The Tapestry Object $T()
-IMPORTANT: Deprecated since 5.2 (no replacement)
-
-The standard library adds a new function, `$T()`.
-This function is used much like Prototype's `$()`, except that instead of returning a DOM object, it returns a hash (an initially empty JavaScript object) that is associated with the DOM object.
-This hash is known as _the Tapestry object_.
-
-You may pass in an object id (as a string) or an object reference.
-The Tapestry Object is created on first invocation.
-
-NOTE: you'll see it as a property name `_tapestry` on the DOM object (which may be useful when debugging).
-
-When Tapestry adds information to a DOM object, it does so in the Tapestry object.
-This helps avoid name conflicts, and groups all Tapestry-added properties into one place which is much easier to debug.
-
-For example, you might store a value for an element in one place:
-[,javascript]
-----
-  $T(myid).fadeDuration = .5;
-----
-
-Then use it somewhere else:
-
-[,javascript]
-----
-  new Effect.Fade($(myId), { duration: $T(myid).fadeDuration });
-----
-
-== Ajax Components and Mixins
-Tapestry provides easy-to-use support for Ajax, the technique of using JavaScript to dynamically updating parts of a web page with content from the server without redrawing the whole page.
-See Ajax and Zones for details.
-
-== Built-in Libraries
-Tapestry comes with the Prototype and Scriptaculous libraries — no extra download is required.
-Tapestry will automatically link into your pages the prototype.js, scriptaculous.js, and effects.js libraries, as well as the Tapestry library, tapestry.js (which largely consists of support for form input validation).
-Starting with Tapestry 5.3, Underscore is also included.
-
-=== Prototype and Scriptaculous Versions
-Tapestry uses a modified version of the main Scriptaculous library, scriptaculous.js, with the library's default autoloading behavior turned off.
-This lets Tapestry and Tapestry components control which Scriptaculus scripts are loaded, rather than having all of them loaded unnecessarily.
-
-If you need access to other Scriptaculous libraries, you can provide them as follows:
-
-[,java]
-----
-@Inject @Path("${tapestry.scriptaculous}/dragdrop.js")
-private Asset dragDropLibrary;
-
-@Environmental
-private JavaScriptSupport javaScriptSupport;
-
-void setupRender()
-{
-  javaScriptSupport.addScriptLink(dragDropLibrary);
-}
-----
-
-The Asset is injected, using the `tapestry.scriptaculous` configuration symbol to reference the location of the Scriptaculous library.
-
-Even though the dragdrop.js library is stored inside a JAR file, Tapestry ensures that it can be accessed from the client web browser.
-A Tapestry URL within the virtual folder "/assets" is created; the file will be given a version number (the application version number if not specified more specifically) and will be sent to the browser with a far-future expires header (to encourage the browser to cache the file aggressively).
-
-== JavaScript Stacks
-Tapestry allows you to define groups of related JavaScript libraries and stylesheets as "stacks".
-The built-in "core" stack is used to define the core JavaScript libraries needed by Tapestry (currently, this includes Prototype and Scriptaculous, as well as Tapestry-specific libraries).
-Other component libraries may define additional stacks for related sets of resources, for example, to bundle together some portion of the ExtJS or YUI libraries.
-
-A JavaScriptStack can be thought of as a generalization of Tapestry 5.1's ClientInfrastructure, which exists now to define the "core" JavaScript stack.
-
-JavaScript assets of a stack may (when enabled) be exposed to the client as a single URL (identifying the stack by name).
-The individual assets are combined into a single virtual asset, which is then streamed to the client.
-
-To group several static resources together in a single stack, you must create a new implementation of the JavaScriptStack interface.
-
-This interface has four methods:
-
-. `getStylesheets()` : This method will return a list of stylesheet files (StylesheetLink-type object) associated to this stack
-. `getJavaScriptLibraries()` : This method will return a list of javascript files (Asset-type object) associated to this stack
-. `getStacks()` : It is also possible to make a stack dependant of other stacks. All the stacks defined in this method will be loaded before the current stack.
-. `getInitialization()` : this method makes it possible to call a JavaScript initialization for the stack. Tapestry will automatically add this initialization to the page that imports the stacks.
-
-.MyStack.java
-[,java]
-----
-public class MyStack implements JavaScriptStack {
-
-    private final AssetSource assetSource;
-
-    public myStack (final AssetSource assetSource)
-    {
-        this.assetSource = assetSource;
-    }
-
-    public String getInitialization()
-    {
-    	return null;
-    }
-
-    public List<Asset> getJavaScriptLibraries()
-    {
-        List<Asset> ret = new ArrayList<Asset>();
-
-        ret.add(assetSource.getContextAsset("static/js/jquery.js", null));
-
-        ret.add(assetSource.getContextAsset("static/js/jquery.ui.core.js", null));
-
-        return ret;
-    }
-
-    public List<StylesheetLink> getStylesheets()
-    {
-    	List<StylesheetLink> ret = new ArrayList<StylesheetLink>();
-
-    	ret.add(new StylesheetLink(assetSource.getContextAsset("static/css/style.css", null)));
-
-        return ret;
-    }
-
-    public List<String> getStacks()
-    {
-        return Collections.emptyList();
-    }
-
-}
-----
-
-When your new Stack is created, you have to define it in your AppModule.
-
-.AppModule.java (partial)
-[,java]
-----
-@Contribute(JavaScriptStackSource.class)
-public static void addMyStack(MappedConfiguration<String, JavaScriptStack> config)
-{
-    config.addInstance("MyNewStack", MyStack.class);
-}
-----
-
-You can now use it in your pages and components, by using the @Import annotation or the JavaScriptSupport service:
-
-.With @Import
-[,java]
-----
-@Import(stack="MyNewStack")
-public class myPage {
-}
-----
-
-.With JavaScriptSupport
-[,java]
-----
-@Contribute(JavaScriptStackSource.class)
-public static void addMyStack(MappedConfiguration<String, JavaScriptStack> config)
-{
-    config.addInstance("MyNewStack", MyStack.class);
-}
-----
+It is often easier to use the abstraction layer to respond correctly to custom Tapestry events.
