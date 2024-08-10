@@ -1,0 +1,130 @@
+= Tapestry 5.7
+
+== Tapestry 5.7.3
+Tapestry 5.7.3 is a new release focused on some improvements and new features. Main ones are:
+
+* Upgrading Hibernate's version from 5.1.1.Final to 5.4.32.Final.
+This required some changes in `tapestry-hibernate` due to some non-backward-compatible changes between these 2 Hibernate versions.
+If your project doesn't work with this new Hibernate version, you should be able to use version 5.7.2 of `tapestry-hibernate` and `tapestry-hibernate` with 5.7.3 of everything else without issues.
+* Introducing `tapestry-spock`, an integration of Tapestry with the https://spockframework.org[Spock] testing framework, which used to be part of the Spock project.
+
+=== Improvements Made
+* issue:2682[] - Improve Require.js error reporting in pageinit.js and zone.js
+* issue:2681[] - Upgrade Hibernate version in tapestry-hibernate and tapestry-hibernate-core to latest 5.x
+* issue:2679[] - Checklist component: Remove outdated documentation
+* issue:2676[] - Adjust build script for Java 9+
+* issue:2675[] - Avoid multiple Groovy compilers on classpath
+* issue:2668[] - Move spock-tapestry extension to tapestry-test
+
+=== Bugs Fixed
+* issue:2674[] - Type coercer contribution - cast exception in equals
+
+== Tapestry 5.7.2
+Tapestry 5.7.2 is a drop-in replacement and recommended upgrade for previous 5.7.x versions.
+
+=== Improvements Made
+* issue:2672[] - Improve reporting for errors in JS modules
+
+=== Bugs Fixed
+* issue:2673[] - Guava generics resolver not used when added in the classpath
+* issue:2671[] - dom(...).trigger("submit") doesn't work on Chrome
+* issue:2670[] - Better handling of slashes in context asset URLs
+* issue:2669[] - Tapestry Form.js running on non Tapestry forms
+
+== Tapestry 5.7.1
+Tapestry 5.7.1 is a drop-in replacement and recommended 5.7.0.upgrade.
+
+=== Improvements Made
+* issue:2665[]: Disallow requests for folders in the classpath by default
+
+=== Bugs Fixed
+* issue:2664[] - javadoc:org.apache.tapestry5.ioc.services.PropertyShadowBuilder[] fails when interface inherits same method more than once
+* issue:2663[] - javadoc:org.apache.tapestry5.internal.services.assets.ChecksumPath[] should ignore slashes at the end of URLs
+
+
+== Tapestry 5.7.0
+IMPORTANT: Tapestry 5.7.0 is a new major version which needs a migration step for projects using previous versions.
+
+To upgrade, update the dependency in your build configuration (Maven POM, Gradle build script, etc.) – or xref:main::download.adoc[] the new JAR file.
+Please check the <<5.7.0 Upgrade Guide>> section below for details.
+This is a step that only needs to be done once.
+Please also review the How to Upgrade instructions before upgrading.
+
+The main new features are:
+
+* Partial Java 9+ modules (JPMS) support.
+It's partial because module-info.java classes are not provided yet.
+On the other hand, Tapestry's JARs don't have split packages anymore, making them easier to be used with Java 9+ modules.
+Many classes had to be moved to other packages, and sometimes even to a different JAR.
+The migration tool mentioned above will take care of updating your code so it uses the correct new fully-qualified class names for the ones that were moved and/or renamed.
+issue:2641[] - issue:2627[]
+
+* TypeCoercer now uses mapped configuration so coercion overrides are done in an explicit manner. 
+issue:2650[]
+
+* It's not possible to use the Tapestry request handling framework, specially the RequestFilter, Dispatcher, Request, Response and HttpServletRequestFilter classes, without the page framework.
+These classes were moved to a new artifact, `tapestry-http`, which can be used in place of tapestry-core (which depends on tapestry-http). The `tapestry-http` Servlet filter class is javadoc:org.apache.tapestry5.http.TapestryFilter[label=org.apache.tapestry5.*http*.TapestryFilter].
+The original javadoc:org.apache.tapestry5.TapestryFilter[label=org.apache.tapestry5.TapestryFilter] can be used in the same way as in past Tapestry versions.
+
+=== 5.7.0 Upgrade Guide
+==== Step 1: Use the source code migration tool
+
+. Download the migration tool jar from https://repo1.maven.org/maven2/org/apache/tapestry/tapestry-version-migrator/5.7.0/tapestry-version-migrator-5.7.0.jar
+. Run `java -jar tapestry-version-migrator-5.7.0.jar upgrade 5.7.0` in the command line.
+It will process all `.java` files found in the current folder and its subfolders, recursively.
+
+==== Step 2: Update contributions to the javadoc:org.apache.tapestry5.commons.services.TypeCoercer[] service (in case your projects has any)
+Here's a real example from Tapestry itself.
+It used to be done using javadoc:org.apache.tapestry5.ioc.Configuration[version=5.6.3], but now it's javadoc:org.apache.tapestry5.commons.MappedConfiguration[].
+If you had a contribution method like this:
+
+.Tapestry 5.6.3 or earlier
+[source,java]
+----
+@Contribute(TypeCoercer.class)
+public static void provideCoercions(Configuration<CoercionTuple> configuration)
+{
+  configuration.add(CoercionTuple.create(String.class, JSONObject.class, new StringToJSONObject()));
+}
+----
+
+it should be changed to this:
+
+.Tapestry 5.7.0 and later
+[source,java]
+----
+public static void provideCoercions(MappedConfiguration<CoercionTuple.Key, CoercionTuple> configuration)
+{
+  CoercionTuple<String, JSONObject> stringToJsonObject =
+    CoercionTuple.create(String.class, JSONObject.class, new StringToJSONObject());
+
+    configuration.add(stringToJsonObject.getKey(), stringToJsonObject);
+}
+----
+
+=== Improvements Made
+
+* issue:2662[] - Make `BeanEditor`/`BeanEditForm`/`FormGroup` more accessible
+* issue:2657[] - Blacklist modules autoloaded via manifests
+* issue:2655[] - Create annotation to disable validation in event handler methods
+* issue:2654[] - Remove Asset2 by merging it into javadoc:org.apache.tapestry5.Asset[]
+* issue:2653[] - Upgrade `tapestry-spring` 's spring-web version to 3.2.9
+* issue:2652[] - Upgrade EclipseLink version in `tapestry-jpa` to 2.7.7, the latest
+* issue:2651[] - javadoc:org.apache.tapestry5.commons.services.TypeCoercer[] should favor exact match coercions over intermediate ones
+* issue:2650[] - Change javadoc:org.apache.tapestry5.commons.services.TypeCoercer[] configuration to MappedConfiguration
+* issue:2649[] - Configuration should have consistent ordering
+* issue:2645[] - Java Time API / JSR310 Type Coercers
+* issue:2644[] - Split HTTP-specific classes from `tapestry-core` into `tapestry-http`
+* issue:2641[] - Turn the Tapestry subprojects into Java 9+ modules (JPMS)
+* issue:2640[] - `tapestry-json` improvements (implement `Collection`/`Map`, better exceptions)
+* issue:2627[] - Fix split packages
+* issue:2613[] - Make the build of tapestry itself pass on Java 11
+
+=== Bugs Fixed
+
+* issue:2661[] - Allow options to be passed to javadoc:org.apache.tapestry5.internal.webresources.GoogleClosureMinimizer[]
+* issue:2660[] - Empty string and `null` namespaces should be treated as the same in Element
+* issue:2659[] - Direct instantiation of javadoc:org.apache.tapestry5.services.pageload.ComponentResourceSelector[] should be replaced with delegation to javadoc:ComponentRequestSelectorAnalyzer.ComponentRequestSelectorAnalyzer[]
+* issue:2658[] - Tuple should implement `hashCode()` based on its values
+* issue:2656[] - Disabling strict CSS URL rewriting still throws exceptions for non-existing files
+* issue:2636[] - Non-unique advice IDs silently override each other in random order on application startup

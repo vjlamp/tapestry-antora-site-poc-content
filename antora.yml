@@ -1,9 +1,9 @@
 name: userguide
 title: User Guide
-version: 5.6
+version: 5.7
 nav:
 - modules/ROOT/nav.adoc
 asciidoc:
   attributes:
-    javadoc-version: 5.6.3
+    javadoc-version: 5.7.3
     tapestry-namespace: http://tapestry.apache.org/schema/tapestry_5_4.xsd
