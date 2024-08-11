@@ -106,7 +106,7 @@ Typically, `UpdateListener`s are also `InvalidationEventHub`s (or provide `Inval
 == Troubleshooting Live Class Reloading
 
 === Quick Checklist
-// * "Production Mode" must be false (in Tapestry 5.3 and later)
+* "Production Mode" must be `false` (in Tapestry 5.3 and later)
 * The class must be one that Tapestry instantiates (a page, component, or mixin class, or a Tapestry IOC service implementation that implements an interface)
 * Turn on "Build Automatically" in your IDE, or remember to build manually.
 * Turn off JVM hot code swapping, if your servlet container supports it.
@@ -115,15 +115,15 @@ Typically, `UpdateListener`s are also `InvalidationEventHub`s (or provide `Inval
 Some of these issues are described in more detail below.
 
 === If Live Class Reloading doesn't work
-////
 ==== Production Mode
-Starting with Tapestry 5.3, Live Class Reloading only works when not in "Production Mode". Check your application module (usually AppModule.java) to be sure you have:
+Starting with Tapestry 5.3, Live Class Reloading only works when not in "Production Mode". Check your application module (usually `AppModule.java`) to be sure you have:
+
 [source,java]
 ----
 configuration.add(SymbolConstants.PRODUCTION_MODE, "false");
 ----
 and that this isn't being overridden to "true" on your application's startup command line.
-////
+
 ==== Build Path Issues
 Live Class Reloading can fail if your build path isn't set correctly, and the exact configuration may differ between Maven plugin versions and Eclipse versions.
 The build process must be set to create classes in a folder which is in the servlet container's classpath.
