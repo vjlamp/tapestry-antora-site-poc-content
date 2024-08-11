@@ -4,7 +4,7 @@
 One of the best features of Tapestry is automatic reloading of changed classes and templates.
 _Page and component_ classes will automatically reload when changed.
 Likewise, changes to component templates and other related resources will also be picked up immediately.
-// In addition, starting in version 5.2, your service classes will also be reloaded automatically after changes (if you're using Tapestry IoC).
+In addition, starting in version 5.2, your service classes will also be reloaded automatically after changes (if you're using Tapestry IoC).
 
 == Template Reloading
 When a template changes, all page instances (as well as the hierarchy of components below them) are discarded and reconstructed with the new template.
@@ -26,11 +26,11 @@ If your root package is `org.example.myapp`, then only classes in the following 
 * `org.example.myapp.components`
 * `org.example.myapp.mixins`
 * `org.example.myapp.base`
-// * org.example.myapp.services (Tapestry 5.2 and later, with restrictions)
+* `org.example.myapp.services` (Tapestry 5.2 and later, with restrictions)
 
-// Starting in Tapestry 5.2, live class reloading includes service implementation classes.
-// There are some limitations to this.
-// See Service Implementation Reloading for more details.
+Starting in Tapestry 5.2, live class reloading includes service implementation classes.
+There are some limitations to this.
+See xref:service-implementation-reloading.adoc[] for more details.
 
 == File System Only
 Reloading of classes and other files applies only to files that are actually on the file system, and not files obtained from JAR files.
