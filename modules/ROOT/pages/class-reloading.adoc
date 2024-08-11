@@ -5,13 +5,11 @@ One of the best features of Tapestry is automatic reloading of changed classes a
 _Page and component_ classes will automatically reload when changed.
 Likewise, changes to component templates and other related resources will also be picked up immediately.
 // In addition, starting in version 5.2, your service classes will also be reloaded automatically after changes (if you're using Tapestry IoC).
-// Starting in version 5.8.3, you enable multiple classloader mode, which allows smarter page class invalidation.
+Starting in version 5.8.3, you enable multiple classloader mode, which allows smarter page class invalidation.
 
-////
-NOTE: Not necessarily throwing away all cached page instances
+NOTE: Not necessarily all cached page instances are thrown away.
 Since Tapestry 5.8.3, Tapestry can be run in multiple classloaders mode.
 When it's on, only the affected cached page instances are discarded and rebuilt instead of all of them. 
-////
 
 == Template Reloading
 When a template changes, all page instances (as well as the hierarchy of components below them) are discarded and reconstructed with the new template.
@@ -161,8 +159,7 @@ Network drives are always slower, and the file system scanning needed for LCR ca
 If you use Maven, be sure to put your local repository (e.g. `~/.m2/repository`) on a local drive for similar reasons.
 * Java 7 and below: Since LCR adds classes to your PermGen space, you may be running low on PermGen memory (and may eventually get a `java.lang.OutOfMemoryError: PermGen space` error). Try increasing PermGen size with a JVM argument of something like `-XX:MaxPermSize=400m`. (PermGen settings are not relevant for Java 8 and above.)
 
-////
-== [5.8.3+] Multiple Classloader Mode/Smarter Page Class Invalidation
+== Multiple Classloader Mode / Smarter Page Class Invalidation
 Since Tapestry 5.8.3, you can run Tapestry in multiple classloader mode, which implements smarter page class invalidation in live class reloading.
 In addition, other caches are also invalidated in smarter way when something changes, avoiding throwing away everything. Multiple classloader mode isn't available when production mode is on.
 
@@ -178,8 +175,8 @@ This is possible by 2 new internal features:
 
 You can find a graph of all known dependencies at a time by going to the `/t5dashboard/pagedependencygraph` URL of your webapp. You can view the dependencies for one specific page by going to `/t5dashboard/` and clicking the page's Structure Info link. Here's one partial example:
 
-.Page Dependency Graph
-image::page-dependency-graph.png[Page dependency graph]
+.Page Dependency Graph (partial)
+image::page_dependency_graph.png[Page dependency graph]
 
 === How It Works
 First of all, when production mode is off and multiple classloaders mode is also off, Tapestry reacts to file (including classes in controlled packages, templates, message properties files and assets) changes in the same way as before and described above in this page: all cached information or objects about classes, templates, message properties files, assets, property bindings, etc is invalidated (i.e. thrown away).
@@ -232,4 +229,3 @@ The solution for this is the same one as the above.
 . When one asset is imported into a class through `@Import`, the class and the asset are considered associated.
 When an asset is changed and it's associated with at least one class, the classes associated with it, including pages, are invalidated.
 If an asset is changed and it's not associated with any class, then multiple classloader mode works the same as single classloader one, invalidating everything.
-////
