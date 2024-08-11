@@ -65,6 +65,7 @@
 * xref:case-insensitivity.adoc[]
 * xref:aliases.adoc[]
 * xref:registry-startup.adoc[]
+* xref:service-implementation-reloading.adoc[]
 
 .Add-ons and Integrations
 * Built-in
