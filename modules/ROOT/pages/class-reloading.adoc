@@ -5,13 +5,6 @@ One of the best features of Tapestry is automatic reloading of changed classes a
 _Page and component_ classes will automatically reload when changed.
 Likewise, changes to component templates and other related resources will also be picked up immediately.
 // In addition, starting in version 5.2, your service classes will also be reloaded automatically after changes (if you're using Tapestry IoC).
-// Starting in version 5.8.3, you enable multiple classloader mode, which allows smarter page class invalidation.
-
-////
-NOTE: Not necessarily throwing away all cached page instances
-Since Tapestry 5.8.3, Tapestry can be run in multiple classloaders mode.
-When it's on, only the affected cached page instances are discarded and rebuilt instead of all of them. 
-////
 
 == Template Reloading
 When a template changes, all page instances (as well as the hierarchy of components below them) are discarded and reconstructed with the new template.
@@ -161,75 +154,3 @@ Network drives are always slower, and the file system scanning needed for LCR ca
 If you use Maven, be sure to put your local repository (e.g. `~/.m2/repository`) on a local drive for similar reasons.
 * Java 7 and below: Since LCR adds classes to your PermGen space, you may be running low on PermGen memory (and may eventually get a `java.lang.OutOfMemoryError: PermGen space` error). Try increasing PermGen size with a JVM argument of something like `-XX:MaxPermSize=400m`. (PermGen settings are not relevant for Java 8 and above.)
 
-////
-== [5.8.3+] Multiple Classloader Mode/Smarter Page Class Invalidation
-Since Tapestry 5.8.3, you can run Tapestry in multiple classloader mode, which implements smarter page class invalidation in live class reloading.
-In addition, other caches are also invalidated in smarter way when something changes, avoiding throwing away everything. Multiple classloader mode isn't available when production mode is on.
-
-To enable multiple classloader mode, you need to set `tapestry.multiple-classloaders` symbol to `true` and run the webapp with production mode disabled.
-With production mode on, `tapestry.multiple-classloaders` is ignored.
-
-When multiple classloaders are enabled, when a class in a controlled component, template, message properties file or asset is changed, Tapestry tries to invalidate as few cached objects as possible.
-This include page instances, processed templates, asset information, property bindings, etc.
-This is possible by 2 new internal features:
-
-1. A component dependency registry, which gathers and stores information about how component, page, mixin and base classes depend on each other. There are 3 kinds of dependencies: usage (i.e. a component or mixin used in a class), superclass (i.e. one class extending the other) and `@InjectPage` (i.e. one class injecting a page class using `@InjectPage`.
-2. The usage of multiple classloader instances, organized in a tree, instead of a single one. For example: if a component A is used in pages B and C, when B has its class changed, there's no need to invalidate a cached instance of C since Tapestry knows there's no dependency of B and C. On the other hand, if A is changed, both B and C instances need to be invalidated.
-
-You can find a graph of all known dependencies at a time by going to the `/t5dashboard/pagedependencygraph` URL of your webapp. You can view the dependencies for one specific page by going to `/t5dashboard/` and clicking the page's Structure Info link. Here's one partial example:
-
-.Page Dependency Graph
-image::page-dependency-graph.png[Page dependency graph]
-
-=== How It Works
-First of all, when production mode is off and multiple classloaders mode is also off, Tapestry reacts to file (including classes in controlled packages, templates, message properties files and assets) changes in the same way as before and described above in this page: all cached information or objects about classes, templates, message properties files, assets, property bindings, etc is invalidated (i.e. thrown away).
-The internal services that track changes to these files notify all their listeners that they should invalidate their caches completely.
-
-When multiple classloaders mode is on, these internal services notify their listeners what changed, so they can invalidate just the objects or information that is actually affected by the changes.
-Sometimes this listeners notify the services that more stuff needs to be invalidated, for example, if one asset is changed and it's associated with a class, the asset service notifies the listeners that that class needs to be invalidated.
-For example, the component dependency registry, when notified that a given class was invalidated, besides invalidating information about that class, it informs the service that it also needs to invalidates the classes that depend on the changed one. This process repeats until there's no other class to be invalidated.
-
-Additional logging was added so all files found as changed result in log entries. Same for the invalidation chain described in the paragraph above.
-
-Now that it knows the class dependency graph, Tapestry needs to map that into a classloader tree, since each classloader instance can only have one parent.
-Internally, the framework has one class, PageClassLoaderContext (PCLC or context, for short), that stores all information about one classloader in the tree: the classloader itself, a name, the set of names of the classes beloging to it, the parent PCLC and children PCLCs.
-When a class is invalidated, the classes in the context are invalidated, then the context itself is invalidated, including its classloader, then the child contexts are recursively invalidated too.
-
-There are 2 special PCLC contexts: the root one, which is never invalidated, and the unknown one, where classes without dependency information go initially.
-
-The PCLC tree is created class by class, starting from pages and then on its dependencies on them in a recursive manner.
-For each class, if there's no PCLC already containing it, Tapestry checks its dependency list. Its basic algorithm is this:
-
-. If there are dependencies that belong to a PCLC yet, run the algorithm on it.
-. All the PCLCs of dependencies are gathered.
-.. If there are no PCLCs found, a new one is created with that class and the root context is its parent.
-.. If there is exactly one PCLC found, a new one is created with that class and the found PCLC will be its parent.
-.. If more than one PCLC is found, these PCLCs are merged by creating a new one containing all the classes in the PCLCs.
-The old PCLCs are invalidated recursively and an event about its invalidation is sent to the listeners.
-One of them is `PageSource`, the service that manages, creates and caches page instances, so the merging of PCLCs can cause page invalidation, as keeping these instances could potentially cause `ClassCastException`s later due to class instances belonging to different versions of the same class.
-
-=== Loading, Storing and Preloading Dependency Information
-When a page instance is finished building, it's processed by the component dependency registry, which gathers the dependencies this page has, then the dependencies of its dependencies recursively.
-The registry doesn't process classes it already has information.
-
-When starting up, Tapestry checks whether a file named `tapestryComponentDependencies.json` exists in the folder where the webapp is running.
-If it does, component dependency is loaded from it.
-
-The T5Dashboard page has 2 new buttons related to dependencies, `Store dependency information`, writes all the dependency information as known at that moment.
-
-`Preload dependency information and page classloader contexts` goes through all known pages, gathers its dependencies, also doing the same for all the components used directly and indirectly by them, and the preloads page the page classloader contexts, thus avoiding context invalidations when page instances are created.
-Notice this process won't work if any of the pages or their templates are invalid for any reason.
-
-=== Caveats
-Unfortunately, it wasn't possible to make the multiple classloader mode to work with all situations and code. Some known issues:
-
-. On Java 9 and later, classes belonging to one classloader cannot call package-private methods of other classes even when both are in the same package.
-The solution is to change the method visibility to public.
-. If you don't have component dependency information already loaded for a given class, problems, usually in the form of a `ClassCastException` claiming an object of a given type cannot be assigned to a variable of the same type. The best way to deal with this is to use the T5Dashboard to write the component dependency information to a file and restart the webapp.
-In some cases, it helps to preload dependency information for all classes.
-. If you start your webapp without component dependency information, page instances may be created and invalidated a few times even when they didn't have any changes due to the page classloader context creation.
-The solution for this is the same one as the above.
-. When one asset is imported into a class through `@Import`, the class and the asset are considered associated.
-When an asset is changed and it's associated with at least one class, the classes associated with it, including pages, are invalidated.
-If an asset is changed and it's not associated with any class, then multiple classloader mode works the same as single classloader one, invalidating everything.
-////
