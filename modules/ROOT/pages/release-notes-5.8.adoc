@@ -1,0 +1,172 @@
+= Tapestry 5.8
+
+== Tapestry 5.8.7
+Tapestry 5.8.7 is a bugfix release, being a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Improvements Made
+* issue:2780[] - javadoc:org.apache.tapestry5.json.JSONObject[] does not conform to equals/hashCode contract
+* issue:2777[] - Update the closure compiler for better support of modern JavaScript
+* issue:2771[] - Upgrade to Spock 2.3
+
+
+== Tapestry 5.8.6
+Tapestry 5.8.6 is a bugfix release, being a  drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Bugs Fixed
+* issue:2773[] - NullPointerException in 5.8.5 when in production mode and template extension points
+
+== Tapestry 5.8.5
+Tapestry 5.8.5 is a bugfix release, being a  drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Bugs Fixed
+* issue:2772[] - `ClassCastException` happening in some cases in production mode
+* issue:2770[] - With multiple classloader mode on, `ClassCastException` when component and superclass both have javadoc:org.apache.tapestry5.annotations.Import[label=@Import]
+
+
+== Tapestry 5.8.4
+Tapestry 5.8.4 is a new release with some enhancements and bug fixes.
+
+Tapestry 5.8.4 is a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+The highlights are the support for Java 21 bytecode, and improvement and a fix in multiple classloader support and the upgrade to latest Underscore.js version.
+
+=== Improvements Made
+* issue:2769[] - Upgrade ASM to 9.6 to allow running on Java 21
+* issue:2768[] - javadoc:org.apache.tapestry5.internal.services.DefaultRequestExceptionHandler[] shouldn't send Exception message in production
+* issue:2767[] - Upgrade the build from Gradle 7 to 8
+* issue:2765[] - Update Underscore.js
+* issue:2762[] - New symbol for defining the path to the component dependencies file
+
+=== Bugs Fixed
+* issue:2759[] - javadoc:org.apache.tapestry5.json.JSONObect[] #getLongOrDefault wrong defaultValue type
+
+
+== Tapestry 5.8.3
+Tapestry 5.8.3 is a new release with a number of enhancements and bug fixes.
+
+Tapestry 5.8.3 is a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+Highlights:
+
+* issue:2742[] - Smarter page cache validation (also known as multiple classloader mode).
+Besides collecting dependencies between page, component, mixin and base classes, this enhancement, when turned on, allows Tapestry to invalidate just the cached page instances that need to be rebuilt when a class, template, messages properties or asset is changed.
+See xref:class-reloading.adoc#_multiple_classloader_mode_smarter_page_class_invalidation[Multiple Classloader Mode/Smarter Page Class Invalidation] for more details.
+* issue:1733[] - Tapestry no longer logs an javadoc:org.apache.tapestry5.ioc.internal.OperationException[] when a client submits a form using a method other than POST.
+Previously, the log entry would explain that `Forms require that the request method be POST and that the t:formdata query parameter have values.`
+Likewise, in production mode, instead of displaying the error page, Tapestry silently redirects back to the page containing the form.
+* The YUI CssCompressor got updated to the latest available code, which fixes multiple issues (issue:2753[], issue:2708[], issue:2600[]).
+As Yahoo doesn't develop the Compressor further, a better testing environment was added to `tapestry-webresources` to fix any upcoming CSS compression issues faster.
+* issue:2745[] - The Tree component now gracefully handles an empty list of root nodes instead of throwing an NPE.
+* issue:2743[] - Convenience methods added to javadoc:org.apache.tapestry5.ioc.services.PerThreadValue[] for easier use:
+** `T computeIfAbsent(Supplier<? extends T> fn)`
+** `T computeIfPresent(Function<? super T, ? extends T> fn)`
+** `T compute(Function<? super T, ? extends T> fn)`
+** `void ifSet(Consumer<? super T> action)`
+* issue:2730[] - javadoc:org.apache.tapestry5.CookieBuilder[] now accepts `java.time.Duration` for its `maxAge`-related operation.
+Also, a xref:type-coercion.adoc[Type Coercion] for `TimeInterval --> Duration` was added, so `Duration` is usable for javadoc:org.apache.tapestry5.SymbolConstants#COOKIE_MAX_AGE[].
+* issue:2735[] - New method `void setNonPersistentLocaleFromRequest(Request request)` added to javadoc:org.apache.tapestry5.services.LocalizationSetter[] to expose all of the locale handling through the service.
+* issue:2739[] - Remnants from Java 5->6 transitions removed: javadoc:org.apache.tapestry5.ioc.internal.util.JDKUtils[version=5.8.2] and javadoc:org.apache.tapestry5.ioc.internal.util.DummyLock[version=5.8.2].
+* issue:2730[] - Misspelt internally used id in `org.apache.tapestry5.modules` fixed (`ComnpressedModules` -> `CompressedModules`)
+
+=== Improvements Made
+* issue:2756[] - Allow developers define whether a page should be cached as a soft reference or not
+* issue:2751[] - Provide German translation of the `checked` validator message
+* issue:2750[] - Kaptcha: support for German locale
+* issue:2748[] - Remove Travis CI
+* issue:2744[] - Selenium 3.141 can't seem to start FF 102+
+* issue:2743[] - `PerThreadValue<T>` should provide more convenience methods
+* issue:2742[] - Smarter page cache invalidation
+* issue:2739[] - Remove javadoc:org.apache.tapestry5.ioc.internal.util.JDKUtils[version=5.8.2] and javadoc:org.apache.tapestry5.ioc.internal.util.DummyLock[version=5.8.2]
+* issue:2737[] - Add FontAwesomeIcon to xref:component-reference.adoc[] page
+* issue:2736[] - javadoc:org.apache.tapestry5.CookieBuilder[] `maxAge` should support `java.time.Duration`
+* issue:2735[] - javadoc:org.apache.tapestry5.services.LocalizationSetter[] should add "void setLocaleFromRequest(Request)"
+* issue:2730[] - Misspelt ‘ComnpressedModules’ object id
+* issue:2729[] - Improve javadoc of javadoc:org.apache.tapestry5.ioc.ServiceBinder[]#bind(java.lang.Class)
+* issue:2708[] - CssCompressor update/optimizations
+* issue:1733[] - Throw bespoke exceptions so they may be more easily identified by Error Handlers
+
+=== Bugs Fixed
+* issue:2757[] - Missing BeanModel-related migrations
+* issue:2755[] - Selenium tests don't run on Linux and snap-provided Firefox
+* issue:2753[] - CssCompressor for CSS files produces wrong minification if calc contains variables.
+* issue:2749[] - Incorrect behavior of `getIfExists` in `EntityApplicationStatePersistenceStrategy`
+* issue:2745[] - Tree component with empty list of root nodes causes `NullPointerException`
+* issue:2600[] - CSS minification breaks transition statement
+
+
+== Tapestry 5.8.2
+Tapestry 5.8.2 is a new release introducing CORS (Cross-Origin Resource Sharing) support and also includes a number of bug fixes and small improvements.
+
+Tapestry 5.8.2 is a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Improvements Made
+* issue:2728[] - EventContext enhancements
+* issue:2727[] - Add "boolean optional() default false" to @InjectComponent
+* issue:2725[] - Lack of HTML escaping in validation error message
+* issue:2724[] - Resolve split package caused by DisableStrictChecks
+* issue:2720[] - Tapestry support for CORS
+* issue:2607[] - Update Spanish (es) translation
+
+=== Bugs Fixed
+* issue:2723[] - CronExpression fails handling `L-<dayOfMonth>`
+* issue:2719[] - Missing dependency for commons-fileupload
+* issue:2718[] - Tapestry Announcement lacks version
+* issue:2717[] - tapestry-hibernate pom.xml doesn't have a compile dependency on tapestry-hibernate-core
+* issue:2716[] - Missing dependency for Google Closure Compiler
+* issue:2715[] - Client-side generated error message renders unstyled with Bootstrap 4
+* issue:2714[] - Checkbox and Label components with Boostrap 4
+* issue:2713[] - ChecksumPath: java.lang.StringIndexOutOfBoundsException
+* issue:2667[] - Plastic class should exclude interface static methods
+* issue:2609[] - Grid component doc: configuration sample code is incorrect
+* issue:2574[] - Add core translations for Norwegian Nynorsk (nn)
+
+
+
+== Tapestry 5.8.1
+Tapestry 5.8.1 is a new release focused on Tapestry-IoC support for https://docs.oracle.com/en/java/javase/17/language/[all Java language features introduced between Java 9 and 17].
+It also includes some other bug fixes and small improvements.
+
+Tapestry 5.8.1 is a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Improvements Made
+* issue:2710[] - Improve GridPager accessibility
+* issue:2702[] - Upgrade to Groovy 3 and Spock 2 to support Java 17
+* issue:2700[] - Create Tapestry IoC tests covering new Java features from versions 9 to 17
+* issue:2699[] - Upgrade build to latest Gradle (7.4)
+
+=== Bugs Fixed
+* issue:2711[] - `tapestry.version` factory contribution should be done in TapestryHttpModule
+* issue:2709[] - Creating a service based on a sealed interface causes exception
+* issue:2707[] - GridPager Component with Boostrap4
+* issue:2705[] - Fix warning Could not add object with duplicate id 'tapestry.css'
+* issue:2704[] - quickstart should use later log4j2
+* issue:2703[] - quickstart navbar collapse button doesn't show menu on small windows
+* issue:2701[] - quickstart pom.xml - update maven-war-plugin to 3.3.1
+
+
+
+== Tapestry 5.8.0
+Tapestry 5.8.0 is a new release focused on a couple of new features:
+
+* Support for writing REST endpoints. Read more about this on its xref:rest.adoc[documentation page].
+
+* Support for Servlet API 3.0+ asynchronous requests.
+
+Tapestry 5.8.0 is a drop-in replacement and recommended upgrade for Tapestry 5.7.0+ projects.
+
+=== Improvements Made
+* issue:2698[] - Support for Servlet API 3+ asynchronous requests
+* issue:2697[] - Upgrade embedded ASM version to 9.2 for Java 18 bytecode support
+* issue:2696[] - REST support
+* issue:2695[] - Create convenience methods for contributing coercions
+* issue:2694[] - Tapestry PlasticClassPool & PropBinding & LiteralStringProvider make thousands of duplicate strings
+* issue:2692[] - Create support for static activation context values for event handler methods
+* issue:2690[] - Update quickstart to make Spring Boot optional
+
+=== Bugs Fixed
+* issue:2712[] - Error component renders unstyled with Bootstrap 4
+* issue:2689[] - Cached SortedColumnId causing UnknownValueException with Dynamic columns
+* issue:2687[] - Streamable Resource doesn't implement equals/hashCode
+* issue:2639[] - TestableResponseImpl#clear should clear internal redirectURL & printWriter fields
+* issue:2638[] - TestableRequestImpl#clear should clear internal attributes field
+
