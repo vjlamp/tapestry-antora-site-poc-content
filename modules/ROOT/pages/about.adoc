@@ -5,3 +5,54 @@ image::apache-tapestry-icontext-600.png[]
 
 Apache Tapestry is an open-source component-oriented framework for creating dynamic, robust, highly scalable web appplications in Java.
 
+[cols="1,1,1",frame=none,grid=none]
+|===
+a|[discrete]
+== Java Power
+Tapestry pages and components are simple Java POJOs, with easy access to all Java language features and the vast Java ecosystem. Thanks to Java's advanced concurrency API, Tapestry handles requests fast without sacrificing security or stability.
+a|[discrete]
+== Scripting Ease
+Tapestry features live class reloading: change your Java code, refresh the browser and see the changes... instantly! Have your cake and eat it too: the speed and depth of Java, the agile development style of Ruby or Python.
+a|[discrete]
+== Super Productivity
+Simple POJO classes, streamlined templates, live class reloading, state-of-the-art exception reporting, first-class Ajax support, and a big library of built-in components: Tapestry is designed from the ground up to give you great productivity.
+|===
+
+[sidebar]
+We think you will love Tapestry! Give us 20 minutes and follow our xref:userguide::getting-started.adoc[quickstart guide].
+
+== What is Tapestry?
+
+[cols="1,1",frame=none,grid=none]
+|===
+a|[discrete]
+== Pure Java and Polyglot
+Written in pure Java: code your pages and components in Java, Groovy or Scala.
+[discrete]
+== Highly Productive
+Live class reloading means that the time between seeing an error and providing the fix is seconds, not minutes.
+[discrete]
+== Advanced Exception Reporting
+Gives you all the tools you need to fix your problem: not just a stack trace, but details about what Tapestry was doing and why, what went wrong, and how to fix it.
+[discrete]
+== Fast
+Pure Java; no reflection, not even for property expressions.
+Built to cleanly support large numbers of concurrent threads without contention.
+Integrated GZip content compression, JavaScript aggregation and compression, and client-side caching.
+a|[discrete]
+== Convention over Configuration
+Dependency injection and meta-programming through annotations and naming conventions.
+[discrete]
+== Scalable
+Scales up big on a single server, and works great in a cluster. Keeps session state minimal by design.
+[discrete]
+== Testable
+Committed to testability throughout design; built-in utilities to enhance TDD. Support for Selenium for integration testing.
+[discrete]
+== Adaptable and Modular
+Architecture is open and extensible.
+There's a clean way to add your own extensions, or override built-in logic.
+Provides integration with Hibernate, JPA and Spring.
+Third-party integrations with other tools, such as Quartz and Lucene.
+|===
+
