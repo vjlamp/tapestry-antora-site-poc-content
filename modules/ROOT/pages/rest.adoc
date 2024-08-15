@@ -1,1 +1,353 @@
-= Representational State Transfer (REST)
+= REST Support
+
+Since version 5.8.0, Tapestry provides out-of-the-box support for writing Representational State Transfer (REST) endpoints as regular event handler methods in page classes.
+They work in the same way the activate event (i.e. `onActivate()` methods) work, including how event handler method parameters work.
+The javadoc:org.apache.tapestry5.annotations.RequestBody[label=@RequestBody] annotation was created so event handler methods can access the request body.
+The javadoc:org.apache.tapestry5.annotations.StaticActivationContextValue[label=@StaticActivationContextValue] annotation was created so you can write event handler methods that are only called when one or more parts of the URL path match given values.
+Both annotations are not REST-specific and can be used in any event handler method.
+A new subproject/JAR, `tapestry-rest-jackson`, automates the use of Jackson Databind to make JSON conversions. tapestry-Swagger/OpenAPI 3.0 descriptions are generated automatically and can be easily customized.
+A new subproject/JAR, `tapestry-openapi-viewer`, provides an out-of-the-box viewer for the generated OpenAPI description using Swagger UI.
+For a Tapestry REST support example project, check out https://github.com/thiagohp/tapestry-rest-example.
+
+[WARNING]
+====
+1. Tapestry's REST support isn't an implementation of JAX-RS, so they expect any of its concepts to work here. It's REST implemented in a Tapestry way.
+2. REST endpoint event handler methods in components are ignored just like `onActivate()` is.
+====
+
+The following HTTP methods are supported:
+
+[cols="1,1,2,1"]
+|===
+|HTTP method |Tapestry event name |`EventConstants` constant name |Event handler method name
+
+|GET
+|httpGet
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_GET[]
+|onHttpGet
+
+|POST
+|httpPost
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_POST[]
+|onHttpPost
+
+|DELETE
+|httpDelete
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_DELETE[]
+|onHttpDelete
+
+|PUT
+|httpPut
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_PUT[]
+|onHttpPut
+
+|HEAD
+|httpHead
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_HEAD[]
+|onHttpHead
+
+|PATCH
+|httpPatch
+|javadoc:org.apache.tapestry5.EventConstants#HTTP_PATCH[]
+|onHttpPatch
+|===
+
+== Writing REST endpoints
+Writing a REST endpoint in Tapestry is exactly the same as writing `onActivate()` method in a page class.
+Everything is the same: parameter handling, returned value processing, precedence rules, class inheritance, URLs, etc.
+If you know how to write `onActivate()` methods, you already know almost everything you need how to write a REST endpoint event handler.
+There are only 2 small differences between `onActivate()` and REST endpoint event handler methods:
+
+1. REST event handler methods are invoked after the `onActivate()`. 
+2. The event name is different, according to the HTTP method to be handled.
+
+So, for example, if you want a REST endpoint with URL `/userendpoint/[id]`, supposing the `id` is a `Long`, handling the GET HTTP method, you can just write the following page class and event handler:
+
+[source,java]
+----
+public class UserEndpoint {
+
+    Object onHttpGet(Long id) {
+        // ...
+    }
+
+    // ...
+}
+----
+
+The example above could also be written using the javadoc:org.apache.tapestry5.annotations.OnEvent[label=@OnEvent] annotation and would work the same:
+
+[source,java]
+----
+public class UserEndpoint {
+
+    @OnEvent(EventConstants.HTTP_GET) 
+    Object getById(Long id) { // or any other method name
+        // ...
+    }
+
+    // ...
+}
+----
+
+== Reading the request body with @RequestBody
+Many times, specially with POST, PUT and PATCH requests, the data is sent through the request body.
+To get this data, the event handler method needs to add a parameter with the javadoc:org.apache.tapestry5.annotations.RequestBody[label=@RequestBody] annotation.
+It has a single property, `allowEmpty`, with `false` as its default value, which defines whether an empty request body is empty. If not, an exception will be thrown.
+
+[source,java]
+----
+@OnEvent(EventConstants.HTTP_PUT) 
+Object save(@RequestBody User user) {
+    // ...
+}
+
+@OnEvent(EventConstants.HTTP_PUT) 
+Object save(Long id, @RequestBody User user) {
+    // ...
+}
+----
+
+The following types are supported out-of-the-box:
+
+* `String`
+* `Reader`
+* `InputStream`
+* javadoc:org.apache.tapestry5.json.JSONObject[]
+* javadoc:org.apache.tapestry5.json.JSONArray[]
+* Primitive types and their wrapper types
+
+The actual conversion logic is implemented in the javadoc:org.apache.tapestry5.http.services.HttpRequestBodyConverter[] service, which is defined is an ordered configuration of `HttpRequestBodyConverter` instances.
+The service calls all contributed instances until one of them returns a non-null value.
+If none of them returns a non-null value, it falls back to trying to find a coercion, direct or indirect, from `HttpServletRequest` to the desired type.
+
+Here's one example of implementing an new `HttpRequestBodyConverter`
+
+[source,java]
+----
+/**
+ * Converts the body of HTTP requests to {@link User} instances. It delegates this task
+ * to {@link UserService#toObject(String)}.
+ */
+public class UserHttpRequestBodyConverter implements HttpRequestBodyConverter {
+    
+    private final UserService userService;
+
+    public UserHttpRequestBodyConverter(UserService userService) {
+        super();
+        this.userService = userService;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T convert(HttpServletRequest request, Class<T> type) {
+        T value = null;
+        // Check whether this converter handles the given type
+        if (User.class.equals(type)) {
+            // Actual conversion logic
+            try {
+                value = (T) userService.toObject(IOUtils.toString(request.getReader()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return value;
+    }
+
+}
+----
+
+Then the code added to `AppModule` or any other Tapestry-IoC module class to have it used by javadoc:org.apache.tapestry5.annotations.RequestBody[label=@RequestBody]:
+
+.AppModule.java (partial)
+[source,java]
+----
+    public static void contributeHttpRequestBodyConverter(
+            OrderedConfiguration<HttpRequestBodyConverter> configuration) {
+        
+        configuration.addInstance("User", UserHttpRequestBodyConverter.class); // automatic instantiation and dependency injection
+	// or configuration.add("User", new UserHttpRequestBodyConverter(...));
+    }
+----
+
+== Answering REST requests
+Just like any other Tapestry event handler method, the returned value defines what gets to be sent to the user agent making the request.
+This logic is written in javadoc:org.apache.tapestry5.services.ComponentEventResultProcessor[] implementations, usually but not necessarily one per return type/class, which are contributed to the `ComponentEventResultProcessor` service.
+These implementations can also set additional HTTP headers and set the HTTP status code.
+
+REST requests responses usually fall into 2 types: ones just returning HTTP status and and headers (for example, `HEAD` and `DELETE` requests) and ones returning that and also content (for example, `GET`, sometimes other methods too).
+
+=== Content responses
+For content responses, Tapestry has out-of-the-box support for javadoc:org.apache.tapestry5.StreamResponse[] (mostly binary content),  javadoc:org.apache.tapestry5.util.TextStreamResponse[] (simple text content), javadoc:org.apache.tapestry5.json.JSONArray[] (since Tapestry 5.8.0) and javadoc:org.apache.tapestry5.json.JSONObject[] (since 5.8.0).
+Here's one example for adding support for a class, `User`, converting it to the JSON format:
+
+[source,java]
+----
+/**
+ * Handles {@link User} instances when they're returned by event handler methods.
+ * Heavily inspired by {@link JSONCollectionEventResultProcessor} from Tapestry itself.
+ */
+final public class UserComponentEventResultProcessor 
+        implements ComponentEventResultProcessor<User> {
+
+    private final Response response;
+
+    private final ContentType contentType;
+    
+    private final UserService userService;
+
+    public UserComponentEventResultProcessor(Response response,
+            @Symbol(TapestryHttpSymbolConstants.CHARSET) String outputEncoding,
+            UserService userService)    {
+        this.response = response;
+        this.userService = userService;
+        contentType = new ContentType(InternalConstants.JSON_MIME_TYPE).withCharset(outputEncoding);
+    }
+
+    public void processResultValue(User user) throws IOException
+    {
+        PrintWriter pw = response.getPrintWriter(contentType.toString());
+        pw.write(userService.toJsonString(user));
+        pw.close();
+        // You could also set extra HTTP headers or the status code here
+    }        
+}
+----
+
+.AppModule.java (partial)
+[source,java]
+----
+    public void contributeComponentEventResultProcessor(
+            MappedConfiguration<Class, ComponentEventResultProcessor> configuration) {
+        configuration.addInstance(User.class, UserComponentEventResultProcessor.class);
+    }
+----
+
+=== Non-content responses
+For responses without content, just HTTP status and headers, and also for simple String responses, Tapestry 5.8.0 introduced the javadoc:org.apache.tapestry5.services.HttpStatus[] class.
+You can create instances of it by either using its utility static methods that match HTTP status names like `ok()`, `created()`, `accepted()`, `notFound()` and `forbidden()` or using one of its constructors.
+In both cases, you can customize the response further by using a fluent interface with methods for header-specific methods like `withLocation(url)` and `withContentLocation(url)` or the generic `withHttpHeader(String name, String value)`.
+Check the javadoc:org.apache.tapestry5.services.HttpStatus[] JavaDoc for the full list of methods.
+
+[source,java]
+----
+@OnEvent(EventConstants.HTTP_PUT) 
+Object save(@RequestBody User user) {
+    userService.save(user);
+    return HttpStatus.created()
+            .withContentLocation("Some URL")
+            .withHttpHeader("X-Something", "X-Value");
+}
+----
+
+== MappedEntityManager service
+This is a service which provides a list of mapped entities.
+They're usually classes which are mapped to other formats like JSON and XML and used to represent data received or sent to or from external processes, for example REST endpoints.
+Contributions are done by package and all classes inside the contributed ones are considered mapped entities.
+The `[root package].rest.entities` package is automatically contributed.
+
+This service is used by Tapestry code, including the OpenAPI description generator and `tapestry-rest-jackson`, to know which classes should be considered part of the webapp's external APIs.
+
+Here's an example contribution:
+
+.AppModule.java (partial)
+[source,java]
+----
+public static void contributeMappedEntityManager(Configuration<String> configuration) {
+    configuration.add("com.example.rest.entities");
+}
+----
+
+== Integration with Jackson Databind with tapestry-rest-jackson
+JSON has been widely used as a data interchange format in REST endpoints, while Jackson Databind is maybe the mostly used Java library for JSON mapping.
+`tapestry-rest-jackson` automates the usage of Jackson Databind in Tapestry, defining an javadoc:org.apache.tapestry5.jacksondatabind.services.ObjectMapperSource[] service, contributing javadoc:org.apache.tapestry5.services.ComponentEventResultProcessor[] and javadoc:org.apache.tapestry5.services.HttpRequestBodyConverter[] implementations for all mapped entity classes (as defined by the javadoc:org.apache.tapestry5.services.rest.MappedEntityManager[] service) and implementing the generation of JSON schemas for OpenAPI descriptions of mapped entity classes using https://victools.github.io/jsonschema-generator/[victools/jsonschema-generator].
+
+The `ObjectMapperSource` service defines how `tapestry-rest-jackson` will get an `ObjectMapper` instance to use for a given entity class.
+It has an ordered configuration of `ObjectMapperSource`.
+It has a single method, `ObjectMapper get(Class<?> clasz)`.
+When it's called, it goes through all the contributed instances calling the same method on them until one returns a non-`null` value.
+When a non-`null` value is returned, the service method returns it.
+If none is found, the fallback is always returning the same object returned by `new ObjectMapper()`.
+Any customizations to the `ObjectMapper` instance should be done as contributions to the `ObjectMapperSource` service.
+Here's one example that defines which date format should be used for all entity classes:
+
+[source,java]
+----
+/**
+ * Example of customizing the Jackson Databinding's {@link ObjectMapper}, specifically the
+ * date format.
+ */
+public static void contributeObjectMapperSource(OrderedConfiguration<ObjectMapperSource> configuration) {
+    configuration.add("Custom", new CustomObjectMapperSource());
+}
+
+private static final class CustomObjectMapperSource implements ObjectMapperSource {
+
+    final private ObjectMapper mapper;
+    
+    public CustomObjectMapperSource() {
+        mapper = new ObjectMapper(/* ... */);
+        mapper.setDateFormat(new SimpleDateFormat("yyyy/MM/dd hh:mm:ss"));
+        // Any other customizations go here.
+    }
+        
+    @Override
+    public ObjectMapper get(Class<?> clasz) {
+        // You could check the class to provide class-specific ObjectMapper 
+        // instances here, but this isn't the case for this example
+        return mapper;
+    }
+        
+}
+----
+
+== Automatic generation of OpenAPI 3.0 (Swagger) descriptions
+Tapestry provides an out-of-the-box OpenAPI 3.0 (Swagger) description generator driven by the REST endpoints event handlers (i.e. the ones handling the events listed in the table in the top of this page), configuration symbols and internationalization messages (i.e. app.properties).
+The description is in the JSON format.
+
+It's disabled by default.
+It's enabled by setting the `tapestry.publish-openapi-description` (javadoc:org.apache.tapestry5.SymbolConstants#PUBLISH_OPENAPI_DEFINITON[]) configuration symbol to true.
+If enabled, it will be available at the `/openapi.json` URL.
+This is configurable by using the `tapestry.openapi-description-path` (javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_DESCRIPTION_PATH[]) configuration symbol. 
+
+All the entity classes returned by javadoc:org.apache.tapestry5.services.rest.MappedEntityManager#getEntities()[] are automatically added to the schemas section of the generated description.  
+
+=== Customizing names, summaries and descriptions using messages and configuration symbols
+Summaries, names and descriptions and messages are taken from messages first, configuration symbol second, except for the OpenAPI version, which is only taken from the `tapestry.openapi-version` (javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_VERSION[]) symbol and has a default value of 3.0.0. Given a message key, the corresponding configuration symbol is `tapestry.[message key]` format.
+
+HTTP method names are lowercased.
+
+When building a message key, if it's based on a path, the starting slash is not removed. For example, the summary for the `/something` endpoint for the POST method is +
+`openapi./something.post.summary`.
+
+You can see which messages and symbols are being looked up by setting the debug level of the `org.apache.tapestry5.internal.services.rest.DefaultOpenApiDescriptionGenerator` class to `DEBUG`.
+
+=== Customizing the consumed and produced MIME content types of an endpoint with @RestInfo
+The javadoc:org.apache.tapestry5.annotations.RestInfo[label=@RestInfo] annotation allows you to define, just for OpenAPI description generation purposes, what are the accepted MIME content types accepted by a REST endpoint event handler method, the produced types and what's the actual returned value type of the method when its execution succeeds.
+Many REST event handler methods usually have a return type of `Object` so it can return an javadoc:org.apache.tapestry5.services.HttpStatus[] instance of something goes wrong and a mapped entity class entity when the call is successful.
+
+Here's one example: 
+
+[source,java]
+----
+@RestInfo(produces = "text/plain", produces = "application/json", returnType = User.class)
+Object onHttpGet(@RequestBody Long id) {
+    User user = ...;
+	if (!notFound) {
+        return HttpStatus.notFound()
+    }
+    else {
+        return user;    
+    }
+}
+----
+
+=== Further customizations
+The generated description can be further customized by implementing the javadoc:org.apache.tapestry5.services.rest.OpenApiDescriptionGenerator[] interface and contributing it to the OpenApiDescriptionGenerator service.
+The `JSONObject generate(JSONObject documentation)` method will receive the generated description and it can be changed by using the javadoc:org.apache.tapestry5.json.JSONObject[] methods.
+The return value should be the same object received as a parameter.
+
+== tapestry-openapi-viewer
+The `tapestry-openapi-viewer` Tapestry subproject/JAR embeds the open source Swagger-UI OpenAPI/Swagger and makes it available at the `/openapiviewer` URL.
+No configuration is needed other than including the JAR in the classpath.
+

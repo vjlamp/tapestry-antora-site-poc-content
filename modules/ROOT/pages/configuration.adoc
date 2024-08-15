@@ -378,6 +378,39 @@ Since 5.1.0.0 +
 If `true`, then the `<meta>` tag that Tapestry normally writes into the `<head>`, identifying the Tapestry version, will be omitted.
 Use this when you do not wish to advertise your application's use of Tapestry.
 
+tapestry.openapi-application-version | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_APPLICATION_VERSION[]::
+Since 5.8.0 +
+Defines the version of this application in the generated OpenAPI description (i.e. info/version).
+No default value is provided.
+
+tapestry.openapi-base-path | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_BASE_PATH[]::
+Since 5.8.0 +
+Defines a base path to the generated OpenAPI description relative to the application URL as defined by javadoc:org.apache.tapestry5.http.services.BaseURLSource#getBaseURL(boolean)[].
+It should be either the empty string, meaning there's no base path, or a string starting and ending with a slash.
+Default value is `/`.
+
+tapestry.openapi-description | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_DESCRIPTION[]::
+Since 5.8.0 +
+Defines the description of this application in the generated OpenAPI description.
+No default value is provided.
+
+tapestry.openapi-description-path | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_DESCRIPTION_PATH[]::
+Since 5.8.0 +
+Defines the path the OpenAPI description file of this application's REST endpoints will be published.
+It should start with a slash.
+Default value is `/openapi.json`.
+The description will only be published if `tapestry.publish-openapi-description` is set to `true`.
+
+tapestry.openapi-title | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_TITLE[]::
+Since 5.8.0 +
+Defines the title of this application in the generated OpenAPI description.
+No default value is provided.
+
+tapestry.openapi-version | javadoc:org.apache.tapestry5.SymbolConstants#OPENAPI_VERSION[]::
+Since 5.8.0 +
+Defines the OpenAPI version to be used in the generated OpenAPI description.
+Default value is 3.0.0.
+
 tapestry.page-preload-mode | javadoc:org.apache.tapestry5.SymbolConstants#PRELOADER_MODE[]::
 Since 5.4.0 +
 Controls in what environment page preloading should occur.
@@ -394,6 +427,11 @@ tapestry.production-mode | javadoc:org.apache.tapestry5.SymbolConstants#PRODUCTI
 Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
+
+tapestry.publish-openapi-description | javadoc:org.apache.tapestry5.SymbolConstants#PUBLISH_OPENAPI_DEFINITON[]::
+Since 5.8.0 +
+Defines whether the OpenAPI description file of this application's REST endpoints should be published or not.
+The default value is `false`.
 
 tapestry.restrictive-environment | javadoc:org.apache.tapestry5.SymbolConstants#RESTRICTIVE_ENVIRONMENT[]::
 Since 5.4.0 +
