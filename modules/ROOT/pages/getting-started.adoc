@@ -57,8 +57,7 @@ Choose org.apache.tapestry:quickstart version:
 6: 5.5.0
 7: 5.6.4
 8: 5.7.3
-9: 5.8.7
-Choose a number: 9: 9
+Choose a number: 8: 8
 Define value for property 'groupId': : com.example
 Define value for property 'artifactId': : newapp
 Define value for property 'version':  1.0-SNAPSHOT: : 
@@ -70,7 +69,7 @@ version: 1.0-SNAPSHOT
 package: com.example.newapp
  Y: : Y
 [INFO] ----------------------------------------------------------------------------
-[INFO] Using following parameters for creating project from Archetype: quickstart:5.8.6
+[INFO] Using following parameters for creating project from Archetype: quickstart:5.7.3
 [INFO] ----------------------------------------------------------------------------
 [INFO] Parameter: groupId, Value: com.example
 [INFO] Parameter: artifactId, Value: newapp
