@@ -118,7 +118,7 @@ But as we'll see next, it's possible to have a single decorator method work on m
 
 == Targeting Multiple Services
 
-By using the javadoc:org.apache.tapestry5.annotations.Match[label=@Match] annotation, you may identify which services are to be decorated.
+By using the javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match] annotation, you may identify which services are to be decorated.
 
 The value specified in the `@Match` annotation is one or more patterns.
 These patterns are used to match services.
@@ -188,7 +188,8 @@ It should now be evident that the delegate passed into a decorator method is som
 
 == Annotation driven decorators
 Added in 5.2 +
-Starting from version 5.2, Tapestry supports annotation-driven decorator methods. If the javadoc:org.apache.tapestry5.annotations.Decorate[label=@Decorate] annotation is present, the decorator method can be arbitrary named, as shown in the following example.
+Starting from version 5.2, Tapestry supports annotation-driven decorator methods.
+If the javadoc:org.apache.tapestry5.ioc.annotations.Decorate[label=@Decorate] annotation is present, the decorator method can be arbitrary named, as shown in the following example.
 
 [source,java]
 ----
