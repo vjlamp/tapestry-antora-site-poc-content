@@ -1,0 +1,175 @@
+= Service Advisors
+
+Service advice represents a powerful meta-programming facility available to services. In fact, it is a kind of limited Aspect Oriented Programming.
+
+Service advice allows you to intercept method invocations on your services; you have the ability to see what methods get invoked, what the parameters are. You can let the normal code do it work, and then inspect or even adjust the return value, or any thrown exceptions. And you can do this all in normal Java code.
+
+A common example of method-level service advice is to log method entry and exit, complete with parameter values, return values, and thrown exceptions. Other approaches include security checks, transaction management, and other broadly spanning concerns.
+
+Let's start with a (contrived) example. Let's say you have an existing set of services that have methods that sometimes return null, and you want them to return an empty string instead because you are getting some NullPointerExceptions elsewhere in your application.
+
+You could track down the implementation of each service and fix the logic that provides a return value ... or you could advise the methods:
+
+[source,java]
+----
+  @Match("*")
+  public static void adviseNonNull(MethodAdviceReceiver receiver)
+  {
+    MethodAdvice advice = new MethodAdvice()
+    {
+      void advise(Invocation invocation)
+      {
+        invocation.proceed();
+
+        if (invocation.getResultType().equals(String.class) && invocation.getResult() == null)
+          invocation.overrideResult("");
+      }
+    };
+
+    receiver.adviseAllMethods(advice);
+  };
+----
+
+This is a method that is placed in a module class. Note the terminology: _advise_ is the verb ("to advise a method") and _advice_ is the noun ("with this advice").
+The javadoc:org.apache.tapestry5.ioc.MethodAdviceReceiver[] is a wrapper around the service being advised: you can add advice to some or all methods of the service, and also obtain the interface of the service. It is automatically passed into service advisor methods.
+
+See xref:injection-in-detail.adoc[] for what can be injected into a service advisor method.
+
+Service advisor methods must have a parameter of type javadoc:org.apache.tapestry5.ioc.MethodAdviceReceiver[].
+
+A service will often be advised multiple times; any method may have any number of advice objects applied to it.
+Some methods may not get any advice.
+All of this is acceptable.
+
+Service advisor methods are always void methods (this is different from service decorator methods).
+
+The javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match("*")] annotation indicates that this advice applies to all services (both your own, and those defined by Tapestry).
+You will want to narrow down which services are actually targeted in most cases.
+
+Note that some services, especially those built into Tapestry IoC, are marked as not subject to decoration, this applies to service advice as well as service decoration.
+
+The javadoc:org.apache.tapestry5.plastic.MethodAdvice[] interface is very simple; it receives an javadoc:org.apache.tapestry5.plastic.MethodInvocation[] representing a method call. `MethodInvocation` has methods for inspecting the type and value of the parameters, and for overriding the values of the parameters.
+
+The call to `proceed()` allows the invocation to continue; that is, the original method is invoked.
+If the method has been advised multiple times, the call to `proceed()` may chain into the next `MethodAdvice` object.
+In any case, after invoking `proceed()`, you may inspect and override the result (the return value).
+
+Advice is pretty efficient, but it is still better to apply it only to methods that make sense.
+We can improve the service advisor method in our example to only advise methods that return String:
+
+[source,java]
+----
+  @Match("*")
+  public static void adviseNonNull(MethodAdviceReceiver receiver)
+  {
+    MethodAdvice advice = new MethodAdvice()
+    {
+      void advise(MethodInvocation invocation)
+      {
+        invocation.proceed();
+
+        if (invocation.getResult().equals(null))
+          invocation.overrideResult("");
+      }
+    };
+
+    for (Method m : receiver.getServiceInterface().getMethods())
+    {
+      if (m.getReturnType().equals(String.class))
+        receiver.adviseMethod(m, advice);
+    }
+  };
+----
+
+== Built-in Advice
+
+Tapestry includes two built-in advisor services.
+
+=== Logging Advice
+Logging advice is built into Tapestry. You can apply logging advice to your services very easily:
+
+[source,java]
+----
+  @Match("*")
+  public static void adviseLogging(LoggingAdvisor loggingAdvisor, Logger logger, MethodAdviceReceiver receiver)
+  {
+    loggingAdvisor.addLoggingAdvice(logger, receiver);
+  }
+----
+
+javadoc:org.apache.tapestry5.ioc.services.LoggingAdvisor[] is a built-in Tapestry IoC service.
+This demonstrates how services can be injected into service advisor methods.
+The Logger parameter is the logger for the service being advised.
+
+=== Lazy Advice
+javadoc:org.apache.tapestry5.ioc.services.LazyAdvisor[] makes method invocations lazy: methods that return an interface (rather than a value) will not execute immediately; instead, the method invocation is postponed until a method of the return value is invoked.
+
+== Matching And Ordering
+Each service advice method gets a unique id, obtained by stripping the "advise" prefix from the method name. Advice ids must be unique across all modules.
+
+If the javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match] annotation is omitted, the advice will match against a service with the same id.
+
+In many cases, the order in which the advice is given is very important; for example, you may want logging first, then transaction management, then security checks.
+The javadoc:org.apache.tapestry5.ioc.annotations.Order[label=@Order] annotation allows you to explicitly set the order.
+
+== Annotation driven advisors
+Added in 5.2 +
+Starting from version 5.2, Tapestry supports annotation-driven advise methods.
+If the javadoc:org.apache.tapestry5.annotations.Advise[label=@Advise] annotation is present, the advise method can be arbitrary named, as shown in the following example.
+
+[source,java]
+----
+  @Advise
+  @Match("*DAO")
+  public static void byServiceId(MethodAdviceReceiver receiver)
+  {
+    ...
+  }
+----
+The advice above is applied to any service whose id matches the `*DAO` pattern.
+
+Alternatively, marker annotations can be placed on the advise method to match a specific service.
+
+[source,java]
+----
+  @Advise
+  @Blue
+  public static void byMarkerAnnotation(MethodAdviceReceiver receiver)
+  {
+    ...
+  }
+----
+The advice above is applied to any service that is marked by the `@Blue` annotation.
+
+By default, javadoc:org.apache.tapestry5.ioc.annotations.Advise[label=@Advise] annotation applies the advice to any service matched by the javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match] or marker annotations.
+You can limit the matching to a single service interface, as shown in the following example.
+
+[source,java]
+----
+  @Advise(serviceInterface=MyService.class)
+  @Match("*DAO")
+  public static void byMatchAnnotation(MethodAdviceReceiver receiver)
+  {
+    ...
+  }
+----
+
+In the example above, the advice is applied to any implementation of `MyService` interfaces whose id matches the `*DAO` pattern.
+
+[source,java]
+----
+  @Advise(serviceInterface=MyService.class)
+  @Blue
+  public static void byMarkerAnnotation(MethodAdviceReceiver receiver)
+  {
+    ...
+  }
+----
+The advice above is applied to any implementation of the MyService interface that is marked by the `@Blue` annotation.
+
+== Decorators and Advice
+xref:service-decorators.adoc[] are another way to achieve the same thing; service advisors are a more recent addition, added in Tapestry 5.1.
+
+It is not recommended that you mix advice and decoration.
+If you do, decoration take precedence;
+all decorators will be in effect before any advice (internally, they are two separate steps, with advice being processed and the result of that used by the decorators).
