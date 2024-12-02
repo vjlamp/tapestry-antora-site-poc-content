@@ -112,61 +112,6 @@ If the javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match] annotati
 In many cases, the order in which the advice is given is very important; for example, you may want logging first, then transaction management, then security checks.
 The javadoc:org.apache.tapestry5.ioc.annotations.Order[label=@Order] annotation allows you to explicitly set the order.
 
-== Annotation driven advisors
-Added in 5.2 +
-Starting from version 5.2, Tapestry supports annotation-driven advise methods.
-If the javadoc:org.apache.tapestry5.annotations.Advise[label=@Advise] annotation is present, the advise method can be arbitrary named, as shown in the following example.
-
-[source,java]
-----
-  @Advise
-  @Match("*DAO")
-  public static void byServiceId(MethodAdviceReceiver receiver)
-  {
-    ...
-  }
-----
-The advice above is applied to any service whose id matches the `*DAO` pattern.
-
-Alternatively, marker annotations can be placed on the advise method to match a specific service.
-
-[source,java]
-----
-  @Advise
-  @Blue
-  public static void byMarkerAnnotation(MethodAdviceReceiver receiver)
-  {
-    ...
-  }
-----
-The advice above is applied to any service that is marked by the `@Blue` annotation.
-
-By default, javadoc:org.apache.tapestry5.ioc.annotations.Advise[label=@Advise] annotation applies the advice to any service matched by the javadoc:org.apache.tapestry5.ioc.annotations.Match[label=@Match] or marker annotations.
-You can limit the matching to a single service interface, as shown in the following example.
-
-[source,java]
-----
-  @Advise(serviceInterface=MyService.class)
-  @Match("*DAO")
-  public static void byMatchAnnotation(MethodAdviceReceiver receiver)
-  {
-    ...
-  }
-----
-
-In the example above, the advice is applied to any implementation of `MyService` interfaces whose id matches the `*DAO` pattern.
-
-[source,java]
-----
-  @Advise(serviceInterface=MyService.class)
-  @Blue
-  public static void byMarkerAnnotation(MethodAdviceReceiver receiver)
-  {
-    ...
-  }
-----
-The advice above is applied to any implementation of the MyService interface that is marked by the `@Blue` annotation.
-
 == Decorators and Advice
 xref:service-decorators.adoc[] are another way to achieve the same thing; service advisors are a more recent addition, added in Tapestry 5.1.
 
