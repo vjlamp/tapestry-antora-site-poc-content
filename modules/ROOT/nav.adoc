@@ -66,6 +66,7 @@
 * xref:type-coercion.adoc[]
 * xref:case-insensitivity.adoc[]
 * xref:aliases.adoc[]
+* xref:injection-in-detail.adoc[]
 * xref:ordering-by-constraints.adoc[]
 * xref:registry-startup.adoc[]
 * xref:service-implementation-reloading.adoc[]
