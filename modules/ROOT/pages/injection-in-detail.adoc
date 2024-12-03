@@ -192,7 +192,6 @@ Injects fields with common resources:
 * `org.slf4j.Logger`: Logger for the component (based on component class name)
 * `Locale`: locale for the containing page (page locale is immutable)
 * javadoc:org.apache.tapestry5.commons.Messages[]: Component's message catalog
-* javadoc:org.apache.tapestry5.services.pageload.ComponentResourceSelector[]: selector for the containing page (selector is immutable). `ComponentResourceSelector` is new as of release 5.3. It encapsulates a locale plus additional application-specific data used for skinning and/or themeing.
 
 === Asset InjectionProvider
 Triggered by the javadoc:org.apache.tapestry5.annotations.Path[label=@Path] annotation: the Path value has symbols expanded, and is then converted to an Asset.
