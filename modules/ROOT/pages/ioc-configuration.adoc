@@ -166,7 +166,7 @@ public static Runnable buildStartup(
 Here we don't even need a separate class for the implementation, we use an inner class for the implementation.
 The point is, the configuration is provided to the builder method, which passes it along to the implementation of the service.
 
-On the contribution side, a service contribution method sees a javadoc:org.apache.tapestry5.commons.Configuration[] object:
+On the contribution side, a service contribution method sees a javadoc:org.apache.tapestry5.ioc.Configuration[] object:
 
 [source,java]
 ----
@@ -219,7 +219,7 @@ Notice that the service builder method is shielded from the details of how the i
 It doesn't have to know about IDs and pre- and post-requisites.
 By using a parameter type of List, we've triggered Tapestry to collect all the ordering information.
 
-For our service contribution methods, we must provide a parameter of type javadoc:org.apache.tapestry5.commons.OrderedConfiguration[]:
+For our service contribution methods, we must provide a parameter of type javadoc:org.apache.tapestry5.ioc.OrderedConfiguration[]:
 
 [source,java]
 ----
@@ -252,7 +252,7 @@ When conflicts occur, Tapestry will log warnings (identifying the source of the 
 
 Neither the key nor the value may be `null`.
 
-For mapped configurations where the key type is `String`, a javadoc:org.apache.tapestry5.commons.util.CaseInsensitiveMap[] will be automatically used (and passed to the service builder method), to help ensure that xref:case-insensitivity.adoc[case insensitivity] is automatic and pervasive.
+For mapped configurations where the key type is `String`, a javadoc:org.apache.tapestry5.ioc.util.CaseInsensitiveMap[] will be automatically used (and passed to the service builder method), to help ensure that xref:case-insensitivity.adoc[case insensitivity] is automatic and pervasive.
 
 == Injecting Classes
 All three configuration interfaces have a second method, `addInstance()`.
@@ -263,14 +263,14 @@ If the constructor for the class takes dependencies, those are injected as well.
 == Injecting Resources
 In addition to injecting services into a contributor method (via the `@InjectService` and `@Inject` annotations), Tapestry will key off of the parameter type to allow other things to be injected.
 
-* javadoc:org.apache.tapestry5.commons.ObjectLocator[]: access to other services visible to the contributing module
+* javadoc:org.apache.tapestry5.ioc.ObjectLocator[]: access to other services visible to the contributing module
 * `org.slf4j.Logger`: the Logger for the service being contributed to
 
 No annotation is needed for these cases.
 
 == Configuration Overrides
 Added in 5.1 +
-The javadoc:org.apache.tapestry5.commons.OrderedConfiguration[] and javadoc:org.apache.tapestry5.commons.MappedConfiguration[] interfaces now support overrides.
+The javadoc:org.apache.tapestry5.ioc.OrderedConfiguration[] and javadoc:org.apache.tapestry5.ioc.MappedConfiguration[] interfaces now support overrides.
 An override is a replacement for a normally contributed object.
 An override must match a contributed object, and each contributed object may be overridden at most once.
 The new object replaces the original object; alternately, you may override the original object with `null`.
