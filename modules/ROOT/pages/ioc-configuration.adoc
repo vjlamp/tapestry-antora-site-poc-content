@@ -241,10 +241,6 @@ The object passed in may be null; this is valid, and is considered a "join point
 Null values, once ordered, are edited out (the `List` passed to the service builder method does not include any `null`s).
 Again, they are allowed as placeholders, for the actual contributed objects to organize themselves around.
 
-When using `add()` without any specific constraints, a default constraint is added: after the previously added element.
-These default constraints are only within a single contribution method, but makes it much easier to set the order of several related contributions.
-Note that the contributions will be ordered relative to each other and it's possible that contributions by some other module or method may be interspersed between them.
-
 === Map
 As discussed in the earlier examples, mapped configurations are also supported.
 The keys passed in must be unique.
