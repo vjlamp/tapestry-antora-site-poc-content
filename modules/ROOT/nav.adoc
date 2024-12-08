@@ -70,7 +70,6 @@
 * xref:registry-startup.adoc[]
 * xref:service-advisors.adoc[]
 * xref:service-decorators.adoc[]
-* xref:service-implementation-reloading.adoc[]
 
 .Add-ons and Integrations
 * Built-in
