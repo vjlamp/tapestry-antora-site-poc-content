@@ -1,5 +1,4 @@
 = Service Implementation Reloading
-Added in 5.2
 
 Service implementation reloading is the live reloading of Tapestry-IOC service implementation classes without having to stop & restart the servlet container.
 Available for Tapestry 5.2 and later, it extends the developer productivity gains of Tapestry's xref:class-reloading.adoc[Live Class Reloading] to your Tapestry-IOC service modules.
@@ -14,21 +13,14 @@ As of release 5.2, you can change your service implementation, and Tapestry pick
 A service can even change its dependencies when being reloaded ... but it can't change its interface.
 
 == Limitations
-* Reloading only works for services, and only for services with the default service scope (i.e., global singletons).
-Live reloading does not apply to *modules, service interfaces*, contributions, or anything but just the service implementation.
-
+* Reloading only works for services, and only for services with the default service scope (i.e., global singletons). Live reloading does not apply to modules, service interfaces, contributions, or anything but just the service implementation.
 * Reloading is limited to services that can be proxied: services with an interface and an implementation of that interface.
-
 * Reloading requires that the underlying class files be simple, local, filesystem files (not, for example, files inside a JAR).
-
-* If a service has internal state of any kind, that state is lost when the class is reloaded and the service re-instantiated.
-However, if a service has a configuration, the configuration will be reconstructed and injected into the service.
-
+* If a service has internal state of any kind, that state is lost when the class is reloaded and the service re-instantiated. However, if a service has a configuration, the configuration will be reconstructed and injected into the service.
 * Services are decorated only once, so any decorations or advice applies to the initially loaded version of the class, and will not be recalculated when the class changes.
 
 == Class Loader Issues
-Tapestry creates a new class loader for _each service implementation_.
-When the underlying `.class` file changes, the class loader is discarded along with the instance, and a new class loader is created.
+Tapestry creates a new class loader for _each service implementation_. When the underlying `.class` file changes, the class loader is discarded along with the instance, and a new class loader is created.
 
 The class loader only loads the service implementation class, and any inner classes for the service implementation.
 All other classes are loaded by the standard class loader for the application.
@@ -42,7 +34,7 @@ However, if the class publishes itself to some other service (for example, addin
 TIP: Be careful about publishing any instances of a reloadable class.
 
 == Update Checks
-Update checks are normally driven by `tapestry-core`, which periodically checks for changed templates, message catalogs, and component classes.
+Update checks are normally driven by tapestry-core, which periodically checks for changed templates, message catalogs, and component classes.
 Checks for changed service implementation classes occur at the same time.
 
-In an application that is not driven by the web tier, you will need to periodically invoke the `fireCheckForUpdates()` method of the javadoc:org.apache.tapestry5.services.UpdateListenerHub[] service (which was moved from `tapestry-core` to `tapestry-ioc` for this purpose).
+In an application that is not driven by the web tier, you will need to periodically invoke the `fireCheckForUpdates()` method of the javadoc:org.apache.tapestry5.services.UpdateListenerHub[] service (which was moved from tapestry-core to tapestry-ioc for this purpose).
