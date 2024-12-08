@@ -571,11 +571,10 @@ Yet another option is available: instead of binding an interface to a implementi
 This is very useful in very rare circumstances.
 
 == Builtin Services
-A few services within the Tapestry IOC Module are "builtin"; there is no service builder method in the javadoc:org.apache.tapestry5.ioc.services.TapestryIOCModule[] class.
+A few services within the Tapestry IOC Module are "builtin"; there is no service builder method in the javadoc:org.apache.tapestry5.ioc.modules.TapestryIOCModule[] class.
 
 Builtin services include:
 
-* javadoc:org.apache.tapestry5.ioc.services.ClassFactory[]
 * javadoc:org.apache.tapestry5.ioc.LoggerSource[]
 * javadoc:org.apache.tapestry5.ioc.services.RegistryShutdownHub[]
 * javadoc:org.apache.tapestry5.ioc.services.PerthreadManager[]
