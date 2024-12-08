@@ -567,7 +567,7 @@ public static Indexer build(String serviceId, Log serviceLog,
 Here, the `alertEmail` parameter will receive the configured alerts email (see the xref:symbols.adoc[symbols documentation] for more about this syntax) rather than the service id.
 
 == Binding ServiceBuilders
-Yet another option is available: instead of binding an interface to a implemention class, you can bind a service to a xref:org.apache.tapestry5.ioc.ServiceBuilder[], a callback used to create the service implementation.
+Yet another option is available: instead of binding an interface to a implemention class, you can bind a service to a javadoc:org.apache.tapestry5.ioc.ServiceBuilder[], a callback used to create the service implementation.
 This is very useful in very rare circumstances.
 
 == Builtin Services
