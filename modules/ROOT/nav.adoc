@@ -65,6 +65,8 @@
 * xref:symbols.adoc[]
 * xref:type-coercion.adoc[]
 * xref:case-insensitivity.adoc[]
+* xref:defining-tapestry-ioc-services.adoc[]
+* xref:ioc-modules.adoc[]
 * xref:ioc-configuration.adoc[Configuration]
 * xref:aliases.adoc[]
 * xref:injection-in-detail.adoc[]
