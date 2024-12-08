@@ -161,8 +161,8 @@ The use of static methods is only absolutely necessary in a few cases, where the
 Services are often referenced by a particular marker interface on the method or constructor parameter.
 Tapestry will use the intersection of services with that exact marker and assignable by type to find a unique service to inject.
 
-Often, all services in a module should share a marker, this can be specified with a javadoc:org.apache.tapestry5.annotations.Marker[label=@Marker] annotation on the module class.
-For example, the TapestryIOCModule:
+Often, all services in a module should share a marker, this can be specified with a javadoc:org.apache.tapestry5.ioc.annotations.Marker[label=@Marker] annotation on the module class.
+For example, the `TapestryIOCModule`:
 
 [source,java]
 ----
