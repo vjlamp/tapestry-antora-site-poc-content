@@ -4,7 +4,7 @@ When you don't provide the javadoc:org.apache.tapestry5.ioc.annotations.InjectSe
 
 This is called _object injection_, rather than _service injection_, because the value that will ultimately be injected is not necessarily a service; it may be some arbitrary object.
 
-If this sounds vague, its because there is not just one javadoc:org.apache.tapestry5.ioc.ObjectProvider[]; there's a whole set of them, forming a xref:chainbuilder-service.adoc[chain of command].
+If this sounds vague, its because there is not just one javadoc:org.apache.tapestry5.commons.ObjectProvider[]; there's a whole set of them, forming a xref:chainbuilder-service.adoc[chain of command].
 The commands in the chain may provide an object based on the parameter type, or based on additional annotations on the parameter.
 
 There are several built-in object providers:
