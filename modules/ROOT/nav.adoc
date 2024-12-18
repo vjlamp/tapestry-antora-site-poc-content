@@ -1,5 +1,4 @@
 * xref:index.adoc[]
-* xref:introduction.adoc[]
 
 .Tapestry Core
 * Basics
