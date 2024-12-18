@@ -19,7 +19,7 @@ Simple POJO classes, streamlined templates, live class reloading, state-of-the-a
 |===
 
 [sidebar]
-We think you will love Tapestry! Give us 20 minutes and follow our xref:userguide::getting-started.adoc[quickstart guide].
+We think you will love Tapestry! Give us 20 minutes and follow our xref:getting-started.adoc[quickstart guide].
 
 == What is Tapestry?
 
