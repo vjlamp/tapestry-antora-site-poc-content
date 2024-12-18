@@ -1,9 +1,10 @@
 name: main
-title: Tapestry
+title: Home
 version: ~
 start_page: ROOT:about.adoc
 nav:
 - modules/ROOT/nav.adoc
 asciidoc:
   attributes:
+    experimental: true # must be true to support User Interface Macros
     tapestry-version: 5.8.7

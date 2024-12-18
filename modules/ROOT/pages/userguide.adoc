@@ -1,0 +1,3 @@
+= User Guide
+
+The versioned User Guide is located in a dedicated section of this website available through the navigation or this  xref:userguide::index.adoc[direct link to the User Guide].

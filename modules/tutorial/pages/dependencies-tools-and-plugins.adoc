@@ -1,0 +1,35 @@
+= Dependencies, Tools and Plugins
+As much as we would like to dive right into the code, we must first set up your development environment. Likely you have some of these, or reasonable alternatives, already on your development machine.
+
+== JDK 1.8 or Newer
+This tutorial uses the latest released version of Tapestry, which requires Java Development Kit (JDK) version 1.8 or newer.
+(But see xref:ROOT:supported-environments-and-versions.adoc[] if you want to use an older version of JDK or Tapestry.)
+
+== Eclipse IDE
+For this tutorial we'll assume you're using Eclipse as your Integrated Development Environment (IDE).
+Eclipse is a popular IDE, but feel free to adapt these instructions to IntelliJ, NetBeans, or any other.
+
+Eclipse comes in various flavors, and includes a reasonable XML editor built-in.
+It can be downloaded from the eclipse.org web site.
+We recommend the latest version of Eclipse IDE for Java Developers (but anything from version 3.7 onward should work fine).
+
+== Apache Maven 3
+Maven is a software build tool with the ability to automatically download project dependencies (such as the Tapestry JAR files, and the JAR files that Tapestry itself depends on) from one of several central repositories.
+
+Maven is not essential for using Tapestry, but is especially helpful when performing the initial set-up of a Tapestry application.
+Feel free to substitute Gradle or Ivy if you prefer.
+
+Eclipse comes with a Maven plugin, M2Eclipse (also known as m2e) with an embedded version of Maven.
+We'll use that here for simplicity's sake.
+Alternatively, you could install Maven from http://maven.apache.org/download.html and use it from the command line (`mvn`).
+
+== Jetty
+For simplicity, this tutorial uses Jetty, a lightweight open source web server and servlet container available from the Eclipse Foundation. Of course, you could use pretty much any other Java servlet container (Tomcat, Glassfish, JBoss, etc), but the instructions that follow assume Jetty.
+
+We will use Maven to download and run Jetty automatically, so you will NOT have to download it for this tutorial. (Alternatively, you could download and install the RunJettyRun Eclipse plugin from the Eclipse Marketplace.)
+
+== Tapestry
+Tapestry is available as a set of JAR files, but you will not have to download them yourself.
+As with Jetty, Maven will take care of downloading Tapestry and its dependencies.
+
+Next: xref:creating-the-skeleton-application.adoc[]

@@ -1,0 +1,57 @@
+= Introduction
+
+Welcome to Tapestry!
+
+This is a tutorial for people who will be creating Tapestry web applications.
+It doesn't matter whether you have experience with earlier versions of Tapestry or other web frameworks.
+In fact, in some ways, the less you know about web development in general, the better off you may be ... that much less to unlearn!
+
+You do need to have a reasonable understanding of HTML, a smattering of XML, and a good understanding of basic Java language features, including Annotations.
+
+== The Challenges of Web Application Development
+If you're used to developing web applications using servlets and JSPs, or with Struts, you are simply used to a lot of pain.
+These are environments with few safety net; Struts and the Servlet API have no idea how your application is structured, or how the different pieces fit together.
+Any URL can be an action and any action can forward to any view (usually a JSP) to provide an HTML response to the web browser.
+The pain is the unending series of small, yet important, decisions you have to make as a developer (and communicate to the rest of your team).
+What are the naming conventions for actions, for pages, for attributes stored in the `HttpSession` or `HttpServletRequest`?
+Where do cross-cutting concerns such as database transactions, caching and security get implemented (and do you have to cut-and-paste Java or XML to make it work?)
+How are your packages organized ... where to the user interface classes go, and where do the data and entity objects go?
+How do you share code from one part of your application to another?
+
+On top of all that, the traditional approaches thrust something most unwanted in your face: _multi-threaded coding_.
+Remember back to Object Oriented Programming 101 where an object was defined as a bundle of data and operations on that data?
+You have to unlearn that lesson as soon as you build a traditional web application, because web applications are multi-threaded.
+An application server could be handling dozens or hundreds of requests from individual users, each in their own thread, and each sharing the exact same objects.
+Suddenly, you can't store data inside an object (a servlet or a Struts Action) because whatever data you store for one user will be instantly overwritten by some other user.
+
+Worse, your objects each have only one operation: `doGet()` or `doPost()`.
+
+Meanwhile, most of your day-to-day work involves deciding how to package up some data already inside a particular Java object and squeeze that data into a URL's query parameters, so that you can write more code to convert it back if the user clicks that particular link.
+And don't forget editing a bunch of XML files to keep the servlet container, or the Struts framework, aware of these decisions.
+
+Just for laughs, remember that you have to rebuild, redeploy and restart your application after virtually any change.
+Is any of this familiar?
+Then perhaps you'd appreciate something a little less familiar: Tapestry.
+
+== The Tapestry Way
+Tapestry uses a very different model: a structured, organized world of pages, and components within pages.
+Everything has a very specific name (that you provide). Once you know the name of a page, you know the location of the Java class for that page, the location of the template for that page, and the total structure of the page.
+Tapestry knows all this as well, and can make things *just work*.
+
+As we'll see in the following pages, Tapestry lets you code in terms of your objects.
+You'll barely see any Tapestry classes, outside of a few Java annotations.
+If you have information to store, store it as fields of your classes, not inside the `HttpServletRequest` or `HttpSession`.
+If you need some code to execute, it's just a simple annotation or method naming convention to get Tapestry to invoke that method, at the right time, with the right data.
+
+Tapestry also shields you from most of the multi-threaded aspects of web application development.
+Tapestry manages the life cycle of your page and components objects, and the fields of the pages and components, in a thread-safe way.
+Your page and component classes always look like simple, standard http://en.wikipedia.org/wiki/Plain_Old_Java_Object[POJOs].
+
+Tapestry began in January 2000, and it now reflects over twenty years of experience of the entire Tapestry community.
+Tapestry brings to the table all that experience about the best ways to build scalable, maintainable, robust, internationalized, and Ajax-enabled applications.
+
+== Getting the Tutorial Source
+Although you won't need it, the source code for this tutorial is available on https://github.com/hlship/tapestry5-tutorial[GitHub].
+
+== Time to Begin
+Okay, enough background. Now let's dig in: xref:dependencies-tools-and-plugins.adoc[]

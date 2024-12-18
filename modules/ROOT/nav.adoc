@@ -1,5 +1,16 @@
 * xref:about.adoc[]
 * xref:download.adoc[]
-* xref:documentation.adoc[]
+* Documentation
+** xref:getting-started.adoc[]
+** Tutorial
+*** xref:tutorial:index.adoc[]
+*** xref:tutorial:dependencies-tools-and-plugins.adoc[]
+*** xref:tutorial:creating-the-skeleton-application.adoc[]
+*** xref:tutorial:exploring-the-project.adoc[]
+*** xref:tutorial:implementing-the-hi-lo-guessing-game.adoc[]
+*** xref:tutorial:using-beaneditform-to-create-user-forms.adoc[]
+*** xref:tutorial:using-tapestry-with-hibernate.adoc[]
+** xref:userguide.adoc[]
 * xref:community.adoc[]
 * xref:developers.adoc[]
+

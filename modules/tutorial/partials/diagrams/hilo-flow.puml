@@ -1,0 +1,10 @@
+@startuml
+hide empty description
+
+[*] -right-> Index
+Index -right-> Guess
+Guess -> Guess
+Guess --> GameOver
+GameOver -right-> [*]
+
+@enduml
