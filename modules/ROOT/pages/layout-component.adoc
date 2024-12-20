@@ -1,1 +1,212 @@
 = Layout Component
+
+You'll see frequent reference to a Layout Component in Tapestry documentation, but you won't find such a component in the xref:component-reference.adoc[].
+The Layout component is a component _that you create_ to provide common elements across all of your pages.
+
+In traditional servlet development, you may be familiar with the use of a JSP include to include a banner across the top of your page and a copyright message across the bottom.
+In Tapestry, you _could_ implement those recurring page elements as components (a banner component, a copyright component, etc.) and then add those components to every page.
+
+But there's an even better way.
+Just create a layout component that provides the overall structure and recurring content for your pages:
+
+.Layout.tml (a template for a Layout component)
+[source,xml,subs="+attributes"]
+----
+<html xmlns:t="{tapestry-namespace}">
+    <head>
+        <title>My Nifty Web Application</title>
+    </head>
+    <body>
+        <div class="nav-top">
+            Nifty Web Application
+        </div>
+
+        <t:body/>
+
+        <div class="nav-bottom">
+            (C) 2012 NiftyWebCo, Inc.
+        </div>
+    </body>
+</html>
+----
+
+In a real-world example, the two `<div>` elements above might contain the typical recurring content you'll see across the pages of a web application: banners, menus, login forms and so forth.
+Often these layout components get very complex ... in fact, in many applications the Layout component can grow to be as complex as any other component.
+
+== Using the Layout in a Page
+To use your layout component, just have each page in your application _wrap itself_ in the layout, like this:
+
+.Welcome.tml (the template for a page)
+[source,xml,subs="+attributes"]
+----
+<html t:type="layout" xmlns:t="{tapestry-namespace}">
+
+   <h1>Welcome to the Nifty Web Application!</h1>
+
+   <p>
+        Would you like to <t:pagelink page="login">Log In</t:pagelink>?
+   </p>
+</html>
+----
+
+Note the `t:type="layout"` part.
+That says, in effect, "wrap the layout component around my _content_".
+
+The magic is in the `<t:body/>` element of the layout template; this will be replaced by each page's _content_, whatever that is.
+
+[NOTE]
+====
+Remember that if your layout component includes a link to a resource such as an image or a stylesheet, you must use an _absolute_ URL.
+The same component will be used for pages in many different folders, or with many different activation contexts, so relative URLs won't work.
+The best approach is to use the xref:assets.adoc[context binding prefix].
+====
+
+To keep our `Welcome.tml` page template relatively preview-able, we are using an `<html>` element and the `t:type` attribute to specify that it is a component.
+At render time, the page's `<html>` tag will be removed, and replaced with the content from the `Layout.tml` template (which conveniently starts with an `<html>` element).
+The `<t:body>` element in `Layout.tml` will be replaced with the page-specific content here: the `<h1>` and `<p>` tags.
+
+Any page in the application that follows this pattern, using the Layout component, will have the same look and feel.
+
+Layout is a regular component like other, with an ordinary component template.
+Like all component templates, it will be stored on the classpath (typically under `src/main/resources`).
+
+Components must always have a Java class.
+But in this trivial example, the Layout component doesn't need any logic:
+
+.Layout.java
+[source,java]
+----
+@Import(stylesheet="context:css/site.css")
+public class Layout
+{
+}
+----
+
+We use the javadoc:org.apache.tapestry5.annotations.Import[label=@Import] annotation, as opposed to directly adding the `<link>` element to the template, for significant performance benefits xref:assets.adoc[described elsewhere].
+
+You may find that your application has more than one look and feel: perhaps user registration pages have one look, while administrative pages have another.
+This can be accomplished by having multiple layout components (using any names you choose) and using those different layout types for different pages.
+
+== Nested Layouts
+Layouts are really just ordinary components, so they can be nested to any level needed.
+You can have, for example, a `CommonLayout` component that provides the peripheral elements for all your pages, and then a more specialized `AdminLayout` component that provides the layout only for the administrative pages, and make the `AdminLayout` component wrap itself in the `CommonLayout` component.
+So then the administrative pages would start with `<html t:type="adminLayout" ...>` and the other pages (and the `AdminLayout` component itself) would start with `<html t:type="commonLayout" ...>`.
+
+.AdminLayout.tml
+[source,xml,subs="+attributes"]
+----
+<html t:type="commonLayout" xmlns:t="{tapestry-namespace}">
+
+    <h1>Administrative Functions</h1>
+
+    <t:body/>
+
+</html>
+----
+
+== A more advanced example
+Here's an example of a `Layout` component with a few more features.
+It has a `title` parameter, so that every page can pass in its own title to be rendered in the `<title>` tag _and_ in an `<h1>` tag at the top of the HTML.
+There is also a `style` parameter that allows each page to pass in a block of CSS rules to be rendered in the `<head>` section of the page (useful for those few CSS rules that can't be put into a static CSS file).
+
+.Layout.tml (a template for a Layout component)
+[source,xml,subs="+attributes"]
+----
+<!DOCTYPE html>
+<html xmlns:t="{tapestry-namespace}">
+    <head>
+        <meta charset="UTF-8" />
+        <title>$\{title} - NiftyWebCo, Inc</title>
+        <style type="text/css">
+            <t:delegate to="style" />
+        </style>
+    </head>
+    <body>
+        <div class="nav-top">
+            Nifty Web Application
+        </div>
+
+        <h1>$\{title}</h1>
+
+        <t:body/>
+
+        <div class="nav-bottom">
+            (C) 2012 NiftyWebCo, Inc.
+        </div>
+    </body>
+</html>
+----
+
+The corresponding component class is still very simple, adding support for the `title` and `style` parameters:
+
+.Layout.java
+[source,java]
+----
+@Import(stylesheet="context:css/site.css")
+public class Layout
+{
+    /** The page title, for the <title> element and the <h1> element. */
+    @Property
+    @Parameter(required = true, defaultPrefix = BindingConstants.LITERAL)
+    private String title;
+
+    /** Optional CSS rules to place into the page head */
+    @Property
+    @Parameter(defaultPrefix = BindingConstants.LITERAL)
+    private Block style;
+}
+----
+
+Here's how you might use the above layout component for a `UserList` page:
+
+.UserList.tml
+[source,xml,subs="+attributes"]
+----
+<html t:type="layout" title="List of Users"
+    xmlns:t="{tapestry-namespace}"
+    xmlns:p="tapestry:parameter">
+<p:style>
+    TD.profile { background: url('$\{userPhoto}') }
+</p:style>
+
+<div>
+    Imagine a table of user account information here.
+</div>
+
+</html>
+----
+
+The `<p:style>` element (and its contents) are passed to the layout component as a `style` parameter (a block parameter, in this case, so you must have the `xmlns:p="tapestry:parameter"` namespace declared, as above).
+
+The rendered HTML would look like the following (whitespace aside, and assuming `UserList.java` has a `backgroundImage` property whose value is the string `http://www.example.com/fuzzy.gif`):
+
+.The rendered HTML
+[source,html]
+----
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>List of Users - NiftyWebCo, Inc</title>
+        <style type="text/css">
+            TD.profile { background: url('http://www.example.com/fuzzy.gif') }
+        </style>
+    </head>
+    <body>
+        <div class="nav-top">
+            Nifty Web Application
+        </div>
+
+        <h1>List of Users</h1>
+
+        <div>
+            Imagine a table of user account information here.
+        </div>
+
+        <div class="nav-bottom">
+            (C) 2012 NiftyWebCo, Inc.
+        </div>
+    </body>
+</html>
+----
+
