@@ -1,1 +1,48 @@
 = Parameter Type Coercion
+
+Type Coercion is the conversion of one type of object to a new object of a different type with similar content.
+Tapestry frequently must coerce objects from one type to another. A common example is the coercion of a string into an integer or a double.
+
+See xref:type-coercion.adoc[Type Coercer Service] for the list of build-in coercions.
+
+Tapestry automatically handles type coercions for xref:component-parameters.adoc[].
+
+Type coercions occur when a value passed into a parameter (as bound in a template or in an annotation) does not match the type of the parameter.
+
+[source,java]
+----
+public class Count
+{
+    @Parameter
+    private int start = 1;
+
+    @Parameter(required = true)
+    private int end;
+
+    @Parameter
+    private int value;
+    
+    . . .
+}
+----
+
+Here, the type of all three parameters is `int`.
+
+However, it is likely that the component will be used as so:
+
+[source,xml]
+----
+Merry Christmas: <t:count end="3"> Ho! </t:count>
+----
+
+A bare whole number is interpreted by the prop binding prefix as a long. So this is the `long` value 3.
+
+Tapestry will automatically coerce the bound value, a `long`, to the parameter's type, `int`.
+This may be a lossy coercion (if the `long` represents a number larger than can be stored in an `int`).
+
+The javadoc:org.apache.tapestry5.ioc.services.TypeCoercer[] service is responsible for this type coercion.
+This service is part of the `tapestry-ioc` module.
+The service is quite extensible, allowing for new types and coercions to be added easily.
+The javadoc:org.apache.tapestry5.modules.TapestryModule[] contributes a few additional coercions into the `TypeCoercer` service.
+
+
