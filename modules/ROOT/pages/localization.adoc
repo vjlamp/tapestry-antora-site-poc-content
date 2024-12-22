@@ -1,1 +1,199 @@
 = Localization
+
+Localization (often abbreviated as "L10n") is all about getting the right text to the user, in the right language.
+
+Localization support is well integrated into Tapestry.
+Tapestry allows you to easily separate the text you present to your users from the rest of your application ... pull it out of your Java code and even out of your component templates.
+You can then translate your messages into other languages and let Tapestry put everything together.
+
+== Component Message Catalogs
+Each component class may have a component message catalog.
+A component message catalog is a set of files with the extension `.properties`.
+These property files are the same format used by `java.util.ResourceBundle`, just lines of `key=value`.
+These files are stored on the classpath, in the same package folder as the page or component's compiled Java class.
+
+So for a class named `org.example.myapp.pages.MyPage`, you would have a main properties file as `org/example/myapp/pages/MyPage.properties`.
+
+If you have a translations of these values, you provide additional properties file, adding an http://www.loc.gov/standards/iso639-2/englangn.html[ISO language code before] the extension.
+Thus, if you have a French translation, you could create a file `MyPage_fr.properties`.
+
+Any values in the more language specific file will override values from the main properties file.
+If you had an even more specific localization for just French as spoken in France, you could create `MyPage_fr_FR.properties` (that's a language code plus a country code, and you can even go further and add variants ... but its unlikely that you'll ever need to go beyond just language codes in practice).
+
+The messages in the catalog are accessed by keys.
+Tapestry ignores the case of the keys when accessing messages in the catalog.
+
+=== Component Message Catalog Inheritance
+If a component class is a subclass of another component class, then it inherits that base class' message catalog.
+Its own message catalog extends and overrides the values inherited from the base class.
+
+In this way, you could have a base component class that contained common messages, and extend or override those messages in subclasses (just as you would extend or override the methods of the base component class).
+This, of course, works for as many levels of inheritance as you care to support.
+
+== Application-wide Message Catalog
+If the file `WEB-INF/__AppName__.properties` exists in the context, it will be used as an application-wide message catalog.
+The AppName is derived from the name of the filter inside the `web.xml` file; this is most often just `app`, thus `WEB-INF/app.properties`.
+The search for the file is case sensitive.
+The properties files may be localized.
+
+Individual pages and components can override the values defined in the message catalog.
+
+[IMPORTANT]
+====
+Avoid BOMs
+Make sure that your properties files don't contain http://en.wikipedia.org/wiki/Byte_order_mark[byte order marks (BOM)], because Java – and thus Tapestry – doesn't support BOM in properties files (see http://bugs.sun.com/view_bug.do?bug_id=4508058).
+Some editors write them out when saving a file in UTF-8, so watch out.
+====
+
+=== Properties File Charset
+Tapestry uses the UTF-8 character set (charset) when reading the properties files in a message catalog.
+This means that you don't have to use the Java `native2ascii tool.
+
+== Localized Component Templates
+The same lookup mechanism applies to component templates.
+Tapestry will search for a localized version of each component template and use the closest match.
+Thus you could have `MyPage_fr.html` for French users, and `MyPage.html` for all other users.
+
+== Accessing Localized Messages
+The above discusses what files to create and where to store them, but doesn't address how to make use of that information.
+
+Messages can be accessed in one of two ways:
+
+1. Using the `message:` binding expression in a component template
+2. By injecting the component's `Messages` object.
+
+In the first case, you may use the `message:` binding prefix with component parameters, or with template expansions:
+
+[source,xml]
+----
+<t:layout title="message:page-title">
+
+  ${message:greeting}, ${user.name}!
+  . . .
+</t:layout>
+----
+
+Here, the `page-title` message is extracted from the catalog and passed to the `Layout` component's `title` parameter.
+
+In addition, the `greeting` message is extracted and written into the response as part of the template.
+
+As usual, `prop:` is the default binding prefix, thus `user.name` is a property path, not a message key.
+
+You would extend this with a set of properties files:
+
+[source,properties]
+----
+page-title=Your Account
+greeting=Welcome back
+----
+
+Or, perhaps, a French version:
+
+[source,properties]
+----
+page-title=Votre Compte
+greeting=Bienvenue en arriere
+----
+
+Programatically, you may inject your component message catalog into your class, as an instance of the Messages interface:
+
+[source,java]
+----
+@Inject
+private Messages messages;
+----
+
+You could then `get()` messages, or `format()` them:
+
+[source,java]
+----
+public String getCartSummary()     
+{
+  if (items.isEmpty())
+    return messages.get("no-items");
+      
+  return messages.format("item-summary", items.size());
+}
+----
+
+The `format()` option works using a `java.util.Formatter`, with all the printf-style loveliness you've come to expect:
+
+[source,properties]
+----
+no-items=Your shopping cart is empty.     
+item-summary=You have %d items in your cart.
+----
+
+As easy as conditionals are to use inside a Tapestry template, sometimes it's even easier to do it in Java code.
+
+== Missing Keys
+If you reference a key that is not in the message catalog, Tapestry does not throw an exception (because that would make initially developing an application very frustrating).
+When a key can not be located, a "placeholder" message is generated, such as "[[missing key: key-not-found]]".
+
+== Reloading
+If you change a property file in a message catalog, you'll see the change immediately, just as with component classes and component templates (provided you're not running in xref:configuration.adoc[production mode]).
+
+== Asset Localization
+When injecting xref:assets.adoc[], the injected asset will be localized as well.
+A search for the closest match for the active locale is made, and the final Asset will reflect that.
+
+== Locale Selection
+The locale for each request is determined from the HTTP request headers.
+The request locale reflects the environment of the web browser and possibly even the keyboard selection of the user on the client.
+It can be highly specific, for example, identifying British English (as `en_GB`) vs. American English (`en`).
+
+Tapestry "narrows" the raw request locale, as specified in the request, to a known quantity.
+It uses the xref:configuration.adoc#_configuration_symbol_names[`tapestry.supported-locales` configuration symbol] to choose the effective locale for each request.
+This value is a comma-separated list of locale names.
+Tapestry searches the list for the best match for the request locale; for example, a request locale of `fr_FR` would match `fr` but not `de`.
+If no match is found, then the first locale name in the list is used as the effective locale (that is, the first locale is used as the default for non-matching requests).
+Thus a site that primarily caters to French speakers would want to list `fr` as the first locale in the list.
+
+== Changing the Locale
+The javadoc:org.apache.tapestry5.services.PersistentLocale[] service can be used to programmatically override the locale.
+Note: You should be careful to only set the persistent locale to a supported locale.
+
+.Toggle between English and German
+[source,java]
+----
+@Inject 
+private PersistentLocale persistentLocale;
+
+void onActionFromLocaleToggle() {
+    if ("en".equalsIgnoreCase(persistentLocale.get().getLanguage())) {
+        persistentLocale.set(new Locale("de"));
+    } else {
+        persistentLocale.set(new Locale("en"));
+    }
+    return this;
+}
+public String getDisplayLanguage() {
+    return persistentLocale.get().getDisplayLanguage();
+}
+----
+
+Once a persistent locale is set, you will see the locale name as the first virtual folder in page render and component event requests URLs.
+In this way, a persistent locale will, in fact, persist from request to request, or in a user's bookmarks.
+
+You will see the new locale take effect on the next request.
+If it is changed in a component event request (which is typical), the new locale will be used in the subsequent page render request.
+
+Note that the locale for a page is fixed (it can't change once the page instance is created).
+In addition, a page may only be attached to a request once.
+In other words, if code in your page changes the persistent locale, you won't see a change to the page's locale (or localized messages) _in that request_.
+
+== Built-in Locales
+While your application can support any locale (and thus any language) that you want, Tapestry provides only a limited set of translations for its own built-in messages.
+
+The locales listed below are built-in to Tapestry {page-component-version}:
+
+en (English), it (Italian), es (Spanish), zh_CN (Chinese), pt_PT (Portuguese), de (German), ru (Russian), hr (Croatian), fi_FI (Finnish), sv_SE (Swedish), fr_FR (French), da (Danish), pt_BR (Brazilian Portuguese), ja (Japanese), el (Greek), bg (Bulgarian), nb (Norwegian Bokmål), sr_RS (Serbian), mk_MK (Macedonian).
+
+=== Providing translations for Tapestry built-in messages
+Fortunately, Tapestry uses all the same mechanisms for its own locale support as it provides for your application.
+So, to support other locales, just translate the built-in message catalog (property) files yourself:
+
+To have Tapestry use these new files, just put them in the corresponding package-named directory within your own app (for example, `src/main/resources/org/apache/tapestry5/core.properties`).
+
+Finally, please open a new GitHub Pull Request for the translated files so that they can be included in the next release of Tapestry.
+
