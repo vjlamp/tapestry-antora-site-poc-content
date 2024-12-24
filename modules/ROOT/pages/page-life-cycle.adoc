@@ -1,1 +1,69 @@
 = Page Life Cycle
+
+TIP: This is an advanced topic. Most users won't ever need to know anything about the page life cycle.
+
+In Tapestry, you are free to develop your presentation objects, page and components classes, as ordinary objects, complete with instance variables and so forth.
+
+This is somewhat revolutionary in terms of web development in Java.
+By comparison, using traditional servlets, or Struts, your presentation objects (Servlets, or Struts Actions, or the equivalent in other frameworks) are _stateless singletons_.
+That is, a _single_ instance is created, and all incoming requests are threaded through that single instance.
+Because multiple requests are handled by many different threads, this means that the singleton's instance variables are useless ... any value written into an instance variable would immediately be overwritten by a different thread.
+Thus, it is necessary to use the Servlet API's `HttpServletRequest` object to store per-request data, and the `HttpSession` object to store data between requests.
+
+Tapestry takes a very different approach.
+
+In Tapestry, each page is a singleton, but with a _per thread_ map of field names & values that Tapestry invisibly manages for you.
+
+With this approach, all the difficult, ugly issues related to multi-threading go by the wayside.
+Instead, familiar, simple coding practices (using ordinary methods and fields) can be used.
+
+The page life cycle is quite simple:
+
+1. When first needed, a page is loaded. Loading a page involves instantiating the components of the page and connecting them together.
+2. Once a page is loaded, it is _attached_ to the current request. Remember that there will be many threads, each handling its own request to the same page.
+3. At the end of a request, after a response has been sent to the client, the page is _detached_ from the request. This is a chance to perform any cleanup needed for the page.
+
+== Page Life Cycle Methods
+There are rare occasions where it is useful for a component to perform some operations, usually some kind of initialization or caching, based on the life cycle of the page.
+
+As with xref:component-rendering.adoc[], you have the ability to make your components "aware" of these events by telling Tapestry what methods to invoke for each.
+
+Page life cycle methods should take no parameters and return void.
+
+You have the choice of attaching an annotation to a method, or simply using the method naming conventions:
+
+[%autowidth]
+|===
+|Annotation |Method Name |When Called
+
+|javadoc:org.apache.tapestry5.annotations.PageLoaded[label=@PagedLoaded]
+|pageLoaded()
+|After the page is fully loaded.
+|javadoc:org.apache.tapestry5.annotations.PageAttached[label=@PagedAttached]
+|pageAttached()
+|After the page is attached to the request.
+|javadoc:org.apache.tapestry5.annotations.PageReset[label=@PagedReset]
+|pageReset()
+|After the page is _activated_, except when requesting the same page.
+|javadoc:org.apache.tapestry5.annotations.PageDetached[label=@PagedDetached]
+|pageDetached()
+|After the page is detached from the request.
+|===
+
+The `@PageReset` life cycle is invoked on a page render request when the page is linked to from some _other_ page of the application (but _not_ on a link to the same page), or upon a reload of the page in the browser.
+This is to allow the page to reset its state, if any, when a user returns to the page from some other part of the application.
+
+== Comparison to JavaServer Pages
+JSPs also act as singletons.
+However, the individual JSP tags are pooled.
+
+This is one of the areas where Tapestry can significantly outperform JSPs.
+Much of the code inside a compiled JSP class concerns getting tags from a tag pool, configuring the properties of the tag instance, using the tag instance, then cleaning up the tag instance and putting it back in the pool.
+
+The operations Tapestry does once per request are instead executed dozens or potentially hundreds of times (depending the complexity of the page, and if any nested loops occur).
+
+Pooling JSP tags is simply the wrong granularity.
+
+Tapestry can also take advantage of its more coarse grained caching to optimize how data moves, via parameters, between components.
+This means that Tapestry pages will actually speed up after they render the first time.
+
