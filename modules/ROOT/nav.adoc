@@ -28,6 +28,7 @@
 ** xref:url-rewriting.adoc[]
 ** xref:dom.adoc[Document Object Model (DOM)]
 ** xref:response-compression.adoc[]
+** xref:security.adoc[]
 ** xref:https.adoc[]
 ** xref:content-type-and-markup.adoc[]
 
