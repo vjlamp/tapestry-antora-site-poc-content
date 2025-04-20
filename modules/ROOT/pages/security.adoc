@@ -1,0 +1,37 @@
+= Security
+
+Tapestry has a number of security features designed to harden your application against unwanted intrusion and denial of service.
+
+== HTTPS-only Pages
+Main Article: xref:https.adoc[]
+
+Tapestry provides several annotations and configuration settings that you can use to ensure that all access to certain pages (or all pages) occurs only via the encrypted HTTPS protocol.
+See xref:https.adoc[] for details.
+
+== Controlling Page Access
+For simple access control needs, you can contribute a javadoc:org.apache.tapestry5.services.ComponentRequestFilter[] with your custom logic that decides which pages should be accessed by which users.
+The Tapestry Hotel Booking app demonstrates this approach with an `@AnonymousAccess` annotation along with a `ComponentRequestFilter` named `AuthenticationFilter.java`.
+The filter enforces security by intercepting all requests to pages that don't have that annotation, and it redirects those requests to the login page.
+https://tapestry-jumpstart.org/jumpstart/examples/infrastructure/protectingpages[JumpStart] has a similar demo.
+
+For more advanced needs see the Security Framework Integration section below.
+
+== Asset Security
+Tapestry serves assets (static content such as CSS files, images, and JavaScript, many of which are on the classpath alongside your compiled class files) to the client.
+Because of this, great care has gone into ensuring that certain file types cannot be served to the client.
+By default, file ending with `.class`, `.tml` and `.properties` can be served to the client only if the request includes the file's MD5 checksum.
+As you would expect, that blacklist can be extended.
+See xref:assets.adoc[] for more information.
+
+== Cross Site Request Forgery (CSRF)
+Cross Site Request Forgery is a type of security vulnerability in which legitimate, authorized users may be made to unwittingly submit malicious requests to your web application.
+
+https://github.com/porscheinformatik/tapestry-csrf-protection[Tapestry-csrf-protection] is a 3rd party module that has several features for preventing CSRF attacks.
+It protects all component event handlers (event links, forms, etc.) by adding a CSRF token to event links and adds a CSRF token as a hidden field to all forms.
+Tokens are generated on a per-session basis.
+
+== Security Framework Integration
+Tapestry does not lock you into a specific authentication/authorization implementation.
+There are integration modules available for the more popular open source Java security frameworks.
+A popular choice among Tapestry users is http://www.tynamo.org/tapestry-security+guide/[tapestry-security (based on Apache Shiro) from Tynamo.org].
+It is always kept up-to-date with the latest Tapestry versions and offers several supporting security modules (e.g. http://www.tynamo.org/tapestry-security-jpa+guide/[tapestry-security-jpa], http://www.tynamo.org/tynamo-federatedaccounts+guide/[tynamo-federatedaccounts]).
