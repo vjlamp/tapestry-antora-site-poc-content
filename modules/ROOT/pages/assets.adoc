@@ -1,1 +1,178 @@
 = Assets
+
+In Tapestry, Assets are any kind of _static_ content (that is, not changing while the application is deployed) that may be downloaded to a client web browser, such as images, style sheets and JavaScript files.
+
+== Asset Locations
+Assets are located within _domains_.
+Tapestry ships with two built-in domains:
+(1) the *web application's context folder* and (2) the *classpath*.
+
+=== Context Assets
+Context Assets are files stored in the web application's context folder in the usual JEE fashion.
+In a project following Maven's directory layout conventions, this would be `src/main/webapp` or a subdirectory of it (with the exception of `WEB-INF` - because the servlet container will prevent client access to files in `WEB-INF` in accordance with the Java Servlet Specification).
+
+=== Classpath Assets
+Classpath Assets go in the *`META-INF`* subdirectory or subdirectories thereof. This would be `src/main/resources/META-INF`, if following Maven directory conventions.
+
+WARNING: Storing classpath assets with your Java class files (that is, in a package-named subdirectory under `src/main/resources` instead of `META-INF`, is *deprecated* for security reasons.
+Doing so is still supported but causes an *error-level log message*.
+Support for classpath assets not under `META-INF` may be removed in future Tapestry releases.
+
+More specifically, xref:javascript-modules.adoc[] are under `META-INF/*modules*` while other assets are under `META-INF/*assets*`.
+This would be `src/main/resources/META-INF/modules` and `src/main/resources/META-INF/assets`, respectively, if following Maven directory conventions.
+
+Assets of your _application_ can be stored directly in `META-INF/modules` or `META-INF/assets`, respectively.
+
+For assets part of a re-usable _library_, Tapestry uses the library's name (from its javadoc:org.apache.tapestry5.services.LibraryMapping[] - such as `core` for the Tapestry core library).
+The library name becomes a folder under `META-INF/assets`.
+For example, Tapestry stores its component-related assets under `META-INF/assets/core`.
+Likewise, assets of your `foo` library are in `META-INF/assets/foo`.
+
+=== Additional Asset Domains
+If you wish to create additional domains for assets, for example, to allow assets to be stored on the file system or in a database, you may define a new javadoc:org.apache.tapestry5.services.AssetFactory[] and contribute it to the javadoc:org.apache.tapestry5.services.AssetSource[] service configuration.
+
+== Referencing Assets
+Assets can be referenced from templates as well as in component classes.
+
+Unlike elsewhere in Tapestry, _case matters_.
+This is because Tapestry is dependent on the Servlet API and the Java runtime to access the underlying files, and those APIs, unlike Tapestry, are case sensitive.
+Be aware that some _operating systems_ (such as Windows) are case insensitive, which may mask errors that will be revealed at deployment (if the deployment operating system is case sensitive, such as Linux).
+
+=== Referencing Assets in Component Classes
+Assets are available to your code as instances of the javadoc:org.apache.tapestry5.Asset[] interface.
+
+Components access assets via xref:injection.adoc[], using the `@Inject` annotation, which allows `Assets` to be injected into components as read-only properties.
+The path to the resource is specified using the javadoc:org.apache.tapestry5.annotations.Path[label=@Path] annotation:
+
+[source,java]
+----
+@Inject
+@Path("context:images/tapestry_banner.gif")
+private Asset banner;
+----
+
+==== Relative Assets
+You can use relative paths with domains (if you omit the prefix):
+
+[source,java]
+----
+@Inject
+@Path("images/edit.png")
+private Asset icon;
+----
+
+This represents a relative path from the default location for the asset.
+This will resolve relative to the correct folder within `META-INF/assets`
+and will fall back relative to the component's class file (even though deprecated since Tapestry 5.4, resulting in an error-level log message).
+
+You may use the standard `./` and `../` prefixes to refer to the current folder, and containing folder, respectively.
+
+Since you must omit the asset domain prefix in order to specify a relative path, this only makes sense for components packaged in a library for reuse.
+
+=== Referencing Assets from Templates
+Two xref:component-parameters.adoc#_binding_expressions[binding prefixes] exist for referencing assets from templates.
+
+The *`context:`* binding prefix matches assets in the web application's context folder.
+In contrast, the *`asset:`* binding prefix matches assets from `META-INF` or the classpath.
+
+[source,xml]
+----
+<img src="${context:images/tapestry_banner.gif}" /> <1>
+<img src="${asset:images/tapestry_banner.gif}" /> <2>
+<img src="${asset:tapestry_banner.gif}" /> <3>
+----
+<1> Referencing src/main/*webapp*/images/tapestry_banner.gif
+<2> Referencing src/main/**resources/META-INF/assets/**images/tapestry_banner.gif
+<3> Referencing src/main/**resources/META-INF/assets/**tapestry_banner.gif _or_ (falling back to deprecated) src/main/**resources/com/example/myapp/pages/**tapestry_banner.gif 
+
+NOTE: In older code you may occasionally see `${asset:context:...}`.
+That means the same thing as `${context:...}`.
+
+==== Symbols For Assets
+xref:symbols.adoc[] inside the annotation value are expanded.
+This allows you to define a symbol and reference it as part of the path.
+For example, you could contribute a symbol named `skin.root` as `context:skins/basic` and then reference an asset from within it:
+
+[source,java]
+----
+@Inject
+@Path("${skin.root}/style.css")
+private Asset style;
+----
+
+NOTE: The use of the `${...}` syntax here is a symbol expansion (because it occurs in an annotation in Java code), rather than a template expansion (which occurs only in Tapestry template files).
+
+An override of the `skin.root` symbol would affect all references to the named asset.
+
+
+== Localization of Assets
+Main Article: xref:localization.adoc[]
+
+Assets are localized; Tapestry will search for a variation of the file appropriate to the effective locale for the request.
+In the previous example, a German user of the application may see a file named `edit_de.png` (if such a file exists).
+
+
+== Asset Fingerprinting
+Asset URLs include a content fingerprint, a hash of the actual content of the asset.
+
+Assets get a far-future expires header.
+
+During development or production, if an asset is changed in any way, it will have a new content fingerprint and will appear, to the browser, to be an entirely new immutable resource.
+
+== CSS Link Rewriting
+It is frequently the case that CSS files will include links to other files, such as background images, using the `url()` value syntax.
+The URL for the CSS file and the targeted file would be broken, due to the inclusions of the CSS file's content hash fingerprint. To fix this, Tapestry parses CSS files, locates the `url()` directives, and rewrites the URLs to be absolute (including the targeted file's content hash fingerprint).
+
+== Performance Notes
+Assets are expected to be entirely static (not changing while the application is deployed).
+This allows Tapestry to perform some important performance optimizations.
+
+Tapestry GZIP compresses the content of all assets – if the asset is compressible, the client supports it, and you don't explicitly disable it.
+
+Further, the asset will get a far future expires header, which will encourage the client browser to cache the asset.
+
+== Minimizing Assets
+Since version 5.3, Tapestry provides a service, javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer[], which will help to minimize all your static resources (principally CSS and JavaScript files).
+
+Minimization takes place before GZip compression.
+When aggregating JavaScript for a JavaScriptStack, the minimization is on the aggregated asset, not the individual assets being aggregated.
+
+By default, this service does nothing.
+You should include `tapestry-webresources`, which makes it possible to minimize CSS and JavaScript files.
+
+[source,xml,subs="+attributes"]
+----
+<dependency>
+    <groupId>org.apache.tapestry</groupId>
+    <artifactId>tapestry-webresources</artifactId>
+    <version>{page-component-version}.x</version>
+</dependency>
+----
+
+By adding this dependency, all your JavaScript and CSS files will be minimized when xref:configuration.adoc[Production Mode] is true.
+You can force the minimization of these files, by changing the value of the constant javadoc:org.apache.tapestry5.SymbolConstants#MINIFICATION_ENABLED[] in your module class (usually `AppModule.java`):
+
+.AppModule.java (partial)
+[source,java]
+----
+@Contribute(SymbolProvider.class)
+@ApplicationDefaults
+public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
+{
+    configuration.add(SymbolConstants.MINIFICATION_ENABLED, "true");
+}
+----
+
+If you want to add your own minimizer for particular types of assets, you can contribute to the javadoc:org.apache.tapestry5.services.assets.ResourceMinimizer[] service.
+The service configuration maps the MIME-TYPE of your resource to an implementation of the `ResourceMinimizer` interface.
+
+.AppModule.java (partial)
+[source,java]
+----
+@Contribute(ResourceMinimizer.class)
+@Primary
+public static void contributeMinimizers(MappedConfiguration<String, ResourceMinimizer> configuration)
+{
+    configuration.addInstance("text/coffeescript", CoffeeScriptMinimizer.class);
+}
+----
