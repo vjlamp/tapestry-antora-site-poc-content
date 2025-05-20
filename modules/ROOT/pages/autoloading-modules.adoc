@@ -47,9 +47,9 @@ If you are using Maven 2, then getting these entries into your JAR's manifest is
 </project>
 ----
 
-More details are provided in the http://maven.apache.org/guides/mini/guide-manifest.html[Maven Manifest Guide]
+More details are provided in the http://maven.apache.org/guides/mini/guide-manifest.html[Maven Manifest Guide].
 
-== SubModule Annotation
+== ImportModule Annotation
 Often, you will have several different modules working together that should all be loaded as a unit.
 
 One approach is to update the module ids into the manifest, as shown in the previous extension.
