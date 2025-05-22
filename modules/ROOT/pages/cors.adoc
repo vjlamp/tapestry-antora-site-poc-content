@@ -1,0 +1,67 @@
+= CORS (Cross-Origin Resource Sharing) Support
+
+Since 5.8.2, Tapestry (specifically `tapestry-http`, a dependency of `tapestry-core`) provides out-of-the-box https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS[CORS (Cross-origin resourse sharing)] support.
+It covers most scenarios with just configuration symbols while also allowing easy customization of almost all its logic.
+
+CORS support isn't enabled by default.
+
+The implementation is based around 3 services:
+
+1. javadoc:org.apache.tapestry5.http.services.CorsHandler[] defines the overall logic, mostly around deciding whether the current request requires CORS processing and call the appropriate code to handle it.
+It delegates almost all of the CORS processing logic to javadoc:org.apache.tapestry5.http.services.CorsHandlerHelper[].
+
+2. javadoc:org.apache.tapestry5.http.services.CorsHandlerHelper[] implements logic for determining whether a CORS request if a pre-flight one, which HTTP headers to set and which values to use.
+It has a default implementation of this service that uses the configuration symbols described below.
+
+3. javadoc:org.apache.tapestry5.http.services.CorsHttpServletRequestFilter[] is both a service and `HttpServletRequestFilter` filter which is called on every incoming HTTP request and delegates the CORS processing to `CorsHandler` instances.
+The `CorsHttpServletRequestFilter` service has an ordered configuration of `CorsHandler` instances.
+The default `CorsHandler` implementation, contributed to be the last one, executes the CORS processing for every request.
+
+If you need to have dynamic logic for determining the allowed origins, how to set the HTTP headers in the response or defining whether a CORS request is pre-flight or not, you should xref:service-advisors.adoc[advise], xref:service-decorators.adoc[decorate] or override the `CorsHandlerHelper` service.
+
+If you want to exclude some requests from having CORS processing on them, implement a `CorsHandler` which returns `CorsHandlerResult.CONTINUE_REQUEST_PROCESSING` (i.e. skip CORS processing) for the these requests and `CorsHandlerResult.CONTINUE_CORS_PROCESSING` for the ones you want CORS processing to happen.
+You should also contribute your `CorsHandler` implementation to the `CorsHttpServletRequestFilter`.
+
+tapestry.cors-enabled | javadoc:org.apache.tapestry5.SymbolConstants#CORS_ENABLED[]::
+Since 5.8.2 +
+Defines whether the CORS (Cross-Origing Resource Sharing) support should be enabled or not.
+Default value is `false`.
+If you set this to true,you should also set at least javadoc:org.apache.tapestry5.SymbolConstants#CORS_ALLOWED_ORIGINS[] too.
+
+tapestry.cors-allowed-origins | javadoc:org.apache.tapestry5.SymbolContants#CORS_ALLOWED_ORIGINS[]::
+Since 5.8.2 +
+Comma-delimited of origins allowed for CORS.
+The special value `*` means allowing all origins.
+This is used by the default implementation of `CorsHandlerHelper.getAllowedOrigin(HttpServletRequest)`.
+Default value is the empty string (i.e. no origins allowed and CORS actually disabled).
+
+tapestry.cors-allow-credentials | javadoc:org.apache.tapestry5.SymbolConstants#CORS_ALLOW_CREDENTIALS[]::
+Since 5.8.2 +
+Boolean value defining whether the `Access-Control-Allow-Credentials` HTTP header should be set automatically in the response for CORS requests.
+Default value is `false`.
+This is used by the default implementation of `CorsHandlerHelper.configureCredentials(HttpServletResponse)`.
+
+tapestry.cors-allow-methods | javadoc:org.apache.tapestry5.SymbolConstants#CORS_ALLOW_METHODS[]::
+Since 5.8.2 +
+Value to be used in the `Access-Control-Allow-Methods` in CORS preflight request responses.
+This is used by the default implementation of `CorsHandlerHelper.configureMethods(HttpServletResponse)`.
+Default value is `"GET,HEAD,PUT,PATCH,POST,DELETE"`.
+
+tapestry.cors-allowed-headers | javadoc:org.apache.tapestry5.SymbolContants#CORS_ALLOWED_HEADERS[]::
+Since 5.8.2 +
+Value to be used in the `Access-Control-Allow-Headers` in CORS preflight request responses.
+This is used by the default implementation of `CorsHandlerHelper.configureAllowedHeaders(HttpServletResponse)`, which only sets the header if the value isn't empty.
+Default value is the empty string.
+
+tapestry.cors-expose-headers | javadoc:org.apache.tapestry5.SymbolConstants#CORS_EXPOSE_HEADERS[]::
+Since 5.8.2 +
+Value to be used in the `Access-Control-Expose-Headers` in CORS preflight request responses.
+This is used by the default implementation of `CorsHandlerHelper.configureExposeHeaders(HttpServletResponse)`, which only sets the header if the value isn't empty.
+Default value is the empty string.
+
+tapestry.cors-max-age | javadoc:org.apache.tapestry5.SymbolConstants#CORS_MAX_AGE[]::
+Since 5.8.2 +
+Value to be used in the `Access-Control-Max-Age` in CORS preflight request responses.
+This is used by the default implementation of `CorsHandlerHelper.configureMaxAge(HttpServletResponse)`, which only sets the header if the value isn't empty.
+Default value is the empty string.
+

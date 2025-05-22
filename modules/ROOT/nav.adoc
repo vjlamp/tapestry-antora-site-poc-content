@@ -48,6 +48,7 @@
 ** xref:ajax-and-zones.adoc[]
 ** xref:css.adoc[Cascading Style Sheets (CSS)]
 ** xref:assets.adoc[]
+** xref:cors.adoc[]
 
 * Working with Forms
 ** xref:forms-and-validation.adoc[]
