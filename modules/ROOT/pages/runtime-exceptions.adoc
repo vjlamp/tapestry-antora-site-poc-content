@@ -1,0 +1,63 @@
+= Runtime Exceptions
+
+Feedback is vitally important when developing an application, and that is one of the areas where Tapestry has always excelled.
+
+Especially during development, requests can fail. There can be errors in templates, broken code in your application, or something unexpected.
+
+* <<Build-in Exception Report Page>>
+* <<Ajax Detailed Exception Reports>>
+* <<Detailed Exception Report Files>>
+
+== Build-in Exception Report Page
+Tapestry has a built-in exception report page that captures an amazing wealth of information:
+
+// TODO Replace this with an image showing the situation in Tapestry 5.3
+image:Exception_Stack_Trace.png[]
+
+// TODO Replace this with an image showing the situation in Tapestry 5.3
+image:Exception_Request.png[]
+
+// TODO Replace this with an image showing the situation in Tapestry 5.3
+image:Application_Exception.png[]
+
+This exception report features:
+
+* The full stack of exceptions, top to bottom.
+* All non-null properties of each exception.
+* The stack trace at _the deepest level_.
+* Key *request* properties, header, attributes, and parameters.
+* Key *session* propertes
+* A break down of the _thread_ in your application
+* A listing of all JVM System properties
+
+== Ajax Detailed Exception Reports
+A similar detailed exception report is also built-in to Tapestry's Ajax support.
+When an Ajax request fails, Tapestry's client-side code will create an `<iframe>` to present this same information:
+
+image:Exception_Ajax.png[]
+
+== Detailed Exception Report Files
+In addition, Tapestry will write a text file for the exception with a similar level of detail.
+The default location for the detailed exception report files is a relative directory `build/exceptions`.
+You can xref:configuration.adoc[configure] the location by setting javadoc:org.apache.tapestry5.SymbolConstants.EXCEPTION_REPORTS_DIR[].
+
+If you want to turn off the writing of detailed exception reports files to the file system, you can add the following to your application module (usually `AppModule.java`):
+
+.AppModule.java (partial)
+[source,java]
+----
+/**
+ * By default, Tapestry's ExceptionReporter implementation writes verbose text files to the
+ * "build/exceptions" directory. This replaces that implementation with one that does nothing.
+ * (The exceptions still get logged elsewhere.)
+ */
+@Decorate(serviceInterface = ExceptionReporter.class)
+public static ExceptionReporter preventExceptionFileWriting(final ExceptionReporter exceptionReporter) {
+    return new ExceptionReporter() {
+        @Override
+        public void reportException(Throwable exception) {
+        }
+    };
+}
+----
+
