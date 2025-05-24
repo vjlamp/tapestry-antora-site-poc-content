@@ -5,6 +5,7 @@
 // ** xref:supported-environments-and-versions.adoc[]
 ** xref:project-layout.adoc[]
 ** xref:configuration.adoc[]
+** xref:runtime-exceptions.adoc[]
 ** xref:class-reloading.adoc[]
 ** xref:component-reference.adoc[]
 ** xref:annotations.adoc[]
