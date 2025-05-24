@@ -77,6 +77,8 @@
 * xref:injection-in-detail.adoc[]
 * xref:ordering-by-constraints.adoc[]
 * xref:registry-startup.adoc[]
+* xref:parallel-execution.adoc[]
+* xref:service-implementation-reloading.adoc[]
 * xref:service-advisors.adoc[]
 * xref:service-decorators.adoc[]
 * xref:operation-tracker.adoc[]

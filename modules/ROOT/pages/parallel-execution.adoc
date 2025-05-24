@@ -1,0 +1,47 @@
+= Parallel Execution
+
+The javadoc:org.apache.tapestry5.ioc.services.ParallelExecutor[] service allows a computation to occur in parallel.
+
+It can be used in two ways. First, with an explicit `java.util.concurrent.Future`:
+
+[source,java]
+----
+Future<String> future = executor.invoke(new Invokable<String>() { ... });
+----
+
+The executor will submit the `Invokable` to a thread pool for execution in the background.
+
+The ultimate value of the Invokable is available by invoking `get()` on the `Future`; this will block until the value is ready.
+
+Other methods on `Future` can cancel the execution, or get the value only if it is ready within a timeout.
+
+The thread pool is started automatically as needed, and will shutdown when the Registry itself is shutdown.
+
+Another alternative will return an object proxy, not a Future:
+
+[source,java]
+----
+RSSFeed feed = executor.invoke(RSSFeed.class, new Invokable<RSSFeed>() { ... });
+----
+
+This only works if the type is an interface.
+A proxy for the interface is created around the Future object; any invocation on the proxy will invoke get() on the Future (that is, will block until the value is computed).
+
+== Configuration
+The behavior of the ParallelExecutor can be tuned with global configuration symbols.
+
+Java constants for the configuration symbols are defined in javadoc:org.apache.tapestry5.ioc.IOCSymbols[].
+
+tapestry.thread-pool-enabled | javadoc:org.apache.tapestry5.ioc.IOCSymbols#THREAD_POOL_ENABLED[]::
+If `true`, the default, then the thread pool will operate.
+If `false`, then `ParallelExecutor`'s implementation changes to invoke the `Invokable` immediately, not in a pooled thread.
+This is useful in environments, such as Google App Engine, that do not support the creation of threads and thread pools.
+
+tapestry.thread-pool.core-pool-size | javadoc:org.apache.tapestry5.ioc.IOCSymbols#THREAD_POOL_CORE_SIZE[]::
+Minimum size of the thread pool. Defaults to 3.
+
+tapestry.thread-pool.max-pool-size | javadoc:org.apache.tapestry5.ioc.IOCSymbols#THREAD_POOL_MAX_SIZE[]::
+Maximum number of threads (active or inactive) in the thread pool. Defaults to 20.
+
+tapestry.thread-pool.keep-alive | javadoc:org.apache.tapestry5.ioc.IOCSymbols#THREAD_POOL_KEEP_ALIVE[]::
+Time to keep waiting threads alive. Defaults to "1 m" (one minute).
