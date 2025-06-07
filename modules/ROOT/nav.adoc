@@ -53,7 +53,8 @@
 ** xref:forms-and-validation.adoc[]
 ** xref:beaneditform-guide.adoc[]
 ** xref:uploading-files.adoc[]
- 
+** xref:bean-validation.adoc[]
+
 * Testing
 // ** Logging & Debugging
 ** xref:unit-testing.adoc[Unit testing pages or components]
