@@ -1,0 +1,50 @@
+@startuml
+
+cloud "Ioc Registry" as Registry {
+
+    rectangle ClassFactory as ClassFactoryImpl #blue;text:white
+
+    rectangle PropertyAccess as PropertyAccessImpl #blue;text:white
+
+    rectangle ApplicationGlobals as ApplicationGlobalsImpl #red;text:white
+
+    rectangle Request as RequestImpl #red;text:white
+
+    rectangle Cookies as CookiesImpl #red;text:white
+
+    rectangle ApplicationStateManager as ApplicationStateManagerImpl #red;text:white
+
+    rectangle TypeCoercer as TypeCoercerImpl #blue;text:white
+
+    rectangle SymbolSource as SymbolSourceImpl #blue;text:white
+
+}
+
+together {
+rectangle TapestryIOCModule {
+
+    rectangle ClassFactory #blue;text:white
+
+    rectangle PropertyAccess #blue;text:white
+
+    rectangle TypeCoercer #blue;text:white
+
+    rectangle SymbolSource #blue;text:white
+
+}
+
+rectangle TapestryModule {
+
+    rectangle ApplicationGlobals #red;text:white
+
+    rectangle Request #red;text:white
+
+    rectangle Cookies #red;text:white
+
+    rectangle ApplicationStateManager #red;text:white
+
+}
+}
+
+
+@enduml
