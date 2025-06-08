@@ -69,6 +69,7 @@
 * xref:chainbuilder-service.adoc[]
 * xref:pipelinebuilder-service.adoc[]
 * xref:shadowbuilder-service.adoc[]
+* xref:strategybuilder-service.adoc[]
 * xref:defining-tapestry-ioc-services.adoc[]
 * xref:ioc-modules.adoc[]
 * xref:ioc-configuration.adoc[Configuration]
