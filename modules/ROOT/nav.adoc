@@ -62,6 +62,7 @@
  
 
 .Tapestry IOC
+* xref:ioc-overview.adoc[]
 * xref:symbols.adoc[]
 * xref:type-coercion.adoc[]
 * xref:case-insensitivity.adoc[]
