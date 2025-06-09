@@ -77,6 +77,7 @@
 * xref:ioc-configuration.adoc[Configuration]
 * xref:object-providers.adoc[]
 * xref:service-serialization.adoc[]
+* xref:starting-the-ioc-registry.adoc[]
 * xref:aliases.adoc[]
 * xref:injection-in-detail.adoc[]
 * xref:ordering-by-constraints.adoc[]
