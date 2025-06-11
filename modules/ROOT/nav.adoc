@@ -82,7 +82,6 @@
 * xref:registry-startup.adoc[]
 * xref:parallel-execution.adoc[]
 * xref:logging-in-tapestry.adoc[]
-* xref:service-implementation-reloading.adoc[]
 * xref:service-advisors.adoc[]
 * xref:service-decorators.adoc[]
 * xref:operation-tracker.adoc[]
