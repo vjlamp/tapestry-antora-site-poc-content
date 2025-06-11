@@ -93,6 +93,7 @@
 ** xref:hibernate.adoc[]
 ** xref:jpa.adoc[]
 ** xref:spring.adoc[]
+** xref:component-report.adoc[]
 * xref:third-party-modules.adoc[]
 
 .Release Notes
