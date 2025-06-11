@@ -54,8 +54,8 @@
 ** xref:uploading-files.adoc[]
 ** xref:bean-validation.adoc[]
 
-* Testing
-// ** Logging & Debugging
+* Logging, Debugging & Testing
+** xref:logging.adoc[]
 ** xref:unit-testing.adoc[Unit testing pages or components]
 ** xref:integration-testing.adoc[]
 ** xref:development-dashboard.adoc[]
@@ -82,6 +82,7 @@
 * xref:ordering-by-constraints.adoc[]
 * xref:registry-startup.adoc[]
 * xref:parallel-execution.adoc[]
+* xref:logging-in-tapestry.adoc[]
 * xref:service-implementation-reloading.adoc[]
 * xref:service-advisors.adoc[]
 * xref:service-decorators.adoc[]
