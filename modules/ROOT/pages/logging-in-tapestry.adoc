@@ -1,0 +1,128 @@
+= Logging in Tapestry
+
+Logging in Tapestry is based on the http://www.slf4j.org/[Simple Logging Facade for Java (SLF4J)].
+You can think of SLF4J as a leaner, meaner replacement for http://commons.apache.org/logging/[commons-logging].
+
+In theory, SLF4J is a wrapper around any of a number of logging systems, including http://logging.apache.org/log4j/1.2/[Log4J] or the built-in JDK logging.
+In practice, it is almost always used with Log4J and no additional build configuration is needed.
+
+Your application will need to provide a log4j.properties file (or its XML equivalent). See the http://logging.apache.org/log4j/1.2/manual.html[Log4J] manual for more information.
+
+== Accessing Loggers
+Loggers are a special kind of resource that is injected into a service.
+In Tapestry IoC, Loggers an be injected into service constructors, or into service builder methods.
+
+In Tapestry Core (the web framework), Loggers for components can be injected into component fields.
+
+This often confuses people, because the standard idiom is to create a Logger based on the class name and inject it into a static field.
+In Tapestry, the Logger is created on your code's behalf and provided to you, and stored into a final private field.
+
+In terms of separation of concerns, Tapestry's approach is superior ... the concern of creating loggers is offloaded into the framework, and you code retains the concern of actually logging useful information.
+However this is largely theoretical.
+
+For a pragmatic standpoint, injecting Loggers makes it easier to test _logging code_ using the same techniques used to test other code: via the injection of Mock Object implementations of the Logger interface.
+This is something to consider when writing your own services, components and test.
+
+== Service Logging
+Tapestry uses the same loggers that are injected into services.
+It logs, at debug level, details about the construction of the service (and the proxy for the service), including details such as methods invoked.
+
+== Operation Tracker
+The OperationTracker is a resource available throughout Tapestry that is used to track what Tapestry is doing at any given time.
+Normally, this information is only used when reporting errors, as it gives an indication of what Tapestry was doing leading up to the point where the exception occurred.
+
+Starting in Tapestry 5.3, you may also enable debug logging for `org.apache.tapestry5.ioc.Registry` to see voluminous details on creation of proxies, services, injections, and so forth.
+It also tracks creation of pages and components, triggering of component events, handling of return values from event handler methods, and many (many!) other details.
+
+The logging even identifies how long each operation takes.
+This can be useful for understanding what is going on in a Tapestry application during the processing of the request, it can also be useful when tracking down performance issues.
+
+An example from the startup of a Tapestry application:
+
+----
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.services.TapestryModule
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.internal.services.InternalModule
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.services.assets.AssetsModule
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.services.pageload.PageLoadModule
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.integration.app1.services.AppModule
+[INFO] RegistryBuilder Adding module definition for class org.apache.tapestry5.integration.app1.services.TestOnlyModule
+[DEBUG] Registry [  1] --> Creating proxy for service ServletApplicationInitializer
+[DEBUG] Registry [  2] --> Obtaining AspectDecorator service
+[DEBUG] Registry [  3] --> Creating proxy for service AspectDecorator
+[DEBUG] Registry [  3] <-- Creating proxy for service AspectDecorator [59.42 ms]
+[DEBUG] Registry [  2] <-- Obtaining AspectDecorator service [62.49 ms]
+[DEBUG] Registry [  1] <-- Creating proxy for service ServletApplicationInitializer [113.98 ms]
+[DEBUG] Registry [  1] --> Realizing service ServletApplicationInitializer
+[DEBUG] Registry [  2] --> Realizing service ServletApplicationInitializer via org.apache.tapestry5.services.TapestryModule.buildServletApplicationInitializer(Logger, List, ApplicationInitializer) (at TapestryModule.java:1398)
+[DEBUG] Registry [  3] --> Constructing module class org.apache.tapestry5.services.TapestryModule
+[DEBUG] Registry [  4] --> Determining injection value for parameter #1 (org.apache.tapestry5.ioc.services.PipelineBuilder)
+[DEBUG] Registry [  5] --> Creating proxy for service MasterObjectProvider
+[DEBUG] Registry [  5] <-- Creating proxy for service MasterObjectProvider [5.77 ms]
+[DEBUG] Registry [  5] --> Realizing service MasterObjectProvider
+[DEBUG] Registry [  6] --> Realizing service MasterObjectProvider via org.apache.tapestry5.ioc.internal.services.MasterObjectProviderImpl(List, OperationTracker) (at MasterObjectProviderImpl.java:32) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49)
+[DEBUG] Registry [  7] --> Invoking constructor org.apache.tapestry5.ioc.internal.services.MasterObjectProviderImpl(List, OperationTracker) (at MasterObjectProviderImpl.java:32) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49)
+[DEBUG] Registry [  8] --> Determining injection value for parameter #1 (java.util.List)
+[DEBUG] Registry [  9] --> Collecting ordered configuration for service MasterObjectProvider
+[DEBUG] Registry [ 10] --> Invoking method org.apache.tapestry5.ioc.services.TapestryIOCModule.setupObjectProviders(OrderedConfiguration, ServiceOverride) (at TapestryIOCModule.java:131).
+[DEBUG] Registry [ 11] --> Determining injection value for parameter #1 (org.apache.tapestry5.ioc.OrderedConfiguration)
+[DEBUG] Registry [ 11] <-- Determining injection value for parameter #1 (org.apache.tapestry5.ioc.OrderedConfiguration) [0.17 ms]
+[DEBUG] Registry [ 11] --> Determining injection value for parameter #2 (org.apache.tapestry5.ioc.services.ServiceOverride)
+[DEBUG] Registry [ 12] --> Creating proxy for service ServiceOverride
+[DEBUG] Registry [ 12] <-- Creating proxy for service ServiceOverride [4.12 ms]
+[DEBUG] Registry [ 11] <-- Determining injection value for parameter #2 (org.apache.tapestry5.ioc.services.ServiceOverride) [4.71 ms]
+[DEBUG] Registry [ 11] --> Creating proxy for service UpdateListenerHub
+[DEBUG] Registry [ 11] <-- Creating proxy for service UpdateListenerHub [6.83 ms]
+[DEBUG] Registry [ 11] --> Realizing service UpdateListenerHub
+[DEBUG] Registry [ 12] --> Realizing service UpdateListenerHub via org.apache.tapestry5.ioc.internal.services.UpdateListenerHubImpl() (at UpdateListenerHubImpl.java:27) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49)
+[DEBUG] Registry [ 13] --> Invoking constructor org.apache.tapestry5.ioc.internal.services.UpdateListenerHubImpl() (at UpdateListenerHubImpl.java:27) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49)
+[DEBUG] Registry [ 13] <-- Invoking constructor org.apache.tapestry5.ioc.internal.services.UpdateListenerHubImpl() (at UpdateListenerHubImpl.java:27) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49) [0.85 ms]
+[DEBUG] Registry [ 12] <-- Realizing service UpdateListenerHub via org.apache.tapestry5.ioc.internal.services.UpdateListenerHubImpl() (at UpdateListenerHubImpl.java:27) via org.apache.tapestry5.ioc.services.TapestryIOCModule.bind(ServiceBinder) (at TapestryIOCModule.java:49) [1.58 ms]
+[DEBUG] Registry [ 11] <-- Realizing service UpdateListenerHub [1.83 ms]
+[DEBUG] Registry [ 10] <-- Invoking method org.apache.tapestry5.ioc.services.TapestryIOCModule.setupObjectProviders(OrderedConfiguration, ServiceOverride) (at TapestryIOCModule.java:131). [47.85 ms]
+[DEBUG] Registry [ 10] --> Invoking method org.apache.tapestry5.services.TapestryModule.contributeMasterObjectProvider(OrderedConfiguration, ObjectProvider, ObjectLocator) (at TapestryModule.java:802).
+[DEBUG] Registry [ 11] --> Determining injection value for parameter #1 (org.apache.tapestry5.ioc.OrderedConfiguration)
+[DEBUG] Registry [ 11] <-- Determining injection value for parameter #1 (org.apache.tapestry5.ioc.OrderedConfiguration) [0.11 ms]
+[DEBUG] Registry [ 11] --> Determining injection value for parameter #2 (org.apache.tapestry5.ioc.ObjectProvider)
+----
+
+== Configuring Tapestry for other Logging Toolkits
+The default configuration uses Log4J.
+
+If you need to use another logging system, that can be accomplished using Maven dependency control.
+
+You can exclude some of the dependencies that Tapestry introduces, and replace them with your own. For example, to switch over to JDK logging, update your pom as follows:
+
+[source,xml]
+----
+<dependencies>
+  <dependency>
+    <groupId>org.apache.tapestry</groupId>
+    <artifactId>tapestry-ioc</artifactId>
+    <version>5.3</version>
+    <exclusions>
+      
+      <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+      </exclusion>
+      
+      <exclusion>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+      </exclusion>
+
+    </exclusions>
+  </dependency>
+
+  <dependency>
+    <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.4.3</version>
+  </dependency>
+</dependencies>
+----
+
+This pulls out the log4j support normally included with Tapestry, and replaces it with the SLF4J library that wraps around JDK 1.4 logging.
+
+In all likelihood, you'll replace `tapestry-ioc` with `tapestry-core` (assuming you are building a web application using Tapestry, rather than using Tapestry IoC as part of some other application).
+And, of course, version numbers change all the time!
