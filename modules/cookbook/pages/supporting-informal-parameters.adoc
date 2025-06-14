@@ -1,0 +1,77 @@
+= Supporting Informal Parameters
+
+Informal parameters are any additional parameters (aka HTML attributes) beyond the those explicitly defined for a component using the javadoc:org.apache.tapestry5.annotations.Parameter[label=@Parameter] annotation.
+
+Any component that closely emulates a particular HTML element _should_ support informal parameters, because it gives users of your component the ability to easily add HTML attributes to the HTML that your component emits.
+You'll find that most of the built-in Tapestry components, such as javadoc:org.apache.tapestry5.corelib.components.Form[], javadoc:org.apache.tapestry5.corelib.components.Label[] and javadoc:org.apache.tapestry5.corelib.components.TextField[], do exactly that.
+
+To support informal parameters, a component class should use either the javadoc:org.apache.tapestry5.annotations.SupportsInformalParameters[label=@SupportsInformalParameters] annotation or the javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[] mixin.
+Otherwise, providing informal parameters to a component will do nothing: any additional parameters will be ignored.
+
+== Approach 1: `@SupportsInformalParameters`
+In the example below we create an Img component, a custom replacement for the `<img>` tag.
+Its `src` parameter will be an asset.
+We'll use the `@SupportsInformalParameters` annotation to tell Tapestry that the component should support informal parameters.
+
+.Img.java
+[source,java]
+----
+@SupportsInformalParameters
+public class Img
+{
+    @Parameter(required=true, allowNull=false, defaultPrefix=BindingConstants.ASSET)
+    private Asset src;
+
+    @Inject
+    private ComponentResources resources;
+
+    boolean beginRender(MarkupWriter writer)
+    {
+         writer.element("img", "src", src);
+         resources.renderInformalParameters(writer);
+         writer.end();
+         return false;
+    }
+}
+----
+
+The call to `renderInformalParameters()` is what converts and outputs the informal parameters.
+It should occur after your code has rendered attributes into the element (earlier written attributes will not be overwritten by later written attributes).
+
+Returning false from `beginRender()` ensures that the body of the component is not rendered, which makes sense for an `<img>` tag, which has no body.
+
+== Approach 2: RenderInformals
+Another, equivalent, approach is to use the javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[] mixin.
+
+.Img.java
+[source,java]
+----
+public class Img
+{
+    @Parameter(required=true, allowNull=false, defaultPrefix=BindingConstants.ASSET)
+    private Asset src;
+
+    @Mixin
+    private RenderInformals renderInformals;
+
+    void beginRender(MarkupWriter writer)
+    {
+        writer.element("img", "src", src);
+    }
+
+    boolean beforeRenderBody(MarkupWriter writer)
+    {
+        writer.end();
+        return false;
+    }
+}
+----
+
+This variation splits the rendering of the tag in two pieces, so that the `RenderInformals` mixin can operate (after `beginRender()` and before `beforeRenderBody()`).
+
+== Approach 3: Extend the "Any" component
+.Img.java
+[source,java]
+----
+public class Img extends Any { ... }
+----
