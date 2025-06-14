@@ -42,7 +42,7 @@ This is used primarily by javadoc:org.apache.tapestry5.corelib.components.BeanEd
 
 === Conditional and Looping Components
 
-xref:switching-cases.adoc[Case]::
+xref:cookbook:switching-cases.adoc[Case]::
 Not really a component, but a technique to emulate a "case" statement using a delegate.
 
 javadoc:org.apache.tapestry5.corelib.components.Delegate[]::
