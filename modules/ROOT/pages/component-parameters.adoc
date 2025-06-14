@@ -332,7 +332,7 @@ The general rule is, only use the `${...}` syntax in non-Tapestry-controlled loc
 ----
 
 == Informal Parameters
-Main Article: xref:supporting-informal-parameters.adoc[]
+Main Article: xref:cookbook:supporting-informal-parameters.adoc[]
 
 Many components support informal parameters, additional parameters beyond the formally defined parameters.
 Informal parameters will be rendered into the output as additional attributes on the tag rendered by the component.
@@ -352,7 +352,7 @@ Informal parameters (if supported) are always rendered into the output _unless_ 
 If the bound property is null then the parameter will _not_ be present at all in the rendered output.
 
 If your component should render informal parameters, just inject the javadoc:org.apache.tapestry5.ComponentResources[] for your component and invoke the `renderInformalParameters()` method.
-See xref:supporting-informal-parameters.adoc[] for an example of how to do this.
+See xref:cookbook:supporting-informal-parameters.adoc[] for an example of how to do this.
 
 
 == Parameters Are Bi-Directional
