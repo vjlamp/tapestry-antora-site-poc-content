@@ -100,7 +100,9 @@ In this case, the `shoppingCart` field will be null if the `ShoppingCart` SSO do
 === Persistence Strategies
 Main Article: xref:persistent-page-data.adoc[]
 
-Each SSO is managed according to a persistence strategy. The default persistence strategy, "session", stores the SSOs inside the session. The session is created as needed.
+Each SSO is managed according to a persistence strategy.
+The default persistence strategy, `session`, stores the SSOs inside the session.
+The session is created as needed.
 
 === Configuring SSOs
 Generally, you will need to configure your Session State Object if you want to change the persistence strategy to other than the default.
@@ -133,7 +135,7 @@ public void contributeApplicationStateManager(MappedConfiguration<Class, Applica
 Here, we have an SSO type of ShoppingCart, and we're providing a creator for it.
 We've dolled the creator up with some generic types, but that isn't essential.
 
-Our creator creates a new `MyState` instance using an alternate constructor that takes the current date and time
+Our creator creates a new `MyState` instance using an alternate constructor that takes the current date and time.
 Again, just an example.
 
 Finally, we create an javadoc:org.apache.tapestry5.services.ApplicationStateContribution[] identifying the strategy name and the creator, and give that to the configuration.
@@ -221,14 +223,14 @@ Tapestry has solutions to this, too:
 Tapestry knows that Java's String, Number and Boolean classes are immutable.
 Immutable objects do not require a re-store into the session.
 
-You can mark your own session objects as immutable (and thus not requiring session replication) using the javadoc:org.apache.tapestry5.http.annotations.ImmutableSessionPersistedObject[label=@ImmutableSessionPersistedObject] annotation.
+You can mark your own session objects as immutable (and thus not requiring session replication) using the javadoc:org.apache.tapestry5.annotations.ImmutableSessionPersistedObject[label=@ImmutableSessionPersistedObject] annotation.
 
 === `OptimizedSessionPersistedObject` Interface
-The javadoc:org.apache.tapestry5.http.OptimizedSessionPersistedObject[] interface allows an object to control this behavior.
+The javadoc:org.apache.tapestry5.OptimizedSessionPersistedObject[] interface allows an object to control this behavior.
 An object with this interface can track when its mutable state changes.
 Typically, you should extend from the javadoc:org.apache.tapestry5.BaseOptimizedSessionPersistedObject[] base class.
 
 `SessionPersistedObjectAnalyzer` Service
-The javadoc:org.apache.tapestry5.http.services.SessionPersistedObjectAnalyzer[] service is ultimately responsible for determining whether a session persisted object is dirty or not (dirty meaning in need of a restore into the session).
+The javadoc:org.apache.tapestry5.services.SessionPersistedObjectAnalyzer[] service is ultimately responsible for determining whether a session persisted object is dirty or not (dirty meaning in need of a restore into the session).
 This is an extensible service where new strategies, for new classes, can be introduced.
 
