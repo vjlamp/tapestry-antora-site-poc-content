@@ -1,3 +1,4 @@
 .Cookbook
+* xref:supporting-informal-parameters.adoc[]
 * xref:switching-cases.adoc[]
 
