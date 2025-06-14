@@ -3,6 +3,7 @@ title: User Guide
 version: 5.8
 nav:
 - modules/ROOT/nav.adoc
+- modules/cookbook/nav.adoc
 asciidoc:
   attributes:
     javadoc-version: current
