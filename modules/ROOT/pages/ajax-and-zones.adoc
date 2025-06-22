@@ -1,1 +1,305 @@
 = AJAX and Zones
+
+Tapestry provides easy-to-use support for Ajax, the technique of using JavaScript to dynamically update parts of a web page with content from the server without redrawing the whole page.
+With Tapestry, you can do simple Ajax updates without having to write any JavaScript code at all.
+
+Ajax support is included in many xref:component-reference.adoc[built-in components] and xref:component-mixins.adoc[component mixins] via the `zone` parameter.
+Here we use an javadoc:org.apache.tapestry5.corelib.components.EventLink[] component to trigger an Ajax update of another area of the page:
+
+.Page or component template (partial)
+[source,xml]
+----
+<t:eventlink event="updateTime" zone="timeArea">update</t:eventlink>
+...
+<t:zone t:id="timeArea" id="timeArea">
+    The current time is ${currentTime}
+</t:zone>
+----
+
+The corresponding Java code might look like this:
+
+.Page or component class (partial)
+[source,java]
+----
+@Inject
+private AjaxResponseRenderer ajaxResponseRenderer;
+
+@InjectComponent
+private Zone timeArea;
+
+@Property
+private Date currentTime;
+ ...
+/** respond to the "updateTime" event */
+void onUpdateTime()
+{
+    currentTime = new Date();
+    ajaxResponseRenderer.addRender(timeArea);
+} 
+----
+
+That `onUpdateTime` method is just an ordinary Tapestry event handler, except that it uses an injected javadoc:org.apache.tapestry5.services.ajax.AjaxResponseRenderer[] to tell Tapestry what zone to update when the link is clicked.
+
+
+== Zones
+Zones are Tapestry's approach to performing partial page updates.
+A javadoc:org.apache.tapestry5.corelib.components.Zone[] component renders as an HTML element, typically a `<div>`, and serves as a marker for where dynamically-updated content should be replaced.
+A zone is recognizable in the DOM because it will have the attribute `data-container-type=zone`.
+The client-side support for Zones is keyed off of this attribute and value.
+
+A Zone update can be triggered by an javadoc:org.apache.tapestry5.corelib.components.EventLink[], javadoc:org.apache.tapestry5.corelib.components.ActionLink[] or javadoc:org.apache.tapestry5.corelib.components.Select[] component, or by a javadoc:org.apache.tapestry5.corelib.components.Form[].
+All of these components support the `zone` parameter.
+Clicking such a link will invoke an event handler method on the server as normal ... except that a _partial page response_ is sent to the client, and the content of that response is used to update the Zone's `<div>` in place.
+
+== Event Handler Return Types
+In a traditional request, the return value of an event handler method may used to determine which page will render a _complete_ response, and a _redirect_ may sent to the client to render the new page (as a new request).
+
+In contrast, with a Zone update, the return value may used to render a _partial response_ within the _same request_.
+
+If you only have one zone to update and don't want to use `AjaxResponseRenderer`, you can instead return a value from your event handler method.
+The simplest case is just to return the zone's own body:
+
+[source,java]
+----
+@Inject
+private Request request;
+
+@InjectComponent
+private Zone myZone;
+...
+Object onActionFromSomeLink()
+{
+   return myZone.getBody(); // AJAX request, return zone's own body
+}
+----
+
+The possible return values are:
+
+* An injected Block or Component to render as the response.
+The response will be a JSON hash, with a `content` key whose value is the rendered markup.
+This is the basis for updates with the Zone component.
+* The zone's own body (using Zone's `getBody()` method)
+* `null` (to redraw the current page)
+* A javadoc:org.apache.tapestry5.json.JSONObject[] or  javadoc:org.apache.tapestry5.json.JSONArray[], which will be sent as the response.
+* A javadoc:org.apache.tapestry5.StreamResponse[], which will be sent as the response.
+* A javadoc:org.apache.tapestry5.Link[], which will send a redirect to the client.
+* A page name (as a String), or a page class, or a page instance, which will send a redirect to the indicated page.
+
+See xref:page-navigation.adoc[] for full descriptions of the above.
+
+
+
+=== Graceful Degradation 
+Users who do not have JavaScript enabled may click javadoc:org.apache.tapestry5.corelib.components.EventLink[]s (or javadoc:org.apache.tapestry5.corelib.components.ActionLink[]s, or javadoc:org.apache.tapestry5.corelib.components.Form[]s) that are configured to update a `Zone`.
+When that occurs, the request will still be sent to the server, but Tapestry will handle it as a traditional request.
+
+This happens automatically when your event handler method has a void return type.
+
+However, to support graceful degradation when your event handler method has a non-void return type, you should detect non-Ajax requests and return a traditional response, typically `null` to redraw the whole page.
+This is accomplished by injecting the javadoc:org.apache.tapestry5.http.services.Request[] object, and invoking the `isXHR()` method.
+This value will be `true` for Ajax requests, and `false` for traditional requests.
+
+[source,java]
+----
+@Inject
+private Request request;
+
+@InjectComponent
+private Zone myZone;
+...
+Object onActionFromSomeLink()
+{
+    // return either the zone body (ajax) or whole page (non-ajax)
+    return request.isXHR() ? myZone.getBody() : null;
+}
+----
+
+=== Multiple Zone Updates
+
+An event handler often needs to update multiple zones on the client side.
+To accomplish this, use an javadoc:org.apache.tapestry5.services.ajax.AjaxResponseRenderer[], indicating the zones to update.
+You must know the client-side id for each zone to update (the best way for this is to lock down the zone's id using the id parameter of the Zone component).
+
+The renderer for each zone can be the zone itself, a block, a component, a javadoc:org.apache.tapestry5.Renderable[] or a javadoc:org.apache.tapestry5.runtime.RenderCommand[] ... or an object, such as String, that can be coerced to either of these.
+
+[source,java]
+----
+@InjectComponent
+private Zone userInput;
+
+@InjectComponent
+private Zone helpPanel;
+
+@Inject
+private AjaxResponseRenderer ajaxResponseRenderer;
+
+void onActionFromRegister()
+{
+    ajaxResponseRenderer
+        .addRender("userInput", userInput)
+        .addRender("helpPanel", helpPanel);
+}
+----
+
+This example assumes that there are two zones, `userInput` and `helpPanel`, somewhere in the rendered page, waiting to receive the updated content.
+
+In this example, the Zone receives the update but does not provide any content.
+That's OK, the other client-side elements (`userInput` and `helpPanel`) will be updated, and the zone's content left unchanged.
+
+This demonstrates why it is necessary for the developer to specify a particular client-side id for `Zone` components.
+If they were dynamically allocated ids, as is typical in most other elements, it would be impossible for this code to know what client-side id was used for the `Zone`.
+
+== Zone Component Id vs. Zone Element Id
+Like all Tapestry components, javadoc:org.apache.tapestry5.corelib.components.Zone[]s have a component id, specified using the `t:id` attribute.
+If you do not assign a component id, a unique id is assigned by Tapestry.
+
+However, to coordinate things on the client side, it is necessary for components that wish to update the zone know the _client-side element id_.
+This is specified with the `id` parameter of the `Zone` component.
+If the `id` parameter is not bound, then a unique value (for the current page and render) is generated by Tapestry and this value is difficult to predict.
+(The actual value will be available as the `clientId` property of the `Zone` component itself.)
+
+Remember that the component id (`t:id`) is used to `inject` the `Zone` component into the containing page or component.
+The client-side id (`id`) is used on the client side to orchestrate requests and updates.
+You will often seen the following construct:
+
+[source,xml]
+----
+<t:zone t:id="myZone" id="myzone"> ... </t:zone>
+----
+
+=== The Containing Zone (`zone="^"`)
+
+If the `Form` or `Link` is enclosed by the `Zone` itself, and you're using the `zone` parameter instead of the `async` parameter, then the `zone` parameter may be set to the special value `^` (the caret).
+The zone is found – on the client side – by searching up form the form or link element for the first enclosing element that is a `Zone`.
+In this way, the client-side coordination can occur without having to know what the specific client-side id of the `Zone` is.
+Because of this, in some cases it is no longer necessary to specify the Zone's `id` parameter.
+
+
+=== An Update `<div>` within a Zone `<div>`
+In many situations, a `Zone` is a kind of "wrapper" or "container" for dynamic content; one that provides a look and feel ... a bit of wrapping markup to create a border.
+In that situation, the Zone `<div>` may contain an update `<div>`.
+
+An Update `<div>` is specifically a `<div>` element marked with the CSS class `t-zone-update`, inside the Zone's `<div>`.
+
+If an Update `<div>` exists within a Zone `<div>`, then when Tapestry updates a zone only the update `<div>`'s content will be changed, rather than the entire Zone `<div>`.
+
+The show and update functions (see <<Zone Effect Functions>>, below) apply to the Zone `<div>`, not just the update `<div>`.
+
+
+=== Zone Effect Functions
+
+A javadoc:org.apache.tapestry5.corelib.components.Zone[] may be initially visible or invisible.
+When a `Zone` is updated, it is made visible if not currently so.
+This is accomplished via a function on the `Tapestry.ElementEffect` client-side object.
+By default, the `show()` function is used for this purpose.
+If you want Tapestry to call a different `Tapestry.ElementEffect` function when updates occur, specify its name with the zone's `show` parameter.
+
+If a `Zone` is already visible, then a different effect function is used to highlight the change.
+By default, the `highlight()` function is called, which performs a yellow fade to highlight that the content of the `Zone` has changed.
+Alternatively, you can specify a different effect function with the ``Zone``'s `update` parameter:
+
+[%autowidth]
+|===
+|Tapestry.ElementEffect Function |Result
+
+|`highlight()`
+|(the default) highlight changes to an already-visible zone
+
+|`show()`
+|make the zone visible if it isn't already visible
+
+|`slidedown()`
+|scroll the content down
+
+|`slideup()`
+|slide the content back up (opposite of slidedown)
+
+|`fade()`
+|fade the content out (opposite of show)
+|===
+
+
+To have Tapestry update a `Zone` without the usual yellow highlight effect, just specify `show` for the update parameter:
+
+[source,xml]
+----
+<t:zone t:id="myZone" t:update="show">
+----
+
+You may also define and use your own JavaScript effect function (with lower-case names), like this:
+
+[source,javascript]
+----
+Tapestry.ElementEffect.myeffectname = function(element) {
+  YourJavascriptCodeGoesHere;
+};
+----
+
+
+
+
+=== Zone Limitations
+Unlike many other situations, Tapestry relies on you to specify useful and unique ids to javadoc:org.apache.tapestry5.corelib.components.Zone[] components, then reference those ids inside javadoc:org.apache.tapestry5.corelib.components.EventLink[] (or javadoc:org.apache.tapestry5.corelib.components.ActionLink[], or javadoc:org.apache.tapestry5.corelib.components.Form[]) components.
+Using `Zone` components inside any kind of loop may cause additional problems, as Tapestry will uniqueify the client id you specify (appending an index number).
+
+If you create a component that contains a Zone, and you use that component in a javadoc:org.apache.tapestry5.corelib.components.Loop[], you'll likely need to set the client-side id like this:
+
+[source,xml]
+----
+<t:zone t:id="myzone" id="prop:componentResources.id">
+----
+
+See https://tapestry-jumpstart.org/jumpstart/examples/ajax/components1[this JumpStart Example] for details.
+
+Zones may only be used inside the `body` of a page, not the head.
+
+=== More Information
+For examples of extending a `Form` with a `Zone` and updating multiple zones at once, see the xref:faq:ajax.adoc[].
+
+There are also a number of Ajax-related examples at the https://tapestry-jumpstart.org/jumpstart/[Tapestry JumpStart] site.
+
+== Autocomplete Mixin
+The javadoc:org.apache.tapestry5.corelib.mixins.Autocomplete[] mixin exists to allow a text field to query the server for completions for a partially entered phrase.
+It is often used in situations where the field exists to select a single value from a large set, too large to successfully download to the client as a drop down list.
+For example, when the number of values to select from is numbered in the thousands.
+
+Autocomplete can be added to an existing text field:
+
+[source,xml]
+----
+<t:textfield t:id="accountName" t:mixins="autocomplete" size="100"/>
+----
+
+The mixin can be configured in a number of ways, see the xref:component-reference.adoc[].
+
+When the user types into the field, the client-side JavaScript will send a request to the server to get completions.
+
+You must write an event handler to provide these completions.
+The name of the event is `providecompletions`.
+The context is the partial input value, and the return value will be converted into the selections for the user.
+
+For example:
+
+[source,java]
+----
+List<String> onProvideCompletionsFromAccountName(String partial)
+{
+  List<Account> matches = accountDAO.findByPartialAccountName(partial);
+
+  List<String> result = new ArrayList<String>();
+
+  for (Account a : matches)
+  {
+    result.add(a.getName());
+  }
+
+  return result;
+}
+----
+
+This presumes that `findByPartialAccountName()` will sort the values, otherwise you will probably want to sort them.
+The `Autocomplete` mixin does not do any sorting.
+
+You can return an object array, a list, even a single object.
+You may return objects instead of strings ... and `toString()` will be used to convert them into client-side strings.
+
