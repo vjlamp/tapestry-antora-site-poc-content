@@ -1,0 +1,149 @@
+= AJAX FAQ
+
+== Do I have to specify both `id` and `t:id` for `Zone` components?
+The examples for the javadoc:org.apache.tapestry5.corelib.components.Zone[] component consistently specify both `id` and `t:id` and this is probably a good idea.
+
+Generally speaking, if you don't specify the client-side id (the `id` attribute), it will be the same as the Tapestry component id (`t:id`).
+
+However, there are any number of exceptions to this rule.
+The `Zone` may be rendering inside a javadoc:org.apache.tapestry5.corelib.components.Loop[] (in which case, each rendering will have a unique client side id).
+The `Zone` may be rendering as part of a partial page render, in which case, a random unique id is inserted into the id. There are other examples where Tapestry component ids in nested components may also clash.
+
+The point is, to be sure, specify the exact client id. This will be the value for the `zone` parameter of the triggering component (such as a javadoc:org.apache.tapestry5.corelib.components.Form[], javadoc:org.apache.tapestry5.corelib.components.PageLink[], javadoc:org.apache.tapestry5.corelib.components.ActionLink[], etc.).
+
+
+== How do I update the content of a `Zone` from an event handler method?
+When a client-side link or form triggers an update, the return value from the event handler method is used to construct a partial page response.
+This partial page response includes markup content that is used to update the ``Zone``'s client-side `<div>` element.
+
+Where does that content come from?
+You inject it into your page.
+
+[source,xml]
+----
+<t:zone id="search" t:id="searchZone">
+  <t:form t:id="searchForm" zone="searchZone">
+    <t:textfield t:id="query" size="20"/>
+    <input type="submit" value="Search"/>
+  </t:form>
+</t:zone>
+
+<t:block id="searchResults">
+  <ul>
+    <li t:type="loop" source="searchHits" value="searchHit">${searchHit}</li>
+  </ul>
+</t:block>
+----
+
+[source,java]
+----
+@Inject
+private Block searchResults;
+
+Object onSuccessFromSearchForm()
+{
+  searchHits = searchService.performSearch(query);
+
+  return searchResults;
+}
+----
+
+So, when the search form is submitted, the resulting search hits are collected.
+In the same request, the `searchResults` block is rendered, package, and sent to the client.
+The form inside the client-side Zone `<div>` is replaced with the list of hits.
+
+In many cases, you just want to re-render the `Zone` itself, to display updated content.
+In that case, you don't need a separate `<t:block>`, instead you can use javadoc:org.apache.tapestry5.annotations.InjectComponent[label=@InjectComponent] to inject the `Zone` object itself, and return the ``Zone``'s body:
+
+[source,java]
+----
+@InjectComponent
+private Zone statusZone;
+
+Object onActionFromUpdateStatus()
+{
+  return statusZone.getBody();
+}
+----
+
+== How to I update multiple zones in a single event handler?
+To do this, you must know, on the server, the client ids of each `Zone`.
+That's one of the reasons that you will generally set the ``Zone``'s client id (via the Zone's `id` parameter), rather than let Tapestry assign a client id for you.
+
+From the event handler method, instead of returning a Block or a Component, return a multi-zone update:
+
+[source,java]
+----
+@Inject
+private Block searchResults;
+
+@Inject
+private Block statusBlock;
+
+@Inject
+private AjaxResponseRenderer ajaxResponseRenderer;
+
+void onSuccessFromSearchForm()
+{
+  searchHits = searchService.performSearch(query);
+
+  message = String.format("Found %,d matching documents", searchHits.size());
+
+  ajaxResponseRenderer.addRender("results", searchResults).addRender("status", statusBlock);
+}
+----
+
+javadoc:org.apache.tapestry5.services.ajax.AjaxResponseRenderer[] adds other useful commands as well.
+It also has the advantage that a simple return value can be returned to render content for the `Zone` that triggered the request.
+
+
+== What's that weird number in the middle of the client ids after a Zone is updated?
+You might start with markup in your template for a component such as a javadoc:org.apache.tapestry5.corelib.components.TextField[]:
+
+[source,xml]
+----
+<t:textfield t:id="firstName"/>
+----
+
+When the component initially renders as part of a full page render, you get a sensible bit of markup:
+
+[source,html]
+----
+<input id="firstName" name="firstName" type="text">
+----
+
+But when the form is inside a Zone and rendered as part of a zone update, the ids get weird:
+
+[source,html]
+----
+<input id="firstName_12a820cc40e" name="firstName" type="text">
+----
+
+What's happening here is that Tapestry is working to prevent unwanted id clashes as part of the page update.
+In an HTML document, each `id` is expected to be unique. Most JavaScript is keyed off of the `id` field, for instance.
+
+In a full page render, components don't just use their component id (`t:id`) as their client id.
+Instead they use the JavaScriptSupport environmental to allocate a unique id.
+When there's no loops or conflicts, the client id matches the component id.
+
+When the component is inside a loop, a suffix is appended: `firstName`, `firstName_0`, `firstName_1`, etc.
+
+When the component is rendered as part of an Ajax partial page update, the rules are different.
+Since Tapestry doesn't know what content has been rendered onto the page previously, it can't use its normal tricks to ensure that ids are unique.
+
+Instead, Tapestry creates a random-ish unique id suffix, such as `12a820cc40e` in the example.
+This suffix is appended to all allocated ids to ensure that they do not conflict with previously rendered ids.
+
+
+== Why do I sometimes get the exception "The rendered content did not include any elements that allow for the positioning of the hidden form field's element." when rendering an empty Zone?
+As part of Tapestry's form processing, it must write a hidden `<input>` element with information needed when the form is submitted.
+Since the content of a `Zone` may be changed or removed, a hidden field is created just for the `Zone`, separate from the rest of the enclosing form.
+
+At the same time, Tapestry wants to position the `<input>` field in a valid location, and HTML defines some constraints for that.
+An input field must appear inside a `<p>` or `<div>` element.
+If your Zone is initially empty, there's no place to put the hidden element, and Tapestry will complain.
+
+The solution is simple: just add a `<div>` element to the body of the zone.
+This ensures that there's a place for the hidden input field.
+An empty `<div>` element (even one containing a hidden form field) will not affect page layout.
+
