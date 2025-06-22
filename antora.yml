@@ -4,7 +4,8 @@ version: 5.4
 nav:
 - modules/ROOT/nav.adoc
 - modules/cookbook/nav.adoc
+- modules/faq/nav.adoc
 asciidoc:
   attributes:
-    javadoc-version: 5.4
+    javadoc-version: 5.4.5
     tapestry-namespace: http://tapestry.apache.org/schema/tapestry_5_4.xsd
