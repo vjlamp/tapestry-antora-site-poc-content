@@ -26,7 +26,6 @@
 ** xref:request-processing.adoc[]
 ** xref:component-rendering.adoc[]
 ** xref:component-events.adoc[]
-** xref:url-rewriting.adoc[]
 ** xref:dom.adoc[Document Object Model (DOM)]
 ** xref:security.adoc[]
 ** xref:https.adoc[]
