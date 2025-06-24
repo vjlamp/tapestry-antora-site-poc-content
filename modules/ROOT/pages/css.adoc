@@ -1,1 +1,100 @@
 = Cascading Style Sheets (CSS)
+
+Most web applications delegate to Cascading Style Sheets (CSS) the stylistic details of the page – fonts, colors, margins, borders and alignment.
+This helps the remaining HTML to remain simple and semantic, which usually makes it easier to read and maintain.
+
+Tapestry includes sophisticated support for CSS in the form of annotation-based linking, far-future expire headers, automatic duplicate removal, and other features provided for assets.
+
+== Default style sheet
+Tapestry includes a built-in style sheet, `tapestry.css`, in all HTML documents (documents that have an outer `<html>` element and a nested `<head>` element), as part of the `core` JavaScript stack.
+For Tapestry 5.4 and later, the core JavaScript stack also includes the CSS for Bootstrap 3.1.1.
+
+Tapestry 5.5.0 and later also includes Bootstrap 4.3.1.
+To use it, just add `@ImportModule(Bootstrap4Module.class)` to your application's module class (normally `AppModule.java`):
+
+[source,java]
+----
+@ImportModule(Bootstrap4Module.class)
+public class AppModule {
+    // ...
+}
+----
+
+Tapestry 5.5.0 and later also allows you to have Tapestry not provide any CSS at all.
+To do that, just add `@ImportModule(NoBootstrapModule.class)` to your module class.
+In this case, you'll need to set the `tapestry.default-stylesheet` (javadoc:org.apache.tapestry5.SymbolConstants#DEFAULT_STYLESHEET[]) xref:configuration.adoc[configuration symbol] to tell Tapestry what's your main CSS file.
+Otherwise, an exception will be thrown and the webapp won't start.
+
+== Adding your own CSS
+A page or component (for example, a xref:layout-component.adoc[layout component]) that is rendering the `<head>` tag can add a style sheet directly in the markup.
+
+[source,xml]
+----
+<head>
+  <link href="/css/site.css" rel="stylesheet" type="text/css"/>
+  ...
+----
+
+If you want to leverage Tapestry's xref:localization.adoc[localization support], you may want to make use of an expansion and the `asset:` or `context:` binding prefix:
+
+[source,xml]
+----
+<head>
+  <link href="${context:css/site.css}" rel="stylesheet" type="text/css"/>
+  ...
+----
+
+The `context:` prefix means that the remainder of the expansion is a path to a context asset, a resource in the web application root (`src/main/webapp` in your workspace).
+By contrast, the `asset:` prefix tells Tapestry to look in the classpath. See xref:assets.adoc[].
+
+== Using the @Import annotation
+Another approach to adding a style sheet is to include an javadoc:org.apache.tapestry5.annotations.Import[label=@Import] annotation on your component class:
+
+.MyComponent.java
+[source,java]
+----
+@Import(stylesheet="context:css/site.css")
+public class MyComponent
+{
+
+}
+----
+
+As with xref:client-side-javascript.adoc[included JavaScript libraries], each style sheet will only be added once, regardless of the number of components that include it via the annotation.
+
+== Conditionally loading IE-only style sheets
+If you need to load a different style sheet for Internet Explorer browsers, or for certain versions of IE browsers, you can use Tapestry's built-in support for IE conditional comments.
+Just add something like the following to your page or component (or layout) class:
+
+[source,java]
+----
+@Environmental
+private JavaScriptSupport javaScriptSupport;
+     
+@Inject @Path("context:layout/ie-only.css")
+private Asset ieOnlyStylesheet;
+
+// add an IE-only style sheet if browser is IE
+void afterRender() {
+    javaScriptSupport.importStylesheet(
+        new StylesheetLink(ieOnlyStylesheet,
+        new StylesheetOptions(null, "IE"))
+    );
+}
+----
+
+The above will render something like:
+
+[source,html]
+----
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" href="/assets/1.0-SNAPSHOT/ctx/layout/ie-only.css"></link>
+<![endif]-->
+----
+
+Naturally, the conditional part can be any other IE http://en.wikipedia.org/wiki/Conditional_comment[conditional expression], such as "lt IE 8".
+
+== Overriding Bootstrap
+The javadoc:org.apache.tapestry5.SymbolConstants#BOOTSTRAP_ROOT[] (`tapestry.bootstrap-root`) symbol tells Tapestry where the Bootstrap CSS file is.
+You can override that symbol to have it point to your own version of Bootstrap (or even to an empty file if you want to eliminate Bootstrap entirely).
+
