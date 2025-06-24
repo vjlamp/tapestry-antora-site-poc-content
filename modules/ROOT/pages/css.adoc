@@ -1,1 +1,62 @@
 = Cascading Style Sheets (CSS)
+
+Most web applications delegate to Cascading Style Sheets (CSS) the stylistic details of the page – fonts, colors, margins, borders and alignment.
+This helps the remaining HTML to remain simple and semantic, which usually makes it easier to read and maintain.
+
+Tapestry includes sophisticated support for CSS in the form of annotation-based linking, far-future expire headers, automatic duplicate removal, and other features provided for assets.
+
+== Default style sheet
+Tapestry includes a built-in style sheet, `tapestry.css`, in all HTML documents (documents that have an outer `<html>` element and a nested `<head>` element), as part of the `core` JavaScript stack.
+
+
+== Adding your own CSS
+A page or component (for example, a xref:layout-component.adoc[layout component]) that is rendering the `<head>` tag can add a style sheet directly in the markup.
+
+[source,xml]
+----
+<head>
+  <link href="/css/site.css" rel="stylesheet" type="text/css"/>
+  ...
+----
+
+If you want to leverage Tapestry's xref:localization.adoc[localization support], you may want to make use of an expansion and the `asset:` or `context:` binding prefix:
+
+[source,xml]
+----
+<head>
+  <link href="${context:css/site.css}" rel="stylesheet" type="text/css"/>
+  ...
+----
+
+The `context:` prefix means that the remainder of the expansion is a path to a context asset, a resource in the web application root (`src/main/webapp` in your workspace).
+By contrast, the `asset:` prefix tells Tapestry to look in the classpath. See xref:assets.adoc[].
+
+== Using the @IncludeStyleSheet annotation
+Another approach to adding a style sheet is to include an javadoc:org.apache.tapestry5.annotations.IncludeStyleSheet[label=@IncludeStyleSheet] annotation on your component class:
+
+.MyComponent.java
+[source,java]
+----
+@IncludeStyleSheet("context:css/site.css")
+public class MyComponent
+{
+
+}
+----
+
+As with xref:client-side-javascript.adoc[included JavaScript libraries], each style sheet will only be added once, regardless of the number of components that include it via the annotation.
+
+== Suppressing the default style sheet
+Though it should be rarely needed, you can prevent Tapestry's default style sheet from loading by overriding the configuration in your application's module (normally `AppModule.java`):
+
+.AppModule.java (partial)
+[source,java]
+----
+@Contribute(MarkupRenderer.class)
+public static void deactiveDefaultCSS(OrderedConfiguration<MarkupRendererFilter> configuration)
+{
+    configuration.override("InjectDefaultStyleheet", null); <1>
+}
+----
+<1> Note the unfortunately misspelled configuration symbol (missing the 's' in 'sheet'). This was fixed in Tapestry 5.3.
+
