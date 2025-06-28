@@ -1,1 +1,316 @@
 = Component Mixins
+
+A Component Mixin is a way to supplement an existing Tapestry component with additional behavior.
+
+You can think of a mixin as a kind of mashup for a component.
+It combines the new behavior of the mixin with the existing behavior of the component, and bundles it all in one place.
+Mixins may be used to add specialized validation to user input fields, dynamically modify the HTML output of a component, or to add Ajax effects and behaviors of all sorts to components.
+
+Tapestry comes with several mixins, such as the javadoc:org.apache.tapestry5.corelib.mixins.Autocomplete[] mixin which adds autocomplete behavior to an ordinary javadoc:org.apache.tapestry5.corelib.components.TextField[] component.
+In addition, you can easily create your own.
+
+== Mixin Classes
+Mixin classes are stored in the `mixins` sub-package of your application, below the application (or library) root package.
+This parallels where your component and page classes are stored.
+
+Other than that, mixin classes are the same as any other component class.
+
+== Mixin Limitations
+Currently, mixins are allowed to do anything a component can do, including having parameters and render phase methods.
+
+Mixins may not have a template.
+They integrate with the component strictly in terms of invoking render phase methods.
+
+Mixins may have persistent fields, but currently, this is not implemented perfectly (there is a potential for a name clash between a mixin and the component or another mixin).
+Use persistent fields with mixins with care.
+Or better yet, delegate persistence to the container using parameters.
+
+Mixins may not, themselves, have mixins.
+
+== Using Mixins
+Mixins are used in two different scenarios: <<Instance Mixins>> and <<Implementation Mixins>>.
+
+=== Instance Mixins
+An instance mixin is a mixin applied to a specific instance of a component.
+This can be done in the xref:component-templates.adoc[] with the `mixins` attribute of the component tag.
+This is a comma-separated list of mixin names.
+
+[source,xml]
+----
+<t:textfield t:id="accountName" t:mixins="Autocomplete,DefaultFromCookie" />
+----
+
+Alternately, when the javadoc:org.apache.tapestry5.annotations.Component[label=@Component] annotation is used to define the component type, you may specify the mixins in two ways:
+
+* The javadoc:org.apache.tapestry5.annotations.Mixins[label=@Mixins] annotation allows a list of mixin names to be specified.
+* The javadoc:org.apache.tapestyr5.annotations.MixinClasses[label=@MixinClasses] annotation allows a set of mixin classes to be specified directly.
+
+The former is often less verbose, and allows core mixins to be overridden with application-specific mixins.
+The later format is more specific and more refactor-safe (renaming a mixin class will rename the entry in the MixinClasses annotation as well).
+
+Example:
+
+[source,java]
+----
+@Component(parameters=...)
+@Mixins({"Autocomplete", "DefaultFromCookie"})
+private TextField userId;
+----
+
+This example defines a component of type javadoc:org.apache.tapestry5.corelib.components.TextField[] and mixes in the _hypothetical_ `Autocomplete` and `DefaultFromCookie` mixins.
+
+==== Ordering the Mixins
+With `@Mixins` and `@MixinClasses` annotations, we can order the list of mixins, by adding a constraint.
+
+----
+@Component(parameters=...) @Mixins({"Autocomplete", "DefaultFromCookie::before:Autocomplete"})
+private TextField userId;
+----
+
+----
+@Component(parameters=. . .) 
+@MixinClasses(value={Autocomplete.class, DefaultFromCookie.class}, order={"","before:AutoComplete"})
+private TextField userId;
+----
+
+You can specify many contraints for a mixin. You just need to separate them with a `;`.
+
+=== Implementation Mixins
+
+Implementation mixins, mixins which apply to all instances of a component, are added using the @Mixin annotation.
+This annotation defines a field that will contain the mixin instance.
+
+[source,java]
+----
+public class AutocompleteField extends TextField
+{
+  @Mixin
+  private Autocomplete autocompleteMixin;
+ 
+  // ...
+}
+----
+
+Often, the type of the field is the exact mixin class to be instantiated.
+
+In other cases, such as when the field's type is an interface or a base class, the value attribute of the annotation will be used to determine the mixin class name:
+
+[source,java]
+----
+public class AutocompleteField extends TextField
+{
+  @Mixin("Autocomplete")
+  private Object autocompleteMixin;
+  
+  // ...
+}
+----
+
+=== Mixin Parameters
+Mixins are allowed to have parameters, just like components.
+
+Here we provide a value of `.5` seconds for the Autocomplete mixin's `frequency` parameter:
+
+[source,xml]
+----
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+...
+<t:textfield t:id="accountName" t:mixins="Autocomplete" t:Autocomplete.frequency=".5" />
+----
+
+The parameter name should be prefixed with the name of the mixin class (`Autocomplete.` above).
+
+You can do the same thing with the `@Component` annotation:
+
+[source,java]
+----
+@Component(parameters={"Autocomplete.frequency=.5", ... })
+@Mixins("Autocomplete", "DefaultFromCookie"})
+private TextField userId;
+----
+
+When using the Tapestry 5.3 and earlier xref:component-templates.adoc#_the_tapestry_namespace[XSDs], you may omit the class name prefix (e.g. `t:frequency=".5"` instead of `t:Autocomplete.frequency=".5"`), but then Tapestry has to resolve conflicts.
+If a component and a mixin both define a parameter with the same name, the component wins; the component's parameter will be bound, and the mixin's parameter will be unbound.
+
+If the component and a mixin both supports informal parameters, the mixin will receive the all the unqualified informal parameters.
+If more than one Mixin supports informal parameters the results are undefined.
+
+Note that when you define an implementation mixin, and the mixin has parameters, there's no way to bind those parameters as part of the _implementation_.
+They simply become available when the composite component (including the mixin) is introduced into a page.
+
+=== Binding the parameter of the core component
+It is sometimes desirable to access the current value of a parameter defined in the component associated with the mixin.
+For example: normally, when the textfield component is marked disabled, it renders a text field with a disabled attribute, but you want it to output the (plaintext) value when disabled.
+A mixin for this purpose would need access to at least the `disabled`, and `value` parameters, and possibly the `translate` parameter (for a client-side representation).
+You can access the `disabled` parameter via javadoc:org.apache.tapestry5.annotations.InjectContainer[label=@InjectContainer] and checking `isDisabled` on the field, but textfield currently provides no access to `value` or `translate`.
+In this case, you can bind the core-component parameter using the javadoc:org.apache.tapestry5.annotations.BindParameter[label=@BindParameter] annotation:
+
+[source,java]
+----
+public class MyMixin
+{
+  @BindParameter
+  private boolean disabled;
+
+  @BindParameter
+  private FieldTranslator translate;
+
+  @BindParameter
+  private Object value;
+
+  Boolean beginRender(MarkupWriter writer)
+  {
+      // ...
+      if (disabled)
+      {
+         // ...
+         String stringValue = translate.toClient(value));
+         // ...
+      }
+      // ...
+  }
+  // ...
+----
+
+Tapestry will "link" the `disabled`, `translate`, and `value` fields above to parameters of the same name on the associated component.
+The fields are not parameters to the mixin, but local copies of the component parameter.
+They are cached only if the associated component parameter is cached.
+They are read-write, and Tapestry handles synchronizing the value between mixins and the associated component such that even with a cached parameter, components and mixins will share the same value for a given parameter/bound-parameter during render.
+Only declared parameters of the associated components may be bound.
+
+By default, Tapestry will bind the parameter with the same name as the field.
+You can explicitly declare the parameter to bind via the value attribute:
+
+[source,java]
+----
+@BindParameter("translate")
+private FieldTranslator translator;
+----
+
+In some cases, a mixin will be used on different components using different names for a similar parameter type.
+For instance, javadoc:org.apache.tapesytr5.corelib.components.BeanEditor[] has an `object` parameter; most form fields have a `value` parameter, and javadoc:org.apache.tapestry5.corelib.components.Grid[] has a `source` parameter.
+These parameters have different names, but each is the `principle` parameter on which the components are acting.
+A mixin useable by all three components can specify multiple potential parameter values to bind.
+The first value that matches a declared parameter of the associated component will be used:
+
+[source,java]
+----
+public class MyMixin
+{
+  // ...
+  @BindParameter({"value","object","source"})
+  private Object principalObject;
+  // ...
+}
+----
+
+`MyMixin` can be used on a textfield (`principalObject` is bound to `value`), on javadoc:org.apache.tapesytr5.corelib.components.BeanEditor[] or javadoc:org.apache.tapesytr5.corelib.components.BeanDisplay[] (`principalObject` is bound to `object`), or on javadoc:org.apache.tapesytr5.corelib.components.Grid[] or javadoc:org.apache.tapesytr5.corelib.components.Loop[] (`principalObject` is bound to `source`).
+
+=== Render Phase Ordering
+
+All mixins for a component execute their xref:component-rendering.adoc[render phase methods] before the component's render phase methods for most phases.
+However, in the later phases (`AfterRender`, `CleanupRender`) the order of executing is reversed.
+
+Exception: A mixins whose class is annotated with javadoc:org.apache.tapestry5.annotations.MixinAfter[label=@MixinAfter] is ordered _after_ the component, not before.
+
+Withing a given phase and class (`@MixinAfter` vs. `mixin` before), mixin ordering is determined by the ordering constraints specified in the mixin definitions.
+The constraint definitions follow the same conventions as xref:ordering-by-constraints.adoc[ordered service configurations].
+How you specify the constraints depends on how the mixin is specified.
+
+.As an Implementation Mixin
+[source,java]
+----
+@Mixin("Autocomplete", order={"before:DiscardBody", "after:RenderDisabled"}
+private TextField userId;
+----
+
+.As a Template-specifed Instance Mixin
+[source,xml]
+----
+<input t:id="myfield"
+    t:mixins="autocomplete::before:discardbody;after:renderdisabled, defaultfromcookie::before:autocomplete"/>
+----
+
+.As a @Mixins-specified Instance Mixin
+[source,java]
+----
+@Component(...)
+@Mixins(
+  "Autocomplete::before:discardbody;after:renderdisabled",
+  "DefaultFromCookie::before:autocomplete")
+)
+private TextField userId;
+----
+
+.As a @MixinClasses-specified Instance Mixins
+[source,java]
+----
+@Component(...)
+@MixinClasses(
+  value={Autocomplete.class,DefaultFromCookie.class},
+  order={"before:discardbody;after:renderdisabled","before:autocomplete"
+)
+----
+
+The ordering is always specified in terms of the order of the "forward" rendering process (`setupRender`, `beginRender`, etc.).
+When the "reverse" rendering phases (`afterRender`, etc.) occur, the mixin order is exactly reversed.
+Mixins which have no associated ordering constraints will be ordered in a manner which is consistent with the specified constraints for all other mixins, but is otherwise unspecified.
+
+== Available Mixins
+Tapestry includes the following mixins out-of-the-box.
+
+[cols="1,3"]
+|===
+|Name |Description
+
+|javadoc:org.apache.tapestry5.corelib.mixins.Autocomplete[]
+|Modifies a text field to provide for auto-completion of text using values retrieved from the server as the user types. xref:ajax-and-zones.adoc#_autocomplete_mixin[See instructions].
+
+|javadoc:org.apache.tapestry5.corelib.mixins.DiscardBody[]
+|Discards a component's body. Returns false from the `BeforeRenderBody` phase, which prevents the rendering of the body.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.FormFieldFocus[]
+|Instruments the outer Form on which component the focus should be activated.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.FormGroup[]
+|Attaches to a field to render an enclosing `<div>` element and label for proper Bootstrap markup of text fields, ``select``s, and `textareas``.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.NotEmpty[]
+|Attaches to any component that renders an element. At the end of the render, if the element is empty, then a non-breaking space (`+&nbsp;+`) is injected into the element.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.RenderClientId[]
+|Forces a client element to render its client id by ensuring that `getClientId()` is called.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.RenderDisabled[]
+|Renders a "disabled" attribute if the containing component is disabled.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.RenderInformals[]
+|Renders out all informal parameters, at the end of the `BeginRender` phase. This mixin can be used with components that render a single tag inside the `BeginRender` phase.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.RenderNotification[]
+|Triggers component event notifications when the attached component enters its `BeginRender` and `AfterRender` render phases.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.TriggerFragment[]
+|When applied to a javadoc:org.apache.tapestry5.corelib.components.Checkbox[] or javadoc:org.apache.tapestry5.corelib.components.Radio[] component, links the input field and a javadoc:org.apache.tapestry5.corelib.components.FormFragment[], making the field control the client-side visibility of the `FormFragment`.
+
+|javadoc:org.apache.tapestry5.corelib.mixins.ZoneRefresh[]
+|Periodically refreshes a javadoc:org.apache.tapestry5.corelib.components.Zone[] by triggering an event on the server using ajax requests.
+
+|===
+
+In addition, the following mixins are available from other sources:
+
+[cols="1,3"]
+|===
+|Name |Description
+
+|https://tapestry-jumpstart.org/jumpstart/examples/javascript/creatingmixins1[ClickOnce]
+|Ensures a submit button cannot be double-clicked.
+
+|https://tapestry-jumpstart.org/jumpstart/examples/ajax/onevent[ZoneUpdater]
+|Updates a zone when a client-side event occurs
+
+|===
+
+== Additional Tools
+http://tapestryxpath.sourceforge.net/[Tapestry-Xpath] is a third-part Tapestry module that allows XPath traversal of the Tapestry (server-side) DOM, which can be extremely useful in certain mixins.
