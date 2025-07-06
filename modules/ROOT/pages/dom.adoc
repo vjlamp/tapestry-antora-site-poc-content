@@ -1,1 +1,111 @@
 = Document Object Model (DOM)
+
+Tapestry 5 takes a very different approach to markup generation than most other frameworks.
+Components render out a Document Object Model (DOM).
+This is a tree of nodes representing elements, attributes and text within a document.
+
+Once all rendering is complete, the DOM tree is streamed to the client.
+
+The javadoc:org.apache.tapestry5.MarkupWriter[] interface allows the majority of component code to treat the generation of output as a stream.
+In reality, `MarkupWriter` is more like a cursor into the DOM tree, and the DOM may ultimately be operated upon in a random access manner (rather than the serial, or buffered, approach used in Tapestry 4).
+
+== DOM Classes
+The implementation of this DOM is part of Tapestry, despite the fact that several third-party alternatives exist.
+This represents a desire to limit dependencies for the framework, but also the Tapestry DOM is streamlined for initial creation, and a limited amount of subsequent modification.
+Most DOM implementations are more sophisticated than needed for Tapestry, with greater support for querying (often using XPath) and manipulation.
+
+Once the `Document` object is created, you don't directly create new DOM objects; instead, each DOM object includes methods that create new sub-objects.
+This primarily applies to the `Element` class, which can be a container of text, comments and other elements.
+
+=== Document
+The javadoc:org.apache.tapestry5.dom.Document[] object represents the an entire document, which is to say, an entire response to be sent to the client.
+
+``Document``s will have a single root element.
+The `newRootElement()` method is used to create the root element for the document.
+
+The `Document` class also has methods for setting and getting the DTD, adding comments and text, and finding an element based on a path of element names.
+
+=== Element
+An javadoc:org.apache.tapestry5.dom.Element[] object represents an element of the document.
+Elements may have attributes, and they may themselves contain other elements, as well as text and comments.
+
+The `Element` class has methods for searching, traversing and manipulating the DOM after it is built.
+
+== DOM Manipulation/Rewriting
+A powerful feature of Tapestry 5 is the ability to manipulate the structure and ordering of the DOM after it has been rendered.
+For example, this can be used to alter the output of a component that may otherwise be outside of your control.
+
+DOM manipulation is surprisingly fast, too.
+
+Methods on javadoc:org.apache.tapestry5.dom.Node[] (and javadoc:org.apache.tapestry5.dom.Element[], which is a subclass of `Node`) allow an existing node to be moved relative to an javadoc:org.apache.tapestry5.dom.Element[].
+Nodes may be moved before or after the `Element`, or may be moved inside an `Element` at the top (the first child) or the bottom (the last child).
+
+Element's `attribute()` method adds a new attribute name/value pair to the `Element`.
+If an existing attribute with the specified name already exists, then then the new value is ignored.
+This has implications when different pieces of code try to add attributes to an Element.
+The first to add an attribute will "win".
+Conversely, the `forceAttributes()` method can be used to update or remove an attribute.
+
+In addition, the children of an Element may be removed or a `Node` (and all of its children) removed entirely.
+
+Finally, an Element may `pop()`: the Element is removed and replaced with its children.
+
+== MarkupWriter
+The javadoc:org.apache.tapestry5.MarkupWriter[] interface allows the structure of the document to be built while maintaining a streaming metaphor.
+
+=== `element()` and `end()` methods
+Calls to `element()` create a new element within the tree, and may provide attributes for the new element as well.
+Calls to `write()`, `writeln()` and `writef()` write text nodes within the current element.
+Every call to `element()` should be matched with a call to `end()`, which is used to move the current node up one level.
+
+[source,java]
+----
+writer.element("img", "src", "icon.png", "width", 20, "height", 20, alt, "*");
+writer.end();
+----
+
+Note that `end()` must be called here, even though the `<img>` element is empty (has no body).
+If the call to `end()` is omitted, then later elements created by calls to `element()` will be nested inside the `<img>` element, which is not desired.
+
+Again, every call to `element()` must be matched with a call to `end()`:
+
+[source,java]
+----
+writer.element("select", "name", "choice");
+  
+for (String name : optionsNames)
+{
+  writer.element("option");
+  writer.write(name);
+  writer.end();
+}
+  
+writer.end();
+----
+
+=== attributes()
+Adds additional name/value pairs to the current element.
+
+When a value is `null`, no attribute is added.
+
+When a new name conflicts with an existing name, the new value is ignored.
+This gives precedence to the first value specified for an attribute over any subsequent value.
+
+=== write()
+The `write()` method writes text inside the current element.
+It scans the provided text for XML control characters ('<', '>', and '&') and converts them to their XML entity equivalents ('&lt;', '&gt;', and '&amp;').
+The result is correct, safe, HTML/XML output even when the content (which may come from a template, or from an external source such as a database) contains such problematic characters.
+
+=== writef()
+The writef() method formats an number of arguments. It uses a java.util.Formatter. It is a convenience for formatting that ultimately invokes write().
+
+=== writeRaw()
+The writeRaw() method writes unfiltered text into the DOM. When the DOM is rendered to markup, the provided string is written to the output stream exactly as-is. Care should be taken, as this can easily result invalid markup, or even markup that is not well formed. It can also introduce XSS vulnerabilities if the text comes from end users without proper filtering.
+
+=== comment()
+Adds an XML comment. The comment delimiters will be supplied by Tapestry:
+
+[source,java]
+----
+writer.comment("Start of JS Menu code");
+----
