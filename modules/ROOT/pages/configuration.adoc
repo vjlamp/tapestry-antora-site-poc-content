@@ -281,16 +281,21 @@ Since 5.0 +
 A flag (`true` or `false`) indicating whether the application is running in production or in development.
 The default is `true`, which means that runtime exceptions are not reported with full detail (only the root exception message is displayed, not the entire stack of exceptions, properties and other information shown in development mode).
 
-tapestry.secure-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SECURE_ENABLED[]::
-Since 5.1.0.1 +
-If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] annotations are honored; if `false`, no security checks or redirects take place.
-This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
-However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
+tapestry.restrictive-environment | javadoc:org.apache.tapestry5.SymbolConstants#RESTRICTIVE_ENVIRONMENT[]::
+Since 5.4.0 +
+A flag (`true` or `false`) that, if `true`, changes some default Tapestry behavior to make it work better in restrictive environments such as xref:cookbook:google-app-engine.adoc[Google App Engine (GAE)].
+Specifically, if `true`, then javadoc:org.apache.tapestry5.ioc.OperationTracker[] writes its exception report files into a single folder (specified by the `tapestry.exception-reports-dir` symbol, above) rather than creating dated sub-folders under that path, and javadoc:org.apache.tapestry5.internal.webresources.ResourceTransformerFactory[] avoids creating a cache folder for resources.
 
 tapestry.scriptaculous | javadoc:org.apache.tapestry5.SymbolConstants#SCRIPTACULOUS[]::
 The path to the embedded copy of http://script.aculo.us/[script.aculo.us] packaged with Tapestry.
 This value may be overridden to use a different version of the script.aculo.us library.
 See xref:client-side-javascript.adoc[] for the default version.
+
+tapestry.secure-enabled | javadoc:org.apache.tapestry5.SymbolConstants#SECURE_ENABLED[]::
+Since 5.1.0.1 +
+If `true`, then javadoc:org.apache.tapestry5.annotations.Secure[label=@Secure] annotations are honored; if `false`, no security checks or redirects take place.
+This defaults to `tapestry.production-mode`, meaning that in development mode it will (by default) be disabled.
+However, sites that are intended to be served only under HTTPS should set this to `false`. See xref:https.adoc[] for details.
 
 tapestry.start-page-name | javadoc:org.apache.tapestry5.SymbolConstants#START_PAGE_NAME[]::
 Since 5.2.0 +
