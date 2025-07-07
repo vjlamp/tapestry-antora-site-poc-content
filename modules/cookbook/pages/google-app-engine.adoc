@@ -1,0 +1,45 @@
+= Google App Engine (GAE)
+
+Tapestry apps should run fine on Google App Engine (GAE) if you follow certain important steps.
+
+== Required Configuration Settings
+Set javadoc:org.apache.tapestry5.SymbolConstants#PRODUCTION_MODE[](`tapestry.production-mode`) to true (to turn off live class reloading, among other things).
+
+Set the javadoc:org.apache.tapestry5.SymbolConstants#RESTRICTIVE_ENVIRONMENT[] (`tapestry.restrictive-environment`) configuration symbol to true (to prevent Tapestry from writing exception reports and cached resources to the file system).
+
+Set the javadoc:org.apache.tapestry5.ioc.IOCSymbols#THREAD_POOL_ENABLED[] (`tapestry.thread-pool-enabled`) configuration symbol to false (to prevent Tapestry's javadoc:org.apache.tapestry5.ioc.services.cron.PeriodicExecutor[] from attempting to spawn threads).
+
+=== Example configuration
+Your application's module class (generally `AppModule.java`) can set these symbols where it sets others (either in a method named `contributeApplicationDefaults` or one annotated with `@ApplicationDefaults` and `@Contribute`), as shown below.
+
+.AppModule.java (partial)
+[source,java]
+----
+@ApplicationDefaults
+@Contribute(SymbolProvider.class)
+public static void configureMyApp(
+   MappedConfiguration<String, String> configuration)
+{
+      configuration.add(SymbolConstants.PRODUCTION_MODE, "true");
+      configuration.add(SymbolConstants.RESTRICTIVE_ENVIRONMENT, "true");
+      configuration.add(IOCSymbols.THREAD_POOL_ENABLED, "false");
+      // ...
+}
+----
+
+NOTE: Setting production mode to `true` is generally only desirable in production and QA/testing environments, but you can override that symbol with a JVM system property (`-Dtapestry.production-mode=false`) in those environments.
+
+== Serializable Objects
+Make sure all objects that you store in the servlet session -- particularly those annotated with javadoc:org.apache.tapestry5.annotations.SessionState[label=@SessionState] and javadoc:org.apache.tapestry5.annotations.SessionAttribute[label=@SessionAttribute] – are actually serializable types.
+Otherwise you may see strange behavior in which objects seem to lose their session values.
+
+== File Uploads
+If you use the Tapestry-upload module (or any file upload mechanism, for that matter), you'll need to be sure that it is configured to not store temporary uploaded files on the file system. 
+See xref:ROOT:uploading-files.adoc[]
+Particularly the javadoc:org.apache.tapestry5.upload.services.UploadSymbols#REPOSITORY_THRESHOLD[] (`upload.repository-threshold`) symbol, which should be set to a large value.
+
+== Other Considerations
+Other than the above settings, Tapestry should provide no impediment to running your app under Google App Engine.
+However, you still need to adhere to all of GAE's usual constraints (as with any app, Tapestry or otherwise).
+Please carefully read Google's documentation for general guidelines for creating an app that is compatible with GAE.
+
