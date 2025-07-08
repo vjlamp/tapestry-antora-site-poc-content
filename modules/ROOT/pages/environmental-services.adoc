@@ -1,1 +1,112 @@
 = Environmental Services
+
+Environmental services represent yet another, distinct form of injection.
+
+Unlike service injection (injection via a service implementation's constructor) or normal component injection (directly into component fields, via the `@Inject` annotation) where the injected value is always the same, with environmental services, the injected value is very late bound and dynamic.
+
+Environmental services provide a conduit of communication between two components (usually a component and the components it encloses).
+The first component pushes an object of a certain type into the _environment_, and then the second component can access that object merely by defining an annotated property of the same type.
+
+An example of how this works is Tapestry's built-in form support.
+The javadoc:org.apache.tapestry5.corelib.components.Form[] component creates an object of type FormSupport and pushes it into the environment.
+Then, the enclosed form components can use that javadoc:org.apache.tapestry5.services.FormSupport[] object to participate in both the rendering of the `Form` and the ``Form``'s eventual submission.
+This is how control names and client-side ids are determined, how fields register callbacks so that they can process their part of the submission, and how fields hook themselves to client-side validation.
+
+== Using the `@Environmental` annotation
+The javadoc:org.apache.tapestry5.annotations.Environmental[label=@Environmental] annotation, when used in a component class, causes the associated field to be replaced at runtime with a read-only value obtained from an javadoc:org.apache.tapestry5.services.Environment[] service provided by an enclosing component.
+
+A very common `@Environmental` is javadoc:org.apache.tapestry5.RenderSupport[], used when generating xref:client-side-javascript.adoc[].
+
+[source,java]
+----
+@Inject @Path("context:/js/myeffects.js")
+private Asset myEffects;
+
+@Environmental
+private RenderSupport renderSupport;
+
+void setupRender()
+{
+  renderSupport.addScriptLink(myEffects);
+}
+----
+
+Environmental services are, by their nature, per-thread (and therefore per-request).
+
+Accessing an environmental field causes a lookup, by type, against the `Environment` service.
+
+Normally, an environmental of the specified type must be available in the `Environment`, or an exception is thrown when accessing the field.
+However, if the value of the Environmental annotation's value is `false`, then the environmental value is optional.
+
+== Placing a value in the environment
+The javadoc:org.apache.tapestry5.services.Environment[] service has `push()` and `pop()` methods to put a value in the `Environment`, and discard it.
+
+For example, say you were building a tab-based menu system and you needed to allow an outer `TabGroup` component to communicate with inner Tab components, to control various aspects of presentation.
+
+The relevant information could be exposed as an interface, `TabModel`.
+
+.TabGroup.java
+[source,java]
+----
+public class TabGroup
+{
+  @Inject
+  private Environment environment;
+
+  void beginRender()
+  {
+     environment.push(TabModel.class, new TabModelImpl(...));
+  }
+
+  void afterRender()
+  {
+    environment.pop(TabModel.class);
+  }
+}
+
+public class Tab
+{
+  @Environmental
+  private TabModel model;
+
+  void beginRender(MarkupWriter writer)
+  {
+    ...
+  }
+}
+----
+
+Notice that when pushing a value into the `Environment`, you identify its type as well as the instance.
+`Environment` maintains a number of stacks, one for each type.
+Thus, pushing a `TabModel` into the environment won't disturb the javadoc:org.apache.tapestry5.RenderSupport[] or other environmentals already there.
+
+What's important here is that the code that pushes a environmental onto a stack should also pop it off.
+
+The enclosed class, `Tab`, has full access to whatever object was pushed onto the stack by the `TabGroup`.
+
+The reason why `Environment` is a stack is so that a component can, when it makes sense, easily replace or intercept access to an `@Environmental`.
+
+== Fundamental Environmentals
+Not all environmentals are pushed into the `Environment` by components.
+
+A number of environmentals are initialized as part of page rendering, even before the first component starts to render.
+This initialization is accomplished with javadoc:org.apache.tapestry5.services.MarkupRendererFilter[] contributions to the javadoc:org.apache.tapestry5.services.MarkupRenderer[] service.
+
+== Accessing Environmentals in Services
+The javadoc:org.apache.tapestry5.annotations.Environmental[label=@Environmental] annotation only works inside components.
+
+To access an Environmental inside a service implementation, you must inject the javadoc:org.apache.tapestry5.services.Environment[] service and obtain values from it using the `peek()` method.
+
+If this is something that will occur frequently, it is possible to create a service implementation that is "backed" by the `Environment`.
+For example, javadoc:org.apache.tapestry5.RenderSupport[] is accessible as a normal injection, because a service is built for it in javadoc:org.apache.tapestry5.services.TapestryModule[]:
+
+[source,java]
+----
+public RenderSupport buildRenderSupport(EnvironmentalShadowBuilder builder)
+{
+  return builder.build(RenderSupport.class);
+}
+----
+
+The javadoc:org.apache.tapestry5.services.EnvironmentalShadowBuilder[] service creates a service implementation that delegates to the proper instance in the environment.
+The same technique can be used for your own services and environmentals.
