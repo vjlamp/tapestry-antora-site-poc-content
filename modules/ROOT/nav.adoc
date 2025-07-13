@@ -91,8 +91,8 @@
 * Built-in
 ** xref:hibernate.adoc[]
 ** xref:jpa.adoc[]
-** xref:spring.adoc[]
 ** xref:component-report.adoc[]
+** xref:integrating-with-spring-framework.adoc[Spring]
 * xref:third-party-modules.adoc[]
 
 .Release Notes
