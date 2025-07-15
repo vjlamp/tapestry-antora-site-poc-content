@@ -1,1 +1,19 @@
 = TypeScript
+
+https://en.wikipedia.org/wiki/TypeScript[TypeScript] is a language that compiles down to JavaScript.
+
+Tapestry can automatically compile your TypeScript code into JavaScript on the fly.
+This is done with the optional `tapestry-webresources` module.
+It is highly recommended for anyone who wants to use TypeScript in their application ... just let Tapestry do the compilation at runtime (with access to Tapestry's full exception reporting capabilities).
+
+To use the `tapestry-webresources` module, just add the JAR to your project. For example, if you're using Maven:
+
+.pom.xml (partial)
+----
+<dependency>
+    <groupId>org.apache.tapestry</groupId>
+    <artifactId>tapestry-webresources</artifactId>
+    <version>${tapestry-release-version}</version>
+</dependency>
+----
+
