@@ -90,8 +90,8 @@ When the field is restored in a later request, the entity is re-instantiated usi
 
 What is _not_ stored is any changes to the persistent entity that are not committed to the external datastore (the database).
 
-Starting in Tapestry 5.4, it is possible to store a non-persistent entity (a transient entity).
-A transient entity is stored directly into the HttpSession, and should be Serializable if the application is clustered.
+It is possible to store a non-persistent entity (a transient entity).
+A transient entity is stored directly into the `HttpSession`, and should be `Serializable` if the application is clustered.
 
 === JPA Entity Strategy
 The `tapestry-jpa` module uses a similar strategy.
