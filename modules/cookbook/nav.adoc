@@ -1,4 +1,5 @@
 .Cookbook
+* xref:overriding-exception-reporting.adoc[]
 * xref:supporting-informal-parameters.adoc[]
 * xref:switching-cases.adoc[]
 
