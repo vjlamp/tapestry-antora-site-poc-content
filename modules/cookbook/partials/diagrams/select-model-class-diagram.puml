@@ -1,0 +1,14 @@
+@startuml
+
+interface SelectModel {
+    List<OptionModel> getOptions()
+}
+
+interface OptionModel {
+    String getLabel()
+    Object getValue()
+}
+
+SelectModel *-- OptionModel
+
+@enduml
