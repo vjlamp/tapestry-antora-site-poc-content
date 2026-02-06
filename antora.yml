@@ -4,6 +4,7 @@ version: 5.1
 nav:
 - modules/ROOT/nav.adoc
 - modules/cookbook/nav.adoc
+- modules/faq/nav.adoc
 asciidoc:
   attributes:
     javadoc-version: 5.3.7
