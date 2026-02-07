@@ -1,4 +1,5 @@
 .Frequently Asked Questions (FAQ)
 * xref:general.adoc[]
+* xref:templating-and-markup.adoc[]
 * xref:ajax.adoc[]
 
