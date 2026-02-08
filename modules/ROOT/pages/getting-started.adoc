@@ -228,4 +228,4 @@ You can see the files in `src/webapp/context/mybootstrap`, and the overrides to 
 == What's next?
 To deepen your understanding, step through the xref:tutorial:index.adoc[Tapestry Tutorial], which goes into much more detail about setting up your project as well as loading it into Eclipse... then continues on to teach you more about Tapestry.
 
-Be sure to read about the core xref:principles.adoc[Tapestry Principles], and browse the xref:userguide::index.adoc[User Guide].
+Be sure to read about the core xref:userguide::principles.adoc[Tapestry Principles], and browse the xref:userguide::index.adoc[User Guide].
