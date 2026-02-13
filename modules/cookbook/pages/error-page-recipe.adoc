@@ -1,0 +1,110 @@
+= Error Page Recipe
+
+Serving Tapestry Pages as Servlet Error Pages
+
+Do you want to dress up your site and use a snazzy Tapestry page instead of the default 404 error page?
+Using modern servlet containers, this is a snap!
+
+Simply upgrade your application web.xml to the 2.4 version (or newer), and make a couple of changes:
+
+.web.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
+
+  <display-name>Cookbook</display-name>
+  <context-param>
+    <param-name>tapestry.app-package</param-name>
+    <param-value>com.example.newapp</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>app</filter-name>
+    <!-- org.apache.tapestry5.TapestryFilter if not Tapestry 5.7.0+ -->
+    <filter-class>org.apache.tapestry5.http.TapestryFilter</filter-class> 
+  </filter>
+  <filter-mapping>
+    <filter-name>app</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+  </filter-mapping>
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error404</location>
+  </error-page>
+
+</web-app>
+----
+
+Tapestry's filter must be marked as a handler for both standard requests and errors.
+That's accomplished with the `<dispatcher>` elements inside the `<filter-mapping>` section.
+
+You must then map error codes to Tapestry URLs.
+In this case, the 404 error is send to the `/error404` resource, which is really the "Error404" Tapestry page.
+
+We'll create a simple Error404 page, one that displays a message and (in development mode) displays the details about the incoming request.
+
+.Error404.tml
+[source,xml,subs="+attributes"]
+----
+<html xmlns:t="http://tapestry.apache.org/schema/{tapestry-namespace}">
+ <head>
+
+        <title>Resource not found.</title>
+    </head>
+    <body>
+
+        <div class="container">
+
+            <h1>Page or resource not found.</h1>
+
+            <t:if test="! productionMode">
+                <t:renderobject object="request"/>
+            </t:if>
+        </div>
+
+    </body>
+</html>
+----
+
+The page simply makes the request and productionMode properties available:
+
+.Error404.java
+[source,java]
+----
+package com.example.newapp.pages;
+
+import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.apache.tapestry5.services.Request; 
+
+public class Error404
+{
+    @Property
+    @Inject
+    private Request request;
+
+    @Property
+    @Inject
+    @Symbol(SymbolConstants.PRODUCTION_MODE)
+    private boolean productionMode;
+}
+----
+
+The end-result, in when _not_ in production mode, looks like this:
+
+image::Resource_not_found_.png[]
+
+[NOTE]
+====
+An issue with an application that has a root Index page is that any invalid path, which would normally generate a 404 error, is instead routed to the Index page (because the invalid path looks like page's activation context).
+See https://issues.apache.org/jira/browse/TAP5-2070[Issue TAP5-2070].
+====
