@@ -1,0 +1,25 @@
+= IoC Cookbook
+
+Tapestry *Inversion of Control* (IoC), though originally designed specifically for the needs of the Tapestry web framework, may also be employed as a stand-alone IoC container, separate from the rest of Tapestry.
+
+Tapestry IoC is a sophisticated tool that takes some experience to use properly.
+
+The IoC documentation in the xref:ROOT:ioc-overview.adoc[] is factually correct, but it is designed more as a reference, rather than giving the big picture.
+In this Cookbook, we'll show a bit more about how to use Tapestry IoC, using real examples from the Tapestry code base (both the `tapestry-ioc` and `tapestry-core` modules).
+
+A word of caution: Several of the examples have been taken from Tapestry's _internal_ code base.
+Tapestry internals are private and subject to change at any time, so be aware that if you go peeking at the internal source code, it may have changed since the corresponding documentation was written.
+
+
+== Contents
+
+* xref:ioc-cookbook-basic-services-and-injection.adoc[]
+* xref:ioc-cookbook-overriding-ioc-services.adoc[]
+* xref:ioc-cookbook-patterns.adoc[]
+* xref:ioc-cookbook-service-configurations.adoc[]
+
+== See Also
+
+* xref:ROOT:ioc-overview.adoc[]
+* xref:ROOT:ioc-configuration.adoc[]
+* xref:ROOT:defining-tapestry-ioc-services.adoc[]
