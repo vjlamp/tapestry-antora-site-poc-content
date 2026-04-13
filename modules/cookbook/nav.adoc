@@ -14,5 +14,6 @@
 ** xref:ioc-cookbook-patterns.adoc[]
 ** xref:ioc-cookbook-service-configurations.adoc[]
 * xref:using-select-with-a-list.adoc[]
+* xref:performance-and-clustering.adoc[]
 * xref:google-app-engine.adoc[]
 
