@@ -12,4 +12,4 @@
 ** xref:ioc-cookbook-overriding-ioc-services.adoc[]
 ** xref:ioc-cookbook-patterns.adoc[]
 ** xref:ioc-cookbook-service-configurations.adoc[]
-
+* xref:performance-and-clustering.adoc[]
