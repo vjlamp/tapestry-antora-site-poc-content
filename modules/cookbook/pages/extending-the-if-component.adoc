@@ -1,0 +1,93 @@
+= Extending The If Component
+
+The javadoc:org.apache.tapestry5.corelib.components.If[] component can be made very flexible; its main parameter, `test`, does not have to be bound to a boolean value, it merely has to be bound to a value that can be xref:ROOT:parameter-type-coercion.adoc[coerced] to boolean.
+
+For example, you may be working on an application that does a lot of https://lucene.apache.org/[Lucene] searches, and you represent the results as a `SearchResult` object:
+
+[source,java]
+----
+public class SearchResult<T> {
+  public final Class<T> itemType;
+  public final List<T> items;
+  public final int size;
+  public final int pages;
+  public final int firstIndex;
+  public final int lastIndex;
+
+  public SearchResult(Class<T> type, List<T> items, int size, int pages, int firstIndex,
+      int lastIndex) {
+    this.itemType = type;
+    this.items = items;
+    this.size = size;
+    this.pages = pages;
+    this.firstIndex = firstIndex;
+    this.lastIndex = lastIndex;
+  }
+
+  public boolean isEmpty() {
+    return size == 0;
+  }
+}
+----
+
+In a `SearchResult`, the `size` property is the overall number of results from the search. The `items` list is a single "page" of those results to present to the user, consisting of items from `firstIndex` to `lastIndex` within the overall set.
+
+== The Problem: Nested If Components
+
+In your templates, you have to check to see if the `SearchResult` exists, then see if it is empty, before you can get to the part that displays the content:
+
+[source,xml]
+----
+<t:if test="searchResult">
+  <t:if test="!searchResult.empty">
+    . . .
+  </t:if>
+</t:if>
+----
+
+The first test checks to see if `searchResult` is not null (null is treated as false). The second checks to see if the search result is empty.
+
+What we'd like is for the test to look at the `searchResult` directly and treat an empty search result as false, and a non-empty search result as true. This is similar to what Tapestry already does for `Collection` types.
+
+== Adding a Type Coercion
+
+This is just a matter of adding a xref:ROOT:parameter-type-coercion.adoc[Coercion]:
+
+*AppModule:*
+
+[source,java]
+----
+public static void contributeTypeCoercer(MappedConfiguration<CoercionTuple.Key, CoercionTuple> configuration) {
+
+  add(configuration, SearchResult.class, Boolean.class,
+      new Coercion<SearchResult, Boolean>() {
+        public Boolean coerce(SearchResult input) {
+          return !input.isEmpty();
+        }
+      });
+}
+
+private static <S, T> void add(MappedConfiguration<CoercionTuple.Key, CoercionTuple> configuration,
+    Class<S> sourceType, Class<T> targetType, Coercion<S, T> coercion) {
+  CoercionTuple<S, T> tuple = new CoercionTuple<S, T>(sourceType,
+      targetType, coercion);
+
+  configuration.add(tuple.getKey(), tuple);
+}
+----
+
+
+Inside this thicket of generics and brackets is the code that treats a `SearchResult` as a boolean: `return !input.isEmpty();`.
+
+== The Result: Simplified Template
+
+With this in place, the previous template can be simplified:
+
+[source,xml]
+----
+<t:if test="searchResult">
+  . . .
+</t:if>
+----
+
+The single test now implies that `searchResult` is not null and not empty.
