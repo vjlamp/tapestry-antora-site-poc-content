@@ -1,0 +1,141 @@
+= IoC Cookbook - Patterns
+
+Tapestry IoC has support for implementing several of the https://en.wikipedia.org/wiki/Design_Patterns[Gang Of Four Design Patterns].
+In fact, the IoC container itself is a pumped up version of the Factory pattern.
+
+The basis for these patterns is often the use of _service builder methods_, where a xref:ioc-cookbook-service-configurations.adoc[configuration] for the service is combined with a factory to produce the service implementation on the fly.
+
+== Chain of Command Pattern
+
+Main Article: xref:ROOT:chainbuilder-service.adoc[Chain of Command]
+
+Let's look at an example from the Tapestry code base.
+The javadoc:org.apache.tapestry5.services.transform.InjectionProvider2[] interface is used to process the javadoc:org.apache.tapestry5.ioc.annotations.Inject[label="@Inject"] annotation on the fields of a Tapestry page or component.
+Many different instances are combined together to form a _chain of command_.
+
+The interface has only a single method (this is far from uncommon):
+
+[source,java]
+----
+public interface InjectionProvider2
+{
+  boolean provideInjection(PlasticField field, ObjectLocator locator,
+      MutableComponentModel componentModel);
+}
+----
+
+Note: `InjectionProvider2` replaced `InjectionProvider` in Tapestry 5.3, using the javadoc:org.apache.tapestry5.plastic.PlasticField[] API for more direct field manipulation.
+The provider calls `field.inject(value)` to perform injection, and the caller is responsible for invoking `field.claim(annotation)`.
+
+The return type indicates whether the provider was able to do something.
+For example, the javadoc:org.apache.tapestry5.internal.services.AssetInjectionProvider[] checks to see if there's an javadoc:org.apache.tapestry5.annotations.Path[] annotation on the field, and if so, converts the path to an asset, calls `field.inject()` with the appropriate value, and returns `true` to indicate success.
+Returning `true` terminates the chain early, and that `true` value is ultimately returned to the caller.
+
+In other cases, it returns `false` and the chain of command continues down to the next provider.
+If no provider is capable of handling the injection, then the value `false` is ultimately returned.
+
+The `InjectionProvider2` service is built up via contributions.
+These are the contributions from the `TapestryModule`:
+
+[source,java]
+----
+@Contribute(InjectionProvider2.class)
+public static void provideStandardInjectionProviders(OrderedConfiguration<InjectionProvider2> configuration, SymbolSource symbolSource,
+                                                        AssetSource assetSource)
+{
+    configuration.addInstance("Named", InjectNamedProvider.class);
+    configuration.add("Block", new BlockInjectionProvider());
+    configuration.add("Asset", new AssetInjectionProvider(assetSource));
+
+    configuration.add("CommonResources", new CommonResourcesInjectionProvider());
+
+    configuration.addInstance("Default", DefaultInjectionProvider.class);
+
+    // This needs to be the last one, since it matches against services
+    // and might blow up if there is no match.
+    configuration.addInstance("Service", ServiceInjectionProvider.class, "after:*");
+}
+----
+
+Other contributions could be made in other modules if you wanted to add in your own form of injection.
+
+The configuration is converted into a service via a service builder method:
+
+[source,java]
+----
+public InjectionProvider2 buildInjectionProvider(List<InjectionProvider2> configuration)
+{
+    return chainBuilder.build(InjectionProvider2.class, configuration);
+}
+----
+
+Now, let's see how this is used.
+The transform worker looks for fields with the `@Inject` annotation, and uses the chain of command to inject the appropriate value.
+However, to the worker, there is no chain ... just a _single_ object that implements the `InjectionProvider2` interface.
+
+[source,java]
+----
+public class InjectWorker implements ComponentClassTransformWorker2
+{
+    private final ObjectLocator locator;
+
+    // Really, a chain of command
+
+    private final InjectionProvider2 injectionProvider;
+
+    private final OperationTracker tracker;
+
+    private final Predicate<PlasticField> MATCHER = new Predicate<PlasticField>()
+    {
+        public boolean accept(PlasticField field)
+        {
+            return field.hasAnnotation(Inject.class) ||
+                    field.hasAnnotation(jakarta.inject.Inject.class);
+        }
+    };
+
+    public InjectWorker(ObjectLocator locator, InjectionProvider2 injectionProvider, OperationTracker tracker)
+    {
+        this.locator = locator;
+        this.injectionProvider = injectionProvider;
+        this.tracker = tracker;
+    }
+
+    public void transform(final PlasticClass plasticClass, TransformationSupport support, final MutableComponentModel model)
+    {
+        for (final PlasticField field : F.flow(plasticClass.getUnclaimedFields()).filter(MATCHER))
+        {
+            final String fieldName = field.getName();
+
+            tracker.run(String.format("Injecting field  %s.%s", plasticClass.getClassName(), fieldName), new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        boolean success = injectionProvider.provideInjection(field, locator, model);
+
+                        if (success)
+                        {
+                            field.claim("@Inject");
+                        }
+                    } catch (RuntimeException ex)
+                    {
+                        throw new RuntimeException(String.format("Error obtaining injected value for field %s.%s: %s", plasticClass.getClassName(), fieldName, ExceptionUtils.toMessage(ex)), ex);
+                    }
+                }
+            });
+        }
+    }
+}
+----
+
+Reducing the chain to a single object vastly simplifies the code: we've factored out the loop implicit in the chain of command.
+That eliminates a lot of code, and that's less code to test, and fewer paths through `InjectWorker`, which lowers its complexity further.
+We don't have to test the cases where the list of injection providers is empty, or consists of only a single object, or where it's the third object in that returns `true`: it looks like a single object, it acts like a single object ... but its implementation uses many objects.
+
+== Related Services
+
+* xref:ROOT:pipelinebuilder-service.adoc[PipelineBuilder Service]
+* xref:ROOT:strategybuilder-service.adoc[StrategyBuilder Service]
+* xref:ROOT:chainbuilder-service.adoc[ChainBuilder Service]

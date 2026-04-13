@@ -7,6 +7,11 @@
 * xref:switching-cases.adoc[]
 * xref:enum-parameter-recipe.adoc[]
 * xref:extending-the-if-component.adoc[]
+* xref:ioc-cookbook.adoc[]
+** xref:ioc-cookbook-basic-services-and-injection.adoc[]
+** xref:ioc-cookbook-overriding-ioc-services.adoc[]
+** xref:ioc-cookbook-patterns.adoc[]
+** xref:ioc-cookbook-service-configurations.adoc[]
 * xref:using-select-with-a-list.adoc[]
 * xref:google-app-engine.adoc[]
 
