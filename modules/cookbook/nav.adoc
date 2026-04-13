@@ -4,4 +4,5 @@
 * xref:error-page-recipe.adoc[]
 * xref:supporting-informal-parameters.adoc[]
 * xref:switching-cases.adoc[]
+* xref:enum-parameter-recipe.adoc[]
 
