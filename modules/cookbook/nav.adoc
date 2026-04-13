@@ -5,4 +5,4 @@
 * xref:supporting-informal-parameters.adoc[]
 * xref:switching-cases.adoc[]
 * xref:enum-parameter-recipe.adoc[]
-
+* xref:extending-the-if-component.adoc[]
