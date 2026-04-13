@@ -6,6 +6,7 @@
 * xref:component-libraries.adoc[]
 * xref:switching-cases.adoc[]
 * xref:enum-parameter-recipe.adoc[]
+* xref:extending-the-if-component.adoc[]
 * xref:using-select-with-a-list.adoc[]
 * xref:google-app-engine.adoc[]
 
