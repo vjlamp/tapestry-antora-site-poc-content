@@ -422,12 +422,12 @@ It is invoked in each thread where the perthread service is used.
 At the end of the request, the Registry's `cleanupThread()` method is invoked; it will discard any perthread service implementations for the current thread.
 
 [CAUTION]
-----
+====
 A common technique in Tapestry IoC is to have a service builder method register a core service implementation as an event listener with some event hub service.
 With non-singleton objects, this can cause a number of problems; the event hub will hold a reference to the per-thread instance, even after that per-thread instance has been cleaned up (discarded by the inner proxy).
 Simply put, this is a pattern to avoid.
 For the most part, perthread services should be simple holders of data specific to a thread or a request, and should not have overly complex relationships with the other services in the registry.
-----
+====
 
 === Defining the scope of Autobuilt Services
 There are two options for defining the scope for an autobuilt service.
