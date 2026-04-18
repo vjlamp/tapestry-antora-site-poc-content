@@ -1,0 +1,15 @@
+= Support
+
+== Community Support
+Apache Tapestry is an open source project and as such, supported by the xref:community.adoc[].
+Even if you are looking for commercial support, your best bet for support is to first subscribe to xref:community.adoc#_mailing_lists[Apache Tapestry user mailing list] and ask there.
+
+In addition, https://stackoverflow.com/questions/tagged/tapestry[Stack Overflow] is a good platform for user questions.
+
+== Commercial Training and Support
+
+Training on Tapestry and Support is available directly from the source - some of the Tapestry project committers:
+
+* https://www.machina.com.br/[Thiago H. de Paula Figueiredo (Machina)]: Provides training and support on Tapestry and related technologies including Hibernate
+* https://www.netzgut.net/[Ben Weidig (Netzgut)]: Tapestry and functional programming champion
+
